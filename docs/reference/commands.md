@@ -108,7 +108,7 @@ matching line. A scan of the files every time; nothing is kept on disk.
 
 Move a page, a file or a directory, and rewrite every relative link to it and
 from it in every Markdown file git knows about. Into `NEW` if it is an existing
-directory. Never overwrites.
+directory. Never overwrites, and never moves `loam.toml` itself.
 
 | Option | |
 | --- | --- |

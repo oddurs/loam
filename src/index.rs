@@ -330,5 +330,14 @@ mod tests {
             first_sentence("Version 1.2 is out. Ok."),
             "Version 1.2 is out."
         );
+        assert_eq!(
+            lead("Thanks! This says what it is. And more besides.", 30),
+            "Thanks! This says what it is."
+        );
+        assert_eq!(
+            lead("A very long first sentence indeed. Short.", 10),
+            "A very long first sentence indeed."
+        );
+        assert_eq!(lead("One. Two. Three.", 100), "One. Two. Three.");
     }
 }

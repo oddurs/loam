@@ -31,8 +31,8 @@ The block is generated from `loam.toml`, so it cannot describe a kind or a
 directory the project does not have. It tells an agent where each kind of page
 lives and what question it answers; to search before writing; to use `loam new`
 rather than a path of its own; to replace a page with `loam supersede`, never a
-`-v2.md`; to say what a page covers; and, after changing code, to reread the
-pages that cover it.
+`-v2.md`; to say what a page covers, and for research, where it came from and
+when it was read; and, after changing code, to reread the pages that cover it.
 
 ## 2. What an agent writes is a draft
 
