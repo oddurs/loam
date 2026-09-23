@@ -10,6 +10,7 @@
       "kind": "page",
       "kind_from": "directory",
       "links": [],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -57,6 +58,7 @@
           "target": "docs/shot.png"
         }
       ],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": "This paragraph is the summary: the picture above it is passed over.",

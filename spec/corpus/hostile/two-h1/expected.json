@@ -11,6 +11,7 @@
       "kind": "page",
       "kind_from": "directory",
       "links": [],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": "The summary.",

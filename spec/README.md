@@ -197,6 +197,7 @@ The frontmatter is a mapping. Every key is optional.
 | `summary` | string | A sentence or two saying what the page is for. When absent, see §5.3. |
 | `supersedes` | sequence of strings | Pages this one replaces, each written as a link destination (§4.2). A reader **must** also accept a single string, meaning a sequence of one. |
 | `superseded_by` | sequence of strings | Pages that replace this one, written the same way. A reader **must** also accept a single string. |
+| `order` | integer | The page's place among the pages of its kind, lowest first, for anything that lists them. Pages with no `order` follow those with one. |
 
 A value of the wrong type — a sequence where a string is expected, a number, a
 boolean, a mapping — is a finding (`malformed-key`), and a reader **must** then
@@ -405,7 +406,8 @@ headings included:
   `(title)` — separated from it by whitespace. Whitespace is also allowed after
   the `(` and before the `)`. The text may contain
   brackets, balanced; a bracket preceded by a backslash does not count. The
-  link must lie on one line.
+  text may run over several lines of one paragraph, as wrapped prose makes it
+  do; the destination, and the title and `)` after it, are on one line.
 - **Link reference definitions**: a line, not inside a heading, of up to three
   spaces, then `[label]:`, then optional spaces or tabs, then the destination.
   The definition is a link whether or not anything uses the label.
@@ -422,7 +424,12 @@ same line; a backtick run with no partner is literal text. Autolinks
 (`<https://…>`), bare URLs, and links in raw HTML are not links for this
 format: the first two are absolute (§6.2) and would never be checked anyway.
 
-A link's **line** is the line of the file it appears on.
+A link's **line** is the line of the file its destination is on. Within a
+paragraph, links are listed in the order of their lines, and then of where
+their destinations begin.
+
+Code spans are found in a paragraph as a whole, so one may run over a line
+break, as a link's text may.
 
 ### 6.2 Resolving a destination
 

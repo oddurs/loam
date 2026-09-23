@@ -24,6 +24,7 @@
           "target": "docs/latin1.md"
         }
       ],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": "[latin1](latin1.md#café) is broken: a file that cannot be read has no anchors.",
@@ -46,6 +47,7 @@
       "kind": "page",
       "kind_from": "directory",
       "links": [],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

@@ -10,6 +10,7 @@
       "kind": "page",
       "kind_from": "directory",
       "links": [],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -291,6 +292,7 @@
           "target": "docs/missing-in-heading.md"
         }
       ],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": "Good: [page](other.md), [anchor](other.md#a-section), [self](#links), [directory](sub/), [directory without slash](sub), [root-relative](/README.md#install), [out of docs](../src/main.rs#L1), [query](other.md?plain=1#a-section), [spaces](<a file.md>), [percent](a%20file.md), [title](other.md \"Other\"), [padded](  other.md  ).",
@@ -310,6 +312,7 @@
       "kind": "page",
       "kind_from": "directory",
       "links": [],
+      "order": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

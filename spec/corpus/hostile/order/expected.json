@@ -1,83 +1,19 @@
 {
   "format": 1,
   "pages": {
-    "docs/current.md": {
+    "docs/boolean.md": {
       "anchors": [
-        "current"
-      ],
-      "findings": [],
-      "frontmatter": {
-        "status": "current"
-      },
-      "kind": "page",
-      "kind_from": "directory",
-      "links": [],
-      "order": null,
-      "status": "current",
-      "status_from": "frontmatter",
-      "summary": null,
-      "summary_from": null,
-      "superseded_by": [],
-      "supersedes": [],
-      "title": "Current",
-      "title_from": "heading"
-    },
-    "docs/done.md": {
-      "anchors": [
-        "done-is-not-a-page-status"
+        "nor-a-boolean"
       ],
       "findings": [
         {
-          "code": "unknown-status",
-          "detail": "done",
+          "code": "malformed-key",
+          "detail": "order",
           "line": 1
         }
       ],
       "frontmatter": {
-        "status": "done"
-      },
-      "kind": "page",
-      "kind_from": "directory",
-      "links": [],
-      "order": null,
-      "status": "done",
-      "status_from": "frontmatter",
-      "summary": null,
-      "summary_from": null,
-      "superseded_by": [],
-      "supersedes": [],
-      "title": "Done is not a page status",
-      "title_from": "heading"
-    },
-    "docs/draft.md": {
-      "anchors": [
-        "draft"
-      ],
-      "findings": [],
-      "frontmatter": {
-        "status": "draft"
-      },
-      "kind": "page",
-      "kind_from": "directory",
-      "links": [],
-      "order": null,
-      "status": "draft",
-      "status_from": "frontmatter",
-      "summary": null,
-      "summary_from": null,
-      "superseded_by": [],
-      "supersedes": [],
-      "title": "Draft",
-      "title_from": "heading"
-    },
-    "docs/null.md": {
-      "anchors": [
-        "null-is-absent"
-      ],
-      "findings": [],
-      "frontmatter": {
-        "status": null,
-        "title": null
+        "order": true
       },
       "kind": "page",
       "kind_from": "directory",
@@ -89,28 +25,95 @@
       "summary_from": null,
       "superseded_by": [],
       "supersedes": [],
-      "title": "Null is absent",
+      "title": "Nor a boolean",
       "title_from": "heading"
     },
-    "docs/superseded.md": {
+    "docs/first.md": {
       "anchors": [
-        "superseded-saying-nothing-about-by-what"
+        "first"
       ],
       "findings": [],
       "frontmatter": {
-        "status": "superseded"
+        "order": 1
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": 1,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "First",
+      "title_from": "heading"
+    },
+    "docs/negative.md": {
+      "anchors": [
+        "negative-is-fine"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "order": -3
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": -3,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Negative is fine",
+      "title_from": "heading"
+    },
+    "docs/unordered.md": {
+      "anchors": [
+        "unordered"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Unordered",
+      "title_from": "heading"
+    },
+    "docs/words.md": {
+      "anchors": [
+        "order-must-be-an-integer"
+      ],
+      "findings": [
+        {
+          "code": "malformed-key",
+          "detail": "order",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "order": "first"
       },
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
-      "status": "superseded",
-      "status_from": "frontmatter",
+      "status": "current",
+      "status_from": "default",
       "summary": null,
       "summary_from": null,
       "superseded_by": [],
       "supersedes": [],
-      "title": "Superseded, saying nothing about by what",
+      "title": "Order must be an integer",
       "title_from": "heading"
     }
   }

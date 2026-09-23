@@ -77,11 +77,22 @@ for _tag, _pattern, _first in [
 # no merge key: `<<` resolves as an ordinary string, so nothing is merged. A tag
 # outside the core schema is left with no constructor, PyYAML raises, and §3.2
 # makes that malformed frontmatter.
+def _construct_int(loader, node):
+    """1.2 core integers. PyYAML's own is 1.1's, under which `012` is octal ten."""
+    value = loader.construct_scalar(node)
+    if value.startswith("0o"):
+        return int(value[2:], 8)
+    if value.startswith("0x"):
+        return int(value[2:], 16)
+    return int(value, 10)
+
+
 Core.yaml_constructors = {
     tag: construct
     for tag, construct in yaml.SafeLoader.yaml_constructors.items()
     if tag is None or tag.rsplit(":", 1)[-1] in ("null", "bool", "int", "float", "str", "seq", "map")
 }
+Core.add_constructor("tag:yaml.org,2002:int", _construct_int)
 
 
 # ─── §7.1 Configuration ───────────────────────────────────────────────────
@@ -132,7 +143,7 @@ ATX = re.compile(r"^ {0,3}(#{1,6})(?:[ \t]+(.*?))?[ \t]*$")
 SETEXT = re.compile(r"^ {0,3}(=+|-+)[ \t]*$")
 BREAK = re.compile(r"^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$")
 LIST = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:[ \t]|$)")
-REFDEF = re.compile(r"^ {0,3}\[((?:[^\]\\]|\\.)+)\]:[ \t]*(<[^>\n]*>|\S+)")
+REFDEF = re.compile(r"^ {0,3}\[((?:[^\]\\]|\\.)+)\]:[ \t]*(<[^>\n]*>|[^ \t]+)")  # §2: whitespace is space and tab
 
 
 def blocks(body, first_line):
@@ -317,7 +328,8 @@ def strip_code_spans(line):
                 out.append(run)
                 i = j
                 continue
-            out.append(" " * (close + len(run) - i))
+            # Spaces, byte for byte, but a line break stays one (§6.1).
+            out.append(re.sub(r"[^\n]", " ", line[i : close + len(run)]))
             i = close + len(run)
             continue
         out.append(line[i])
@@ -326,7 +338,11 @@ def strip_code_spans(line):
 
 
 def inline_destinations(line):
-    """Destinations of inline links and images on one line (§6.1)."""
+    """(offset, destination) of inline links and images (§6.1).
+
+    `line` is a heading, or a paragraph's lines joined with newlines: a link's
+    text may run over several lines, but its destination stays on one.
+    """
     found = []
     i = 0
     while True:
@@ -355,19 +371,19 @@ def inline_destinations(line):
             k += 1
         if k < len(line) and line[k] == "<":
             end = line.find(">", k)
-            if end == -1:
+            if end == -1 or "\n" in line[k:end]:
                 i = k
                 continue
-            dest = line[k + 1 : end]
+            dest, dest_at = line[k + 1 : end], k + 1
             rest = end + 1
         else:
             parens, start = 0, k
             while k < len(line):
                 c = line[k]
-                if c == "\\" and k + 1 < len(line):
+                if c == "\\" and k + 1 < len(line) and line[k + 1] != "\n":
                     k += 2
                     continue
-                if c in " \t":
+                if c in " \t\n":
                     break
                 if c == "(":
                     parens += 1
@@ -376,12 +392,12 @@ def inline_destinations(line):
                         break
                     parens -= 1
                 k += 1
-            dest = line[start:k]
+            dest, dest_at = line[start:k], start
             rest = k
         # An optional title, then `)`.
-        m = re.match(r"""[ \t]*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\((?:[^()\\]|\\.)*\))?[ \t]*\)""", line[rest:])
+        m = re.match(r"""[ \t]*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\((?:[^()\\]|\\.)*\))?[ \t]*\)""", line[rest:].split("\n", 1)[0])
         if m and dest:
-            found.append(dest)
+            found.append((dest_at, dest))
         i = rest
 
 
@@ -391,16 +407,25 @@ def links(block_list):
     for kind, number, data in block_list:
         if kind == "code":
             continue
-        lines = [data[1]] if kind == "heading" else data
-        for offset, line in enumerate(lines):
-            n = number + offset
-            m = REFDEF.match(line) if kind != "heading" else None
+        if kind == "heading":
+            result.extend((number, dest) for _, dest in inline_destinations(strip_code_spans(data[1])))
+            continue
+        # A paragraph: definitions line by line, inline links across lines.
+        found, joined, starts = [], [], []
+        offset = 0
+        for i, line in enumerate(data):
+            starts.append(offset)
+            m = REFDEF.match(line)
             if m:
                 dest = m.group(2)
-                result.append((n, dest[1:-1] if dest.startswith("<") else dest))
-                continue
-            for dest in inline_destinations(strip_code_spans(line)):
-                result.append((n, dest))
+                found.append((number + i, 0, dest[1:-1] if dest.startswith("<") else dest))
+                line = " " * len(line)
+            joined.append(line)
+            offset += len(line) + 1
+        for at, dest in inline_destinations(strip_code_spans("\n".join(joined))):
+            i = max(k for k, start in enumerate(starts) if start <= at)
+            found.append((number + i, at - starts[i], dest))
+        result.extend((n, dest) for n, _, dest in sorted(found, key=lambda f: (f[0], f[1])))
     return result
 
 
@@ -563,6 +588,13 @@ def read_page(project, path):
     elif kind not in [k for k, _ in project["kinds"]]:
         findings.append({"line": 1, "code": "unknown-kind", "detail": kind})
 
+    order = None
+    if meta is not None and meta.get("order") is not None:
+        if isinstance(meta["order"], int) and not isinstance(meta["order"], bool):
+            order = meta["order"]
+        else:
+            findings.append({"line": 1, "code": "malformed-key", "detail": "order"})
+
     supersedes = path_list("supersedes")
     superseded_by = path_list("superseded_by")
 
@@ -599,6 +631,7 @@ def read_page(project, path):
         "status_from": status_from,
         "summary": summary,
         "summary_from": summary_from,
+        "order": order,
         "supersedes": supersedes,
         "superseded_by": superseded_by,
         "anchors": anchors(block_list),
