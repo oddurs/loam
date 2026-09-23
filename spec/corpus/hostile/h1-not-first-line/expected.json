@@ -5,12 +5,15 @@
       "anchors": [
         "title-after-it"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -24,8 +27,10 @@
       "anchors": [
         "the-title-comes-later"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -59,6 +64,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "This paragraph is the summary: the picture above it is passed over.",

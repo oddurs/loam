@@ -56,6 +56,10 @@ exits 1. A case the reader must refuse expects `{"refused": true}`.
   §5 found one instead. A status of `superseded` inferred from `superseded_by`
   (§5.5) is `default`, like `current`.
 - **`order`** is the integer, or `null` when absent or not an integer.
+- **`covers`** is the list of patterns as written, a single string becoming a
+  list of one, or `[]` when absent or malformed. **`reviewed`** is
+  `{"commit": …, "date": …}`, or `null`. **`generated`** is the string, or
+  `null`.
 - **`supersedes`, `superseded_by`** are the values as written, a single string
   becoming a list of one, or `[]` when absent or malformed.
 - **`anchors`** are the page's anchors in the order of spec §6.3: heading slugs,

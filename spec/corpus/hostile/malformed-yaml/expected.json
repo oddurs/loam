@@ -5,6 +5,7 @@
       "anchors": [
         "the-heading-still-counts"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-frontmatter",
@@ -13,10 +14,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "And so does this summary.",
@@ -30,6 +33,7 @@
       "anchors": [
         "a-sequence-is-not-frontmatter"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-frontmatter",
@@ -38,10 +42,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -55,6 +61,7 @@
       "anchors": [
         "neither-is-a-scalar"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-frontmatter",
@@ -63,10 +70,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

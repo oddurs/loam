@@ -28,8 +28,10 @@
         "performance-tips",
         "debugging-tips"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -49,6 +51,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "This document provides detailed information on building \"The Measure of the World\" LaTeX document.",
@@ -80,6 +83,7 @@
         "prompts-and-planning",
         "questions"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-link",
@@ -108,6 +112,7 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -162,6 +167,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Thank you for interest in \"The Measure of the World\"! This document outlines how to contribute to the project.",
@@ -187,12 +193,15 @@
         "key-integrations-with-book-themes",
         "specific-instructions-for-writing"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -238,12 +247,15 @@
         "f6-online-resources",
         "annotation-notes"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Detailed structural outlines for all 6 appendices.",
@@ -281,12 +293,15 @@
         "required-content-4",
         "format-5"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Individual prompts for each appendix. Use in conjunction with STYLE_GUIDE.md or QUICK_REFERENCE.md.",
@@ -478,12 +493,15 @@
         "closing-reflections",
         "technical-elements-24"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Detailed structural outlines for all 25 chapters. Each outline specifies sections, technical elements, and sidenote content.",
@@ -672,12 +690,15 @@
         "required-elements-24",
         "connections-24"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Individual prompts for each chapter. Use in conjunction with STYLE_GUIDE.md or QUICK_REFERENCE.md.",
@@ -704,12 +725,15 @@
         "checklist-before-writing",
         "notes"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -767,12 +791,15 @@
         "latex-environment-errors",
         "build-process-best-practices"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "You are writing a technical history of the Royal Observatory, Greenwich. The book integrates narrative history, mathematical exposition, and instrument analysis in the tradition of Edward Tufte's analytical design. It is for academically minded readers—historians of science, mathematicians, astronomers, engineers, and serious enthusiasts—who expect rigorous exposition, **dense citation, abundant mathematics and figures as primary language of explanation**, but who also want to feel the human drama of discovery.",
@@ -803,12 +830,15 @@
         "12-progress-as-of-9-september-2026",
         "13-immediate-next-steps"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "plan",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "A plan for taking *The Measure of the World* from a January 2026 draft to a print-ready first edition, and for the tooling that makes each pass repeatable. Written 2026-09-08.",
@@ -828,8 +858,10 @@
         "content",
         "release"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -856,6 +888,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Target: **v2.0.0**, a perfect-bound US Trade paperback (6 × 9 in) printed by [Mixam](https://mixam.com). Earlier tags (v1.0.0–v1.3, January 2026) were PDF-only drafts on US Letter and remain on GitHub as-is.",
@@ -922,12 +955,15 @@
         "notes-for-editors",
         "chapter-4-implementation-notes"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -952,8 +988,10 @@
         "deleting-a-tag",
         "manual-releases"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -966,6 +1004,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "This document explains how releases work for *The Measure of the World*.",
@@ -982,12 +1021,15 @@
         "references-by-status",
         "claims-by-file"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Generated by `make status`. Do not edit by hand.",
@@ -1095,6 +1137,7 @@
         "part-xxi-when-to-break-these-rules",
         "questions-and-further-resources"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-link",
@@ -1108,6 +1151,7 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -1127,6 +1171,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "This guide combines **writing and formatting principles** for a technical history that integrates narrative, mathematics, and analytical design. We use LaTeX with the `memoir` class to achieve the precision and flexibility that this project demands.",

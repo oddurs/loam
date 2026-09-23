@@ -5,6 +5,7 @@
       "anchors": [
         "nor-a-boolean"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-key",
@@ -15,10 +16,12 @@
       "frontmatter": {
         "order": true
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -32,14 +35,17 @@
       "anchors": [
         "first"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "order": 1
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": 1,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -53,14 +59,17 @@
       "anchors": [
         "negative-is-fine"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "order": -3
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": -3,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -74,12 +83,15 @@
       "anchors": [
         "unordered"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -93,6 +105,7 @@
       "anchors": [
         "order-must-be-an-integer"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-key",
@@ -103,10 +116,12 @@
       "frontmatter": {
         "order": "first"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

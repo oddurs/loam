@@ -5,12 +5,15 @@
       "anchors": [
         "a-readme-is-a-page"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -24,6 +27,7 @@
       "anchors": [
         "a-kind-nobody-declared"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "unknown-kind",
@@ -34,10 +38,12 @@
       "frontmatter": {
         "kind": "decision"
       },
+      "generated": null,
       "kind": "decision",
       "kind_from": "frontmatter",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -51,14 +57,17 @@
       "anchors": [
         "frontmatter-overrides-the-directory"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "kind": "guide"
       },
+      "generated": null,
       "kind": "guide",
       "kind_from": "frontmatter",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -72,6 +81,7 @@
       "anchors": [
         "guide-notes-is-not-under-guide"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "unclaimed",
@@ -80,10 +90,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": null,
       "kind_from": null,
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -97,12 +109,15 @@
       "anchors": [
         "deep-the-longest-claim-wins"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "advanced",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -116,12 +131,15 @@
       "anchors": [
         "deeper-still"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "advanced",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -135,12 +153,15 @@
       "anchors": [
         "start"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

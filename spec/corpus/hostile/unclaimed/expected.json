@@ -5,12 +5,15 @@
       "anchors": [
         "claimed"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -24,6 +27,7 @@
       "anchors": [
         "no-kind-claims-the-docs-root"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "unclaimed",
@@ -32,10 +36,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": null,
       "kind_from": null,
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

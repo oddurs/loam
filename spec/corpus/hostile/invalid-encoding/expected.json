@@ -5,6 +5,7 @@
       "anchors": [
         "fine"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-anchor",
@@ -13,6 +14,7 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -25,6 +27,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "[latin1](latin1.md#café) is broken: a file that cannot be read has no anchors.",
@@ -36,6 +39,7 @@
     },
     "docs/latin1.md": {
       "anchors": [],
+      "covers": [],
       "findings": [
         {
           "code": "invalid-encoding",
@@ -44,10 +48,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

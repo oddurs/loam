@@ -29,6 +29,7 @@
         "over-two-lines",
         "upper"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-link",
@@ -77,6 +78,7 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -306,6 +308,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

@@ -5,6 +5,7 @@
       "anchors": [
         "crlf"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-anchor",
@@ -15,6 +16,7 @@
       "frontmatter": {
         "summary": "Written on Windows."
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -34,6 +36,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Written on Windows.",
@@ -47,12 +50,15 @@
       "anchors": [
         "other-page"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Text.",

@@ -5,12 +5,15 @@
       "anchors": [
         "comment-only-frontmatter"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {},
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -24,14 +27,17 @@
       "anchors": [
         "heading"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "title": "Closed with dots"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "A body after `...`.",
@@ -45,12 +51,15 @@
       "anchors": [
         "empty-frontmatter"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {},
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Is an empty mapping.",

@@ -5,15 +5,18 @@
       "anchors": [
         "core-tags-are-honoured"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "number": 7,
         "title": "2026"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -27,14 +30,17 @@
       "anchors": [
         "a-core-tag-on-a-key-is-honoured"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "12": "twelve"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -48,6 +54,7 @@
       "anchors": [
         "a-local-tag"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-frontmatter",
@@ -56,10 +63,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -73,6 +82,7 @@
       "anchors": [
         "no-merge-key-in-yaml-12-core"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "base": {
@@ -85,10 +95,12 @@
           "extra": 1
         }
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -102,6 +114,7 @@
       "anchors": [
         "a-tag-on-a-key-counts-too"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-frontmatter",
@@ -110,10 +123,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -127,6 +142,7 @@
       "anchors": [
         "a-tag-outside-the-core-schema"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-frontmatter",
@@ -135,10 +151,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Makes the frontmatter malformed.",

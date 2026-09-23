@@ -5,12 +5,15 @@
       "anchors": [
         "a-file-with-a-space"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -25,6 +28,7 @@
         "links",
         "heading-with-a-link"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-anchor",
@@ -78,6 +82,7 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -293,6 +298,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Good: [page](other.md), [anchor](other.md#a-section), [self](#links), [directory](sub/), [directory without slash](sub), [root-relative](/README.md#install), [out of docs](../src/main.rs#L1), [query](other.md?plain=1#a-section), [spaces](<a file.md>), [percent](a%20file.md), [title](other.md \"Other\"), [padded](  other.md  ).",
@@ -307,12 +313,15 @@
         "other",
         "a-section"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

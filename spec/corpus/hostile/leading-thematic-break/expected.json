@@ -3,6 +3,7 @@
   "pages": {
     "docs/break.md": {
       "anchors": [],
+      "covers": [],
       "findings": [
         {
           "code": "untitled",
@@ -11,10 +12,12 @@
         }
       ],
       "frontmatter": {},
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "But the first `---` opened frontmatter.",

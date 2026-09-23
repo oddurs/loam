@@ -588,6 +588,24 @@ def read_page(project, path):
     elif kind not in [k for k, _ in project["kinds"]]:
         findings.append({"line": 1, "code": "unknown-kind", "detail": kind})
 
+    # §4.3: what the page covers, and when it was last read against it.
+    covers = path_list("covers")
+    reviewed = None
+    if meta is not None and meta.get("reviewed") is not None:
+        r = meta["reviewed"]
+        commit = r.get("commit") if isinstance(r, dict) else None
+        date = r.get("date") if isinstance(r, dict) else None
+        if (
+            isinstance(commit, str)
+            and re.fullmatch(r"[0-9a-fA-F]{7,64}", commit)
+            and isinstance(date, str)
+            and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", date)
+        ):
+            reviewed = {"commit": commit, "date": date}
+        else:
+            findings.append({"line": 1, "code": "malformed-key", "detail": "reviewed"})
+    generated = string_key("generated")
+
     order = None
     if meta is not None and meta.get("order") is not None:
         if isinstance(meta["order"], int) and not isinstance(meta["order"], bool):
@@ -632,6 +650,9 @@ def read_page(project, path):
         "summary": summary,
         "summary_from": summary_from,
         "order": order,
+        "covers": covers,
+        "reviewed": reviewed,
+        "generated": generated,
         "supersedes": supersedes,
         "superseded_by": superseded_by,
         "anchors": anchors(block_list),

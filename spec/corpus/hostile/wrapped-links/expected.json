@@ -6,12 +6,15 @@
         "other",
         "a-section"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -25,8 +28,10 @@
       "anchors": [
         "wrapped-links"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -46,6 +51,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Prose wrapped at a margin puts [the text of a link](other.md) on two lines, and [a longer one that runs over three lines of the paragraph](other.md#a-section \"with a title\") as well.",

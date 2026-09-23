@@ -5,7 +5,16 @@
       "anchors": [
         "unknown-keys"
       ],
-      "findings": [],
+      "covers": [
+        "src/"
+      ],
+      "findings": [
+        {
+          "code": "malformed-key",
+          "detail": "reviewed",
+          "line": 1
+        }
+      ],
       "frontmatter": {
         "covers": "src/",
         "layout": "post",
@@ -18,10 +27,12 @@
           "b"
         ]
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Are kept, and are not findings.",

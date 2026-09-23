@@ -3,6 +3,7 @@
   "pages": {
     "docs/empty.md": {
       "anchors": [],
+      "covers": [],
       "findings": [
         {
           "code": "untitled",
@@ -11,10 +12,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -28,6 +31,7 @@
       "anchors": [
         "only-a-second-level-heading"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "untitled",
@@ -36,10 +40,12 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

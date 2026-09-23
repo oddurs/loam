@@ -5,6 +5,7 @@
       "anchors": [
         "unquoted"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "unknown-kind",
@@ -28,10 +29,12 @@
         "title": "yes",
         "version": 1.2
       },
+      "generated": null,
       "kind": "on",
       "kind_from": "frontmatter",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "no",
       "status_from": "frontmatter",
       "summary": "12:30",

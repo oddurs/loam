@@ -10,8 +10,10 @@
         "the-repository-itself",
         "roadmaps"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -290,6 +292,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Three kinds of page, and they answer three different questions.",
@@ -314,12 +317,15 @@
         "which-cgroup-is-stalled",
         "what-it-costs-to-watch"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -334,12 +340,15 @@
         "what-it-costs-to-watch",
         "sample-rate-and-window"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -355,8 +364,10 @@
         "themes",
         "measuring-a-theme"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [
@@ -369,6 +380,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -383,12 +395,15 @@
         "the-graphs",
         "what-the-timeline-graphs"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -402,12 +417,15 @@
       "anchors": [
         "how-it-works"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "The page size is read from `/proc/self/auxv` at startup rather than assumed. RSS is a count of pages multiplied by it, so a hardcoded 4096 reports every process at a quarter of its real memory on a 16 KiB-page kernel and a sixteenth on a 64 KiB one — Asahi and RHEL aarch64 respectively — and nothing about the output looks wrong. Where the kernel will not say, poptop assumes 4096 and says that it did.",
@@ -421,12 +439,15 @@
       "anchors": [
         "notes-from-reading-the-others"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Lessons taken from htop, btop, and bottom, with the measurements that backed them:",
@@ -442,8 +463,10 @@
         "where-each-of-them-stands-on-time",
         "where-poptop-and-atop-differ-now"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [
@@ -463,6 +486,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop is not the first tool to let you look backwards, and it is not the most capable one.",
@@ -479,12 +503,15 @@
         "reading-the-header",
         "which-half-of-the-machine-is-full"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -503,12 +530,15 @@
         "what-it-costs-measured",
         "retention"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -524,12 +554,15 @@
         "keeping-history-across-restarts",
         "doing-something-about-it"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "`~/.config/poptop/poptop.conf`, honouring `$XDG_CONFIG_HOME`. Every flag is a `key = value` line without the leading dashes:",
@@ -545,8 +578,10 @@
         "fuzzing",
         "soaking"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [
@@ -559,6 +594,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -582,12 +618,15 @@
         "what-the-table-cannot-show",
         "processes-that-came-and-went"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "design",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -606,8 +645,10 @@
         "sizing-the-terminal",
         "where-to-go-next"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [
@@ -683,6 +724,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -703,8 +745,10 @@
         "which-to-reach-for",
         "c--cgroups"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [
@@ -724,6 +768,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Forty workers at 3% each do not appear in a table sorted by CPU. They are 120% of a core and they are invisible. `g` and `t` are the two ways of making them visible, and they answer different questions.",
@@ -743,8 +788,10 @@
         "x-and-x--stopping-it",
         "getting-back-out"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [
@@ -764,6 +811,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "You have found the row. Now you want its shape over time, its children, its threads, and — if it comes to that — a way to stop it.",
@@ -789,8 +837,10 @@
         "what-the-log-does-about-bad-days",
         "where-the-files-are"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [
@@ -817,6 +867,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop needs nothing running before you notice the problem — it starts with an empty buffer and fills it. But if it *was* running, you can ask it about yesterday.",
@@ -836,8 +887,10 @@
         "working-out-when-it-started",
         "keeping-more-than-ten-minutes"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [
@@ -864,6 +917,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "This is the thing poptop exists for. Everything on screen — the header, the graphs, the whole process table — is drawn from one sample, and the arrow keys move which one.",
@@ -881,12 +935,15 @@
         "every-refusal-and-what-it-means",
         "what-poptop-will-not-do"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop reads files and nothing else until you say otherwise. A monitor that cannot change the machine is a monitor that cannot break it, so `x` and `X` do nothing on a default install:",
@@ -911,8 +968,10 @@
         "exit-statuses",
         "something-else"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [
@@ -953,6 +1012,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Every message poptop prints about something it could not read or could not do, and what to do about it.",
@@ -973,8 +1033,10 @@
         "when-the-answer-is-all-of-them",
         "then-go-back-in-time"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "guide",
       "kind_from": "directory",
       "links": [
@@ -1008,6 +1070,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "The machine is unhappy and you want to know what is doing it. This is the whole sequence, and it is three keys.",
@@ -1024,8 +1087,10 @@
         "marks",
         "why-a-column-disappeared"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [
@@ -1045,6 +1110,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "What every column in the process table means, and what every mark in it means. Which columns are drawn depends on the view (`v`), on what the platform publishes, and on how wide the terminal is — see [views](views.md) and [platforms](platforms.md).",
@@ -1064,8 +1130,10 @@
         "the-two-settings-that-decide-memory",
         "where-poptop-puts-things"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [
@@ -1106,6 +1174,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Everything poptop can be told is a flag, and every flag is also a config file key with the same name and no leading dashes.",
@@ -1122,12 +1191,15 @@
         "a-query",
         "what-it-refuses-to-do"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "`/` opens the filter. It applies as you type, to the sample under the cursor — so with the timeline scrubbed back four minutes, it answers about that moment. `Esc` or `Enter` leaves the box keeping what you typed; `/` then `Enter` clears it.",
@@ -1143,8 +1215,10 @@
         "things-worth-knowing",
         "moving-them"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [
@@ -1157,6 +1231,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Every key poptop takes. The same list is on screen under `?`, and in `poptop --help`; a test holds all three to each other, so if one of them is wrong here, the build fails.",
@@ -1180,8 +1255,10 @@
         "--verify-is-this-day-file-intact-and-what-is-in-it",
         "exit-status"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [
@@ -1194,6 +1271,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop is a terminal program, and four flags let something else read what it sees. All of them work whether or not poptop has ever been left running: `--once`, `--export` and `--schema` describe the machine now, while `--report`, `--days` and `--read` need [a recording](../guide/recording.md).",
@@ -1210,8 +1288,10 @@
         "what-you-can-read-without-root",
         "where-a-figure-comes-from"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [
@@ -1224,6 +1304,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop reads what the kernel publishes, and says `—` for the rest rather than a zero. What you get therefore depends on the platform, and on what you are allowed to read.",
@@ -1243,8 +1324,10 @@
         "trying-a-colour",
         "why-there-is-no-third-series-colour"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [
@@ -1257,6 +1340,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "`theme = safe` (the default), `theme = classic`, or the name of a file in `~/.config/poptop/themes/`.",
@@ -1273,12 +1357,15 @@
         "modes",
         "sorting"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "reference",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "The table shows one set of columns at a time, and `v` cycles the set. Everything else here is a mode on top of it.",
@@ -1294,8 +1381,10 @@
         "x1--correct-the-prior-art-claims----s----done",
         "x2--comparison-table----s----done"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [
@@ -1315,6 +1404,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop's README and commit history claim it does something no other tool does. That claim is wrong and needs correcting before anyone reads it.",
@@ -1335,12 +1425,15 @@
         "c5--recessive-chrome----s----done",
         "c6--status-colours-reserved----s----done"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop currently calls `Color::Green`, `Color::Yellow`, `Color::Red` directly from `ui.rs`. Three consequences, in increasing order of severity: the palette cannot be changed, poptop does not actually control the hues, and the pair it depends on most is invisible to the most common form of colour blindness.",
@@ -1361,12 +1454,15 @@
         "g7--the-window-should-follow-the-cursor----m----done",
         "g6--scale-legend-for-retained-heat----s----done"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "The timeline shows shape and nothing else. There is no axis, no gridline and no scale marker anywhere in it. A value is readable at the cursor and at no other point, so a bar at 45% and a bar at 65% are indistinguishable — and the 50%/80% thresholds that drive every colour decision are themselves invisible.",
@@ -1384,12 +1480,15 @@
         "l3--give-reclaimed-rows-to-the-timeline----s----done",
         "l4--documented-responsive-ladder----m----done"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Four bordered panels on a 30-row terminal spend **8 rows on box-drawing alone** — 27% of the vertical space, before any data. The cores panel is the clearest case: three rows of allocation for one row of glyphs, so two thirds of it is chrome.",
@@ -1406,12 +1505,15 @@
         "p2--micro-bar-for-memory----s",
         "p3--per-process-sparkline----m"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "The table is pure text, so finding the heavy process means reading numbers rather than seeing them. htop puts a bar in its CPU column for exactly this reason.",
@@ -1429,12 +1531,15 @@
         "d3--persist-history-across-restarts----l",
         "d4--configurable-sample-interval----s"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "These are not UI items. They bound what poptop is *able* to answer, and `D1` is the largest real gap against atop.",
@@ -1452,12 +1557,15 @@
         "e2--intern-process-names----s----done",
         "deliberately-not-doing"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "poptop is not slow today, and that is the wrong reason to leave the collector alone. At 1 Hz and 400 processes a sample costs 1.44 ms — 0.14% of one core. But the cost is linear in both sample rate and process count, and two items already on the roadmap push on both:",
@@ -1474,8 +1582,10 @@
         "suggested-order",
         "sizing"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "roadmap",
       "kind_from": "directory",
       "links": [
@@ -1544,6 +1654,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

@@ -5,6 +5,7 @@
       "anchors": [
         "claims-a-successor-that-does-not-claim-it"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "one-sided-supersession",
@@ -16,10 +17,12 @@
         "status": "current",
         "superseded_by": "new.md"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "frontmatter",
       "summary": null,
@@ -35,6 +38,7 @@
       "anchors": [
         "superseded-by-a-page-that-does-not-exist"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-supersession",
@@ -45,10 +49,12 @@
       "frontmatter": {
         "superseded_by": "nowhere.md"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "superseded",
       "status_from": "default",
       "summary": null,
@@ -64,6 +70,7 @@
       "anchors": [
         "names-a-page-that-is-not-there"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-supersession",
@@ -82,10 +89,12 @@
           "/docs/new.md"
         ]
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -102,14 +111,17 @@
       "anchors": [
         "new"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "supersedes": "old.md"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -125,16 +137,19 @@
       "anchors": [
         "old"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "superseded_by": [
           "new.md"
         ]
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "superseded",
       "status_from": "default",
       "summary": "Status is inferred from superseded_by.",
@@ -150,6 +165,7 @@
       "anchors": [
         "one-sided"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "one-sided-supersession",
@@ -162,10 +178,12 @@
           "./sub/../unaware.md"
         ]
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -181,12 +199,15 @@
       "anchors": [
         "unaware-it-was-replaced"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,

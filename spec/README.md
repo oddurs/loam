@@ -198,6 +198,9 @@ The frontmatter is a mapping. Every key is optional.
 | `supersedes` | sequence of strings | Pages this one replaces, each written as a link destination (§4.2). A reader **must** also accept a single string, meaning a sequence of one. |
 | `superseded_by` | sequence of strings | Pages that replace this one, written the same way. A reader **must** also accept a single string. |
 | `order` | integer | The page's place among the pages of its kind, lowest first, for anything that lists them. Pages with no `order` follow those with one. |
+| `covers` | sequence of strings | The files the page describes, as patterns (§4.3). A reader **must** also accept a single string. |
+| `reviewed` | mapping | When the page was last read against the code it covers (§4.3). |
+| `generated` | string | What generates the page, when a program does (§4.3). |
 
 A value of the wrong type — a sequence where a string is expected, a number, a
 boolean, a mapping — is a finding (`malformed-key`), and a reader **must** then
@@ -240,13 +243,50 @@ reader **must** report each side that lacks its partner as a finding
 (`one-sided-supersession`) on the page that states it. A writer that records
 one side **should** record the other in the same change.
 
-### 4.3 Reserved keys
+### 4.3 Covers, reviewed and generated
 
-`covers`, `reviewed` and `aliases` are reserved for a later revision of this
-format. A reader of this version treats them as it treats any key it does not
-recognise (§4.4). A project **must not** use them to mean anything else.
+These three say what a page describes and when it was last known to be true.
+A reader that computes nothing from them still reads them, reports a value of
+the wrong type, and preserves them.
 
-### 4.4 Unknown keys
+**`covers`** is a list of patterns naming files in the repository. A page covers
+a file when the file's path matches at least one pattern that does not begin
+with `!`, and none that does. A pattern is a path relative to the repository —
+a leading `/` is ignored — whose segments, separated by `/`, are matched against
+the file path's segments:
+
+- `**`, as a whole segment, matches any number of segments, including none;
+- any other segment matches one segment, in which `*` matches any run of
+  characters and `?` matches exactly one, and every other character matches
+  itself;
+- a pattern also matches every file below a directory it matches, so `src/engine`
+  covers `src/engine/step.rs`.
+
+`!src/engine/tests` therefore uncovers what `src/engine` would cover. An `!` must
+be quoted in YAML, where it otherwise begins a tag: `- "!src/engine/tests"`.
+
+**`reviewed`** is a mapping of two strings: `commit`, the hexadecimal name of the
+commit the page was read against, at least seven characters; and `date`, the
+day it was, as `YYYY-MM-DD`. Both, because a commit can stop existing — a branch
+squashed or rebased away — and a date cannot. A `reviewed` without both, or with
+either not a string of that form, is `malformed-key`. Other keys inside it are
+preserved and mean nothing here.
+
+**`generated`** names what writes the page, as its author would say it: `make
+status`. Such a page is kept true by its generator, not by being read, and
+anything that reports whether a page is still true **should** leave it out.
+
+Whether a page is stale — whether what it covers has changed since it was
+reviewed — is a fact a program derives from these and from the repository's
+history. It is not written into a page, and this format does not define it.
+
+### 4.4 Reserved keys
+
+`aliases` is reserved for a later revision of this format. A reader of this
+version treats it as it treats any key it does not recognise (§4.5). A project
+**must not** use it to mean anything else.
+
+### 4.5 Unknown keys
 
 > **A reader must preserve keys it does not recognise.**
 
@@ -686,7 +726,7 @@ describes version 1.
    with no `format`, **must** refuse the project and say so, naming the
    version it found and the version it understands. It **must not** read it on
    a best-effort basis: misreading pages is worse than declining to read them.
-2. A reader of pages **must** preserve keys it does not recognise (§4.4), and a
+2. A reader of pages **must** preserve keys it does not recognise (§4.5), and a
    reader of the configuration **must** ignore them (§7.1).
 
 What costs a version number, and a migration path for existing projects:
@@ -702,7 +742,7 @@ What costs a version number, and a migration path for existing projects:
 
 What does not:
 
-- a new optional key in the frontmatter, including the ones §4.3 reserves;
+- a new optional key in the frontmatter, including the one §4.4 reserves;
 - a new optional key in the configuration, **provided** a reader that ignores
   it still reports the same reading. A key that changes which files are pages,
   or what a reader reports for one, is not optional in this sense: an older

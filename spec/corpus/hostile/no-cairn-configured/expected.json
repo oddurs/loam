@@ -5,6 +5,7 @@
       "anchors": [
         "without-linkscairn"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "broken-link",
@@ -13,6 +14,7 @@
         }
       ],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [
@@ -25,6 +27,7 @@
         }
       ],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "[0072](../cairn/items/0072-old-title.md) is an ordinary broken link.",

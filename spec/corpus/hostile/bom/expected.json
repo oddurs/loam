@@ -5,12 +5,15 @@
       "anchors": [
         "byte-order-mark-no-frontmatter"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "Still a title.",
@@ -24,14 +27,17 @@
       "anchors": [
         "byte-order-mark"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": {
         "status": "draft"
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "draft",
       "status_from": "frontmatter",
       "summary": "The mark is not content.",

@@ -5,12 +5,15 @@
       "anchors": [
         "old"
       ],
+      "covers": [],
       "findings": [],
       "frontmatter": null,
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": null,
@@ -24,6 +27,7 @@
       "anchors": [
         "wrong-types-fall-back-to-inference"
       ],
+      "covers": [],
       "findings": [
         {
           "code": "malformed-key",
@@ -71,10 +75,12 @@
         "supersedes": 3,
         "title": 2026
       },
+      "generated": null,
       "kind": "page",
       "kind_from": "directory",
       "links": [],
       "order": null,
+      "reviewed": null,
       "status": "current",
       "status_from": "default",
       "summary": "This is the summary.",
