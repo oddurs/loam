@@ -110,7 +110,7 @@ The docs folder is an indexable source: a site, a search box or another program 
 - [ ] `0055` A recipe: a site built from the manifest <sup>docs · p2 · m</sup>
 - [ ] `0056` harrow shows stale pages under Needs you <sup>feature · p2 · s</sup>
 
-### in progress
+### blocked
 
 - [ ] `0071` Install loam without Rust: release binaries, an install script, and a GitHub Action <sup>feature · p2</sup>
 
