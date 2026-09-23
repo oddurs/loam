@@ -15,7 +15,8 @@ Every command takes `-C DIR`, to run as if started in `DIR`, and `--no-hooks`,
 to skip the [hooks](loam-toml.md#hooks) in `loam.toml`. A command finds
 `loam.toml` in the working directory or the nearest directory above it. A path
 naming a page may be given from the working directory, from the repository, or
-from the docs root.
+from the docs root; one that is not a page is answered with the page it most
+likely meant.
 
 ## Exit status
 
@@ -28,7 +29,11 @@ from the docs root.
 ## `init`
 
 Adopt the docs folder here: write `loam.toml`, change no page, and print what
-loam read from every page. Refuses to replace an existing `loam.toml`.
+loam read from every page — or, past forty pages, a count for each kind and
+only the pages with something to fix. The index is the folder's `README.md`,
+or its `index.md` if that is the page a site generator opens with; a new
+`README.md` only when there is neither. Refuses to replace an existing
+`loam.toml`.
 
 | Option | |
 | --- | --- |
@@ -98,9 +103,13 @@ it came from, its supersession, its links and findings — then the page itself.
 
 ## `search WORDS…`
 
-Pages containing every word, in any case: those with every word in the title
-first, then in the title and summary, then anywhere. Each hit shows the first
-matching line. A scan of the files every time; nothing is kept on disk.
+Pages containing every word, in any case and any order — a quoted phrase is
+taken as its words. The best match is first: a word in the title counts most,
+then in the summary or the path, then each time it appears in the body. Each
+hit shows the line with the most of the words. The index is left out, since it
+repeats every title. When no page has every word, the pages with the most of
+them are named on standard error, and the exit status is still 1. A scan of
+the files every time; nothing is kept on disk.
 
 | Option | |
 | --- | --- |

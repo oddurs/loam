@@ -107,11 +107,14 @@ fn rebase(summary: &str, page: &Page, index_dir: &str) -> String {
     let mut out = summary.to_string();
     for link in links {
         let dest = &link.destination;
-        if dest.starts_with('/') || dest.starts_with('#') {
+        if dest.starts_with('/') {
             continue;
         }
-        let (Some(target), _, "path") = crate::tree::resolve(&page.path, dest) else {
-            continue;
+        // `#section` meant a place on the page itself, which from the index
+        // is that page's path and the same fragment.
+        let target = match crate::tree::resolve(&page.path, dest) {
+            (Some(target), _, "path" | "self") => target,
+            _ => continue,
         };
         let cut = dest.find(['?', '#']).unwrap_or(dest.len());
         let mut path = relative(index_dir, &target);

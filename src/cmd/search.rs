@@ -29,66 +29,124 @@ pub struct Hit<'a> {
     pub page: &'a Page,
     pub rank: &'static str,
     pub line: Option<(usize, String)>,
+    /// How well it matches: a word in the title counts most, then in the
+    /// summary or the path, then each time it appears in the body.
+    pub score: usize,
+    /// How many of the words it contains, for the closest pages when none
+    /// contains all of them.
+    pub matched: usize,
 }
 
-pub fn search<'a>(pages: impl Iterator<Item = &'a Page>, words: &[String]) -> Vec<Hit<'a>> {
-    let words: Vec<String> = words.iter().map(|w| w.to_lowercase()).collect();
-    let all = |s: &str| {
-        let s = s.to_lowercase();
-        words.iter().all(|w| s.contains(w.as_str()))
-    };
-    let any = |s: &str| {
-        let s = s.to_lowercase();
-        words.iter().any(|w| s.contains(w.as_str()))
-    };
+/// The words to look for. A quoted phrase is still words: `"docker cache"`
+/// finds a page about caching in Docker however it says so.
+pub fn words(args: &[String]) -> Vec<String> {
+    args.iter()
+        .flat_map(|a| a.split_whitespace())
+        .map(str::to_lowercase)
+        .collect()
+}
+
+/// Every page containing every word, best first; or, when none does and
+/// `closest` is set, those containing the most of them.
+pub fn search<'a>(
+    pages: impl Iterator<Item = &'a Page>,
+    words: &[String],
+    closest: bool,
+) -> Vec<Hit<'a>> {
     let mut hits: Vec<Hit> = Vec::new();
     for page in pages {
-        let title = page.title.as_deref().unwrap_or("");
-        let summary = page.summary.as_deref().unwrap_or("");
+        let title = page.title.as_deref().unwrap_or("").to_lowercase();
+        let summary = page.summary.as_deref().unwrap_or("").to_lowercase();
+        let path = page.path.to_lowercase();
         let text = page.text.as_deref().unwrap_or("");
-        let whole = format!("{title}\n{summary}\n{}\n{text}", page.path);
-        if !all(&whole) {
+        let body = text.to_lowercase();
+        let mut score = 0;
+        let mut matched = 0;
+        for w in words {
+            let in_body = body.matches(w.as_str()).count();
+            let found = title.contains(w.as_str())
+                || summary.contains(w.as_str())
+                || path.contains(w.as_str())
+                || in_body > 0;
+            if !found {
+                continue;
+            }
+            matched += 1;
+            score += 20 * usize::from(title.contains(w.as_str()))
+                + 6 * usize::from(summary.contains(w.as_str()))
+                + 4 * usize::from(path.contains(w.as_str()))
+                + in_body.min(10);
+        }
+        if matched == 0 {
             continue;
         }
-        let rank = if all(title) {
+        let all = |s: &str| words.iter().all(|w| s.contains(w.as_str()));
+        let rank = if all(&title) {
             "title"
         } else if all(&format!("{title} {summary}")) {
             "summary"
         } else {
             "body"
         };
+        // The line with the most of the words on it, headings apart.
         let line = text
             .split('\n')
             .enumerate()
             .skip(page.body_line.saturating_sub(1))
-            .find(|(_, l)| any(l) && !l.trim_start().starts_with('#'))
-            .map(|(i, l)| (i + 1, l.trim().to_string()));
-        hits.push(Hit { page, rank, line });
+            .filter(|(_, l)| !l.trim_start().starts_with('#'))
+            .map(|(i, l)| {
+                let lower = l.to_lowercase();
+                let n = words.iter().filter(|w| lower.contains(w.as_str())).count();
+                (n, i, l)
+            })
+            .filter(|(n, ..)| *n > 0)
+            .max_by_key(|(n, i, _)| (*n, std::cmp::Reverse(*i)))
+            .map(|(_, i, l)| (i + 1, l.trim().to_string()));
+        hits.push(Hit {
+            page,
+            rank,
+            line,
+            score,
+            matched,
+        });
     }
-    let order = |r: &str| {
-        ["title", "summary", "body"]
-            .iter()
-            .position(|x| *x == r)
-            .unwrap_or(3)
-    };
-    hits.sort_by(|a, b| (order(a.rank), &a.page.path).cmp(&(order(b.rank), &b.page.path)));
+    let best = hits.iter().map(|h| h.matched).max().unwrap_or(0);
+    if best < words.len() {
+        if !closest {
+            return Vec::new();
+        }
+        // None has every word: those with the most, and only if that is more
+        // than one of several, since one common word matches everything.
+        hits.retain(|h| h.matched == best && (best > 1 || words.len() == 1));
+    } else {
+        hits.retain(|h| h.matched == best);
+    }
+    hits.sort_by(|a, b| b.score.cmp(&a.score).then(a.page.path.cmp(&b.page.path)));
     hits
 }
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     let tree = ctx.tree()?;
+    if let Some(k) = &args.kind {
+        super::kind(&tree.config, k)?;
+    }
+    // The index repeats every title, so it would match whatever the pages do.
     let pages = tree.pages.values().filter(|p| {
-        args.kind
-            .as_ref()
-            .is_none_or(|k| p.kind.as_ref() == Some(k))
+        p.path != tree.config.index
+            && args
+                .kind
+                .as_ref()
+                .is_none_or(|k| p.kind.as_ref() == Some(k))
     });
-    let hits = search(pages, &args.words);
+    let words = words(&args.words);
+    let hits = search(pages.clone(), &words, false);
     if args.json {
         let list: Vec<_> = hits
             .iter()
             .map(|h| {
                 let mut v = super::list::summary_json(h.page);
                 v["rank"] = json!(h.rank);
+                v["score"] = json!(h.score);
                 v["line"] = json!(h.line.as_ref().map(|l| l.0));
                 v["text"] = json!(h.line.as_ref().map(|l| l.1.clone()));
                 v
@@ -98,7 +156,19 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         return Ok(u8::from(hits.is_empty()));
     }
     if hits.is_empty() {
-        eprintln!("loam: nothing written matches");
+        let near = search(pages, &words, true);
+        if near.is_empty() {
+            eprintln!("loam: nothing written matches");
+        } else {
+            eprintln!("loam: no page has every word; these have the most:");
+            for h in near.iter().take(5) {
+                eprintln!(
+                    "  {}  {}",
+                    h.page.path,
+                    h.page.title.as_deref().unwrap_or("")
+                );
+            }
+        }
         return Ok(1);
     }
     for h in &hits {

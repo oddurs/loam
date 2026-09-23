@@ -12,7 +12,7 @@ reviewed:
 # Findings
 
 The format defines most of these ([spec §6.5](../../spec/README.md#65-findings)),
-and any reader of it reports them the same way. The last six are loam's own
+and any reader of it reports them the same way. The last seven are loam's own
 judgements. Every severity can be changed in
 [`[check.severity]`](loam-toml.md#checkseverity).
 
@@ -37,4 +37,5 @@ judgements. Every severity can be changed in
 | `link-to-superseded` | warning | A link to a superseded page, from anything but its successor. | Link to what replaced it. |
 | `stale-index` | error | The index is not what `loam render` would write (with `--render`). | Run `loam render`. |
 | `covers-nothing` | warning | A pattern in `covers` matches no file: the code it named was moved or deleted, or the pattern leaves the repository with `..`, and the page reads as fresh. | Point `covers` at where the code went, or remove it. |
+| `ignored-link` | ignore | A `broken-link` whose target git ignores: a file built rather than committed, as a generated reference is, so no checkout has it. `check` says how many there were. | Nothing, or set it to `warning` to list them. |
 | `stale` | warning | The page's covered code changed since it was reviewed, or it has outlived its kind's `stale_after` (with `--stale`). | Read it against the code, fix what is wrong, and `loam review` it. |

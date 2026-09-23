@@ -69,9 +69,7 @@ fn typed(value: &str) -> String {
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     let (lock, tree) = ctx.locked_tree()?;
     let path = ctx.repo_path(&tree.config, &args.page)?;
-    let Some(page) = tree.pages.get(&path) else {
-        bail!("{path} is not a page")
-    };
+    let page = super::page(&tree, &path)?;
     let Ok(text) = std::str::from_utf8(&page.bytes) else {
         bail!("{path} is not UTF-8, so loam will not rewrite it")
     };
@@ -105,8 +103,15 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         }
     };
 
+    // Patterns added to `covers`, to say at once if one matches nothing.
+    let mut covered: Vec<String> = Vec::new();
     for assignment in &args.assignments {
         let (key, op) = parse(assignment)?;
+        if key == "covers"
+            && let Op::Set(v) | Op::Add(v) = &op
+        {
+            covered.push(v.clone());
+        }
         if key == "reviewed" {
             bail!("`reviewed` records a reading against a commit; use `loam review {path}`");
         }
@@ -184,6 +189,16 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         write_atomic(&tree.config.abs(&path), out.as_bytes())?;
     }
     println!("updated {path}");
+    if !covered.is_empty() {
+        let files = super::check::repo_files(&tree);
+        let covers = crate::covers::Covers::new(&covered);
+        for pattern in covers.unmatched(&files) {
+            eprintln!(
+                "{}: `{pattern}` matches no file in the repository; `loam check` will say so until one does",
+                crate::style::yellow("loam")
+            );
+        }
+    }
     drop(lock);
     ctx.after_change(&tree.config);
     Ok(0)

@@ -72,7 +72,7 @@ Paths here and in `[links]` and `[[kind]]` may be written `./docs`, `docs/` or
 
 | Key | | |
 | --- | --- | --- |
-| `path` | | The index, relative to the docs root. Default `README.md`. |
+| `path` | | The index, relative to the docs root. Default `README.md`; `init` chooses `index.md` when that is the one the folder has. |
 
 ## `[hooks]`
 

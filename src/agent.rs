@@ -106,8 +106,49 @@ pub fn likeness(
     theirs.extend(words(other_summary));
     let shared: Vec<String> = new.iter().filter(|w| theirs.contains(w)).cloned().collect();
     let same_title = new == theirs_title;
-    // Two words in common and at least half the new title, or the same words.
-    (same_title || (shared.len() >= 2 && shared.len() * 2 >= new.len())).then_some(shared)
+    // Two words in common and at least half the new title, one of them in the
+    // other's title — a summary alone mentions too much to be the evidence —
+    // or the same words.
+    let in_title = shared.iter().any(|w| theirs_title.contains(w));
+    (same_title || (shared.len() >= 2 && shared.len() * 2 >= new.len() && in_title))
+        .then_some(shared)
+}
+
+/// `stems` as they are spelled in `texts`, for showing a person: "docker",
+/// not the "dock" they are compared as.
+pub fn spelled(stems: &[String], texts: &[&str]) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    for s in stems {
+        let word = texts
+            .iter()
+            .flat_map(|t| t.split(|c: char| !c.is_alphanumeric()))
+            .map(str::to_lowercase)
+            .find(|w| stem(w) == *s)
+            .unwrap_or_else(|| s.clone());
+        if !out.contains(&word) {
+            out.push(word);
+        }
+    }
+    out
+}
+
+/// Whether a new title only narrows an existing one: it has every word of the
+/// existing title, and more, as "Using uv in Docker containers" has "Using uv
+/// in Docker". The two words `likeness` asks for are too many when a project's
+/// common words leave the existing title with one; so here every word counts,
+/// common or not — "Appendix outlines" does not narrow "Appendix prompts" — and
+/// at least one must be uncommon. A section's landing page, titled with the
+/// section's one word, is narrowed by every page in it: the caller leaves those
+/// out.
+pub fn narrows(title: &str, other_title: &str, common: &[String]) -> Option<Vec<String>> {
+    let (new, theirs) = (words(title), words(other_title));
+    let distinct: Vec<String> = theirs
+        .iter()
+        .filter(|w| !common.contains(w))
+        .cloned()
+        .collect();
+    (!distinct.is_empty() && new.len() > theirs.len() && theirs.iter().all(|w| new.contains(w)))
+        .then_some(distinct)
 }
 
 /// Words in at least a third of these pages, when there are enough of them to
@@ -138,6 +179,33 @@ pub fn common(pages: &[(String, String)]) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_title_that_only_adds_a_word_narrows_the_existing_one() {
+        let common = vec!["us".to_string(), "using".to_string(), "uv".to_string()];
+        assert_eq!(
+            narrows(
+                "Using uv in Docker containers",
+                "Using uv in Docker",
+                &common
+            ),
+            Some(vec!["dock".to_string()])
+        );
+        assert_eq!(
+            narrows("Using uv in Docker", "Using uv with Jupyter", &common),
+            None
+        );
+        let prompts = vec!["prompt".to_string()];
+        assert_eq!(
+            narrows("Appendix outlines", "Appendix prompts", &prompts),
+            None
+        );
+        assert_eq!(narrows("Using uv", "Using uv", &common), None);
+        assert_eq!(
+            spelled(&["dock".to_string()], &["Using uv in Docker"]),
+            vec!["docker".to_string()]
+        );
+    }
 
     #[test]
     fn the_example_pair_is_alike() {

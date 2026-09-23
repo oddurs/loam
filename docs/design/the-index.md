@@ -37,7 +37,7 @@ kind's `title` and `description`. In each, a row per page: its title as a link,
 marked *(draft)* when it is one, and its summary. Rows are in `order`, then by
 title ([0064](../../cairn/items/0064-order-a-page-s-place-among-its-kind.md)),
 because a guide's first page is first on purpose. A summary's own links are
-rewritten to work from the index.
+rewritten to work from the index, a `#section` of the page included.
 
 A summary written in frontmatter is shown whole: its length was chosen. One
 loam took from a first paragraph was not, and a paragraph can run to eighty

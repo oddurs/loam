@@ -36,9 +36,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     let mut writes = Vec::new();
     for typed in &args.pages {
         let path = ctx.repo_path(&tree.config, typed)?;
-        let Some(page) = tree.pages.get(&path) else {
-            bail!("{path} is not a page")
-        };
+        let page = super::page(&tree, &path)?;
         let Ok(text) = std::str::from_utf8(&page.bytes) else {
             bail!("{path} is not UTF-8, so loam will not rewrite it")
         };

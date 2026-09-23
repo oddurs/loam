@@ -130,3 +130,67 @@ impl Ctx {
         }
     }
 }
+
+/// The page at `path`, or an error naming the page probably meant: one with
+/// the same file name, or a path a letter or two away.
+pub fn page<'a>(tree: &'a Tree, path: &str) -> Result<&'a crate::tree::Page> {
+    if let Some(page) = tree.pages.get(path) {
+        return Ok(page);
+    }
+    let name = path.rsplit('/').next().unwrap_or(path);
+    let mut near: Vec<&str> = tree
+        .pages
+        .keys()
+        .map(String::as_str)
+        .filter(|p| p.rsplit('/').next() == Some(name))
+        .collect();
+    if near.is_empty() {
+        near = tree
+            .pages
+            .keys()
+            .map(String::as_str)
+            .filter(|p| distance(p, path) <= 2)
+            .collect();
+    }
+    near.sort();
+    match near.as_slice() {
+        [] => anyhow::bail!(
+            "{path} is not a page (a page is a .md file under {}/)",
+            tree.config.docs
+        ),
+        [one] => anyhow::bail!("{path} is not a page; did you mean {one}?"),
+        many => anyhow::bail!(
+            "{path} is not a page; did you mean one of: {}?",
+            many.iter().take(5).copied().collect::<Vec<_>>().join(", ")
+        ),
+    }
+}
+
+/// The kind called `name`, or an error listing the kinds there are.
+pub fn kind<'a>(config: &'a Config, name: &str) -> Result<&'a crate::config::Kind> {
+    config.kind(name).ok_or_else(|| {
+        let names: Vec<&str> = config.kinds.iter().map(|k| k.name.as_str()).collect();
+        anyhow::anyhow!(
+            "no kind called `{name}`; loam.toml declares: {}",
+            names.join(", ")
+        )
+    })
+}
+
+/// Edits, in characters, to turn one string into the other.
+fn distance(a: &str, b: &str) -> usize {
+    let b: Vec<char> = b.chars().collect();
+    let mut row: Vec<usize> = (0..=b.len()).collect();
+    for (i, ca) in a.chars().enumerate() {
+        let mut prev = row[0];
+        row[0] = i + 1;
+        for (j, cb) in b.iter().enumerate() {
+            let here = row[j + 1];
+            row[j + 1] = (prev + usize::from(ca != *cb))
+                .min(row[j] + 1)
+                .min(here + 1);
+            prev = here;
+        }
+    }
+    row[b.len()]
+}

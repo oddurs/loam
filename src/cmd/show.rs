@@ -5,7 +5,7 @@
 use super::Ctx;
 use crate::fresh::Freshness;
 use crate::tree::Tree;
-use anyhow::{Result, bail};
+use anyhow::Result;
 use std::collections::{HashMap, HashSet};
 
 #[derive(clap::Args)]
@@ -20,12 +20,7 @@ pub struct Args {
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     let tree = ctx.tree()?;
     let path = ctx.repo_path(&tree.config, &args.path)?;
-    let Some(page) = tree.pages.get(&path) else {
-        bail!(
-            "{path} is not a page (a page is a .md file under {}/)",
-            tree.config.docs
-        );
-    };
+    let page = super::page(&tree, &path)?;
     // Whether it is still true, when there is a history to ask.
     let (mut freshness, trouble) = freshness(&tree, &HashSet::from([path.clone()]));
     let freshness = freshness.remove(&path);

@@ -68,18 +68,27 @@ a reviewed page. It does not stop one that means to.
 ```console
 $ loam new research "Rust Markdown parsers"
 research already has 1 page(s) like it:
-  docs/research/markdown-crates.md  "Markdown crates"  (shares: markdown, pars, rust)
+  docs/research/markdown-crates.md  "Markdown crates"  (shares: markdown, parsers, rust)
 nothing written. Update the page above, or `loam new … --anyway` if this is different.
 ```
 
 `new` compares the new title with the title and summary of every page of the
 same kind, by the words they share — no embeddings, no index on disk. Words
 common to a third or more of the kind's pages, like a project's own name, are
-not counted. A person at a terminal is asked; an agent, or anything without a
-terminal, is refused with exit status 1 unless it passes `--anyway`. Tried
-against every title in the three folders loam was designed against, it raised
-two pages that were not duplicates in 66
-([0048](../../cairn/items/0048-warn-before-writing-a-page-that-already-exists-under-another-name.md)).
+not counted. A page is like the new one when they share two words, one of them
+in its title, and those are half the new title; or when the new title is its
+title with more added, as "Using uv in Docker containers" is to "Using uv in
+Docker". A section's landing page — an `index.md` or `README.md` with other
+pages around it — is never offered: it summarises everything in its section.
+A person at a terminal is asked; an agent, or anything without a terminal, is
+refused with exit status 1 unless it passes `--anyway`.
+
+Tried by taking each page out and asking `new` for its title again, it raised
+no page that was not a duplicate among the 64 titles of the three folders loam
+was designed against
+([0048](../../cairn/items/0048-warn-before-writing-a-page-that-already-exists-under-another-name.md)),
+and three close siblings — "HTTP credentials" beside "Git credentials" — among
+uv's 67.
 
 ## 4. The pages for the file in front of it
 

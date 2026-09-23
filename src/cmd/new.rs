@@ -90,14 +90,7 @@ pub fn content(title: &str, template: Option<&str>, draft: bool) -> String {
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     let config = ctx.config()?;
-    let Some(kind) = config.kind(&args.kind) else {
-        let names: Vec<&str> = config.kinds.iter().map(|k| k.name.as_str()).collect();
-        bail!(
-            "no kind called `{}`; loam.toml declares: {}",
-            args.kind,
-            names.join(", ")
-        );
-    };
+    let kind = super::kind(&config, &args.kind)?;
     if args.title.trim().is_empty() {
         bail!("a page needs a title");
     }
@@ -136,6 +129,18 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             })
             .collect();
         let common = crate::agent::common(&same_kind);
+        // An index.md or README.md with other pages beside or below it; one
+        // alone in its directory is a page like any other.
+        let landing = |p: &str| {
+            let Some(dir) = p
+                .strip_suffix("/index.md")
+                .or_else(|| p.strip_suffix("/README.md"))
+            else {
+                return false;
+            };
+            let prefix = format!("{dir}/");
+            tree.pages.keys().any(|q| q != p && q.starts_with(&prefix))
+        };
         let alike: Vec<(&String, &crate::tree::Page, Vec<String>)> = tree
             .pages
             .iter()
@@ -143,12 +148,20 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
                 page.kind.as_deref() == Some(kind.name.as_str()) && **p != tree.config.index
             })
             .filter_map(|(p, page)| {
+                // A section's landing page is not a page on one thing: it is
+                // titled with the section's word and summarises everything in
+                // it, so every page there would look like it.
+                if landing(p) {
+                    return None;
+                }
+                let other = page.title.as_deref().unwrap_or("");
                 let shared = crate::agent::likeness(
                     &args.title,
-                    page.title.as_deref().unwrap_or(""),
+                    other,
                     page.summary.as_deref().unwrap_or(""),
                     &common,
-                )?;
+                )
+                .or_else(|| crate::agent::narrows(&args.title, other, &common))?;
                 Some((p, page, shared))
             })
             .collect();
@@ -158,7 +171,11 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
                 eprintln!(
                     "  {p}  \"{}\"  (shares: {})",
                     page.title.as_deref().unwrap_or(""),
-                    shared.join(", ")
+                    crate::agent::spelled(
+                        shared,
+                        &[args.title.as_str(), page.title.as_deref().unwrap_or("")]
+                    )
+                    .join(", ")
                 );
             }
             let agent = crate::agent::acting(args.agent.as_deref());

@@ -873,3 +873,210 @@ fn no_command_but_init_writes_loam_toml() {
         assert_eq!(repo.read("loam.toml"), config, "{args:?} rewrote loam.toml");
     }
 }
+
+// ─── found by using loam on a docs folder it had never seen ────────────────
+
+#[test]
+fn a_summary_link_to_its_own_section_still_works_from_the_index() {
+    let repo = Repo::with_config(&[
+        (
+            "docs/README.md",
+            "# Docs\n\n<!-- loam:index:begin -->\n<!-- loam:index:end -->\n",
+        ),
+        (
+            "docs/guide/p.md",
+            "# P\n\nSee [below](#later) and [the other](q.md).\n\n## Later\n",
+        ),
+        ("docs/guide/q.md", "# Q\n"),
+    ]);
+    assert_eq!(code(&repo.loam(&["render"])), 0);
+    let index = repo.read("docs/README.md");
+    assert!(
+        index.contains("[below](guide/p.md#later) and [the other](guide/q.md)"),
+        "{index}"
+    );
+    assert_eq!(code(&repo.loam(&["check", "--strict"])), 0);
+}
+
+#[test]
+fn search_takes_a_quoted_phrase_as_words_and_ranks_by_where_they_are() {
+    let repo = Repo::with_config(&[
+        ("docs/README.md", "# Docs\n\nDocker cache, Docker cache.\n"),
+        (
+            "docs/guide/docker.md",
+            "# Using it in Docker\n\nMount a cache to keep builds fast.\n",
+        ),
+        (
+            "docs/guide/zz.md",
+            "# Other\n\nA cache, a cache, a cache; and once, Docker.\n",
+        ),
+    ]);
+    let out = repo.loam(&["search", "docker cache"]);
+    assert_eq!(code(&out), 0);
+    let t = String::from_utf8_lossy(&out.stdout);
+    let docker = t.find("docs/guide/docker.md").expect("found");
+    let other = t.find("docs/guide/zz.md").expect("found");
+    assert!(docker < other, "the page titled for it first: {t}");
+    assert!(
+        !t.contains("docs/README.md"),
+        "the index repeats everything: {t}"
+    );
+
+    let out = repo.loam(&["search", "docker", "kubernetes", "cache"]);
+    assert_eq!(code(&out), 1);
+    let t = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        t.contains("these have the most") && t.contains("docker.md"),
+        "{t}"
+    );
+}
+
+#[test]
+fn a_link_to_a_file_git_ignores_is_not_called_broken() {
+    let repo = Repo::with_config(&[
+        (".gitignore", "/docs/reference/cli.md\n"),
+        (
+            "docs/guide/a.md",
+            "# A\n\nSee [the CLI](../reference/cli.md#run) and [gone](gone.md).\n",
+        ),
+    ]);
+    let git = Command::new("git")
+        .args(["init", "-q"])
+        .current_dir(repo.path(""))
+        .output()
+        .unwrap();
+    assert!(git.status.success());
+    let out = repo.loam(&["check"]);
+    let t = stdout(&out) + &stderr(&out);
+    assert!(t.contains("1 link(s) point at files git ignores"), "{t}");
+    assert!(
+        !t.contains("reference/cli.md`, which does not exist"),
+        "{t}"
+    );
+    assert!(t.contains("gone.md`, which does not exist"), "{t}");
+    repo.write(
+        "loam.toml",
+        &(repo.read("loam.toml") + "\n[check.severity]\nignored-link = \"warning\"\n"),
+    );
+    let out = repo.loam(&["check"]);
+    let t = stdout(&out) + &stderr(&out);
+    assert!(
+        t.contains("a file git ignores: built rather than committed"),
+        "{t}"
+    );
+}
+
+#[test]
+fn init_in_a_site_uses_its_home_page_as_the_index() {
+    let repo = Repo::new(&[
+        ("mkdocs.yml", "site_name: x\n"),
+        ("docs/index.md", "# Home\n\nWelcome.\n"),
+        ("docs/guides/a.md", "# A\n"),
+    ]);
+    assert_eq!(code(&repo.loam(&["init"])), 0);
+    let config = repo.read("loam.toml");
+    assert!(config.contains("path = \"index.md\""), "{config}");
+    assert!(
+        config.contains("# after-change"),
+        "no hook until it has markers: {config}"
+    );
+    assert!(!repo.path("docs/README.md").exists(), "no second home page");
+}
+
+#[test]
+fn init_lists_only_what_needs_attention_in_a_large_folder() {
+    let mut files: Vec<(String, String)> = (0..50)
+        .map(|i| (format!("docs/guides/p{i}.md"), format!("# P{i}\n")))
+        .collect();
+    files.push(("docs/guides/untitled.md".into(), "No heading.\n".into()));
+    let refs: Vec<(&str, &str)> = files
+        .iter()
+        .map(|(a, b)| (a.as_str(), b.as_str()))
+        .collect();
+    let repo = Repo::new(&refs);
+    let out = stdout(&repo.loam(&["init"]));
+    assert!(out.contains("guide  51 page(s)"), "{out}");
+    assert!(out.contains("docs/guides/untitled.md"), "{out}");
+    assert!(!out.contains("docs/guides/p7.md"), "{out}");
+    assert!(out.contains("… and 50 more"), "{out}");
+}
+
+#[test]
+fn a_title_that_only_adds_a_word_to_one_that_exists_is_caught() {
+    let repo = Repo::with_config(&[
+        ("docs/guide/index.md", "# Guides\n\nEvery guide.\n"),
+        ("docs/guide/docker.md", "# Using uv in Docker\n"),
+        ("docs/guide/jupyter.md", "# Using uv with Jupyter\n"),
+        ("docs/guide/lambda.md", "# Using uv with AWS Lambda\n"),
+    ]);
+    let out = repo.loam(&["new", "guide", "Using uv in Docker containers"]);
+    assert_eq!(code(&out), 1, "{}", stderr(&out));
+    let t = stderr(&out);
+    assert!(
+        t.contains("docs/guide/docker.md") && t.contains("(shares: docker)"),
+        "{t}"
+    );
+    assert!(
+        !t.contains("index.md"),
+        "a section's landing page is not a duplicate: {t}"
+    );
+    assert_eq!(
+        code(&repo.loam(&["new", "guide", "Using uv with Bazel"])),
+        0
+    );
+}
+
+#[test]
+fn a_mistyped_page_or_kind_is_answered_with_what_was_meant() {
+    let repo = Repo::with_config(&[
+        ("docs/guide/cache.md", "# Cache\n"),
+        ("docs/design/index.md", "# Design\n"),
+    ]);
+    let t = stderr(&repo.loam(&["show", "cache.md"]));
+    assert!(t.contains("did you mean docs/guide/cache.md?"), "{t}");
+    let t = stderr(&repo.loam(&["show", "docs/guide/cahce.md"]));
+    assert!(t.contains("did you mean docs/guide/cache.md?"), "{t}");
+    let out = repo.loam(&["list", "--kind", "guides"]);
+    assert_eq!(code(&out), 2);
+    assert!(
+        stderr(&out).contains("no kind called `guides`"),
+        "{}",
+        stderr(&out)
+    );
+}
+
+#[test]
+fn mv_keeps_a_link_written_with_dot_slash_that_way() {
+    let repo = Repo::with_config(&[
+        (
+            "docs/guide/a.md",
+            "# A\n\nSee [b](./b.md) and [b again](b.md).\n",
+        ),
+        ("docs/guide/b.md", "# B\n"),
+    ]);
+    assert_eq!(
+        code(&repo.loam(&["mv", "docs/guide/b.md", "docs/guide/c.md"])),
+        0
+    );
+    assert!(
+        repo.read("docs/guide/a.md")
+            .contains("[b](./c.md) and [b again](c.md)"),
+        "{}",
+        repo.read("docs/guide/a.md")
+    );
+}
+
+#[test]
+fn set_says_when_a_covered_path_matches_nothing() {
+    let repo = Repo::with_config(&[("docs/guide/a.md", "# A\n"), ("src/lib.rs", "")]);
+    let out = repo.loam(&[
+        "set",
+        "docs/guide/a.md",
+        "covers+=src/lib.rs",
+        "covers+=src/nope",
+    ]);
+    assert_eq!(code(&out), 0);
+    let t = stderr(&out);
+    assert!(t.contains("`src/nope` matches no file"), "{t}");
+    assert!(!t.contains("src/lib.rs` matches"), "{t}");
+}

@@ -225,7 +225,7 @@ fn a_second_page_on_the_same_thing_is_caught() {
     assert!(t.contains("research already has 1 page(s) like it:"), "{t}");
     assert!(
         t.contains(
-            "docs/research/markdown-crates.md  \"Markdown crates\"  (shares: markdown, pars, rust)"
+            "docs/research/markdown-crates.md  \"Markdown crates\"  (shares: markdown, parsers, rust)"
         ),
         "{t}"
     );

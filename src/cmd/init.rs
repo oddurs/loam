@@ -16,6 +16,9 @@ use crate::write::write_atomic;
 use anyhow::{Result, bail};
 use std::path::Path;
 
+/// Past this many pages, `init` lists only those with something to say.
+const LARGE: usize = 40;
+
 #[derive(clap::Args)]
 pub struct Args {
     /// Use a preset's kinds instead of the folder's directories:
@@ -158,6 +161,7 @@ pub fn config_text(
     cairn: Option<&str>,
     kinds: &[KindSpec],
     hook: bool,
+    index: &str,
     index_note: &str,
 ) -> String {
     let mut t = String::new();
@@ -177,7 +181,7 @@ pub fn config_text(
     t.push_str(
         "\n[index]\n# Relative to the docs root. loam writes only between the two marker lines.\n",
     );
-    t.push_str("path = \"README.md\"\n");
+    t.push_str(&format!("path = {}\n", toml_string(index)));
     if !index_note.is_empty() {
         t.push_str(&format!("# {index_note}\n"));
     }
@@ -251,19 +255,26 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
                 .unwrap_or_else(|| "cairn/items".into())
         });
 
-    let index = root.join(&docs).join("README.md");
-    let (hook, note) = match std::fs::read_to_string(&index) {
+    // The page a reader lands on: a README.md, as GitHub shows a folder; or,
+    // in a site's docs, the index.md its generator makes the home page. Only
+    // with neither is a new README.md proposed, rather than a second home.
+    let index_name = ["README.md", "index.md"]
+        .into_iter()
+        .find(|n| root.join(&docs).join(n).is_file())
+        .unwrap_or("README.md");
+    let index_path = join(&docs, index_name);
+    let (hook, note) = match std::fs::read_to_string(root.join(&index_path)) {
         Err(_) => (true, String::new()),
         Ok(text) if text.contains(BEGIN) && text.contains(END) => (true, String::new()),
         Ok(_) => (
             false,
             format!(
-                "{docs}/README.md has no markers yet: add `{BEGIN}` and `{END}` where the index goes."
+                "{index_path} has no markers yet: add `{BEGIN}` and `{END}` where the index goes."
             ),
         ),
     };
 
-    let text = config_text(&docs, cairn.as_deref(), &kinds, hook, &note);
+    let text = config_text(&docs, cairn.as_deref(), &kinds, hook, index_name, &note);
     let config = Config::parse(&root, &text)?;
     write_atomic(&config_path, text.as_bytes())?;
 
@@ -282,6 +293,23 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         .max()
         .unwrap_or(1)
         .max(1);
+    // Every page of a small folder; of a large one, only those with something
+    // to say, after a count per kind: eighty lines would bury the few that
+    // matter.
+    let (reported, _) = super::check::collect(&tree, false, false)?;
+    let large = tree.pages.len() > LARGE;
+    if large {
+        for k in &tree.config.kinds {
+            let n = tree
+                .pages
+                .values()
+                .filter(|p| p.kind.as_deref() == Some(k.name.as_str()))
+                .count();
+            println!("{:kw$}  {n} page(s)", k.name);
+        }
+        println!();
+    }
+    let mut quiet = 0;
     for (path, page) in &tree.pages {
         let kind = page.kind.as_deref().unwrap_or("?");
         let title = page
@@ -301,13 +329,19 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         if page.title.is_none() {
             notes.push("no level-1 heading to take a title from".to_string());
         }
-        let n = page
-            .findings
+        // What `check` will report, which is not every finding in the
+        // reading: a link to a file git ignores is quiet, for one.
+        let n = reported
             .iter()
-            .filter(|f| f.code != "untitled" && f.code != "unclaimed")
+            .filter(|r| r.path == *path)
+            .filter(|r| r.finding.code != "untitled" && r.finding.code != "unclaimed")
             .count();
         if n > 0 {
             notes.push(format!("{n} finding(s); see `loam check`"));
+        }
+        if large && notes.is_empty() {
+            quiet += 1;
+            continue;
         }
         let notes = if notes.is_empty() {
             String::new()
@@ -315,6 +349,9 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             crate::style::dim(&format!("  ({})", notes.join("; ")))
         };
         println!("{path:width$}  {kind:kw$}  {title}{notes}");
+    }
+    if quiet > 0 {
+        println!("… and {quiet} more, each of its directory's kind; `loam list` names them");
     }
     println!();
     let kinds_list: Vec<String> = tree
@@ -344,7 +381,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     if !note.is_empty() {
         println!("      {note}");
     } else {
-        println!("      `loam render` writes the index to {docs}/README.md.");
+        println!("      `loam render` writes the index to {index_path}.");
     }
     Ok(0)
 }
@@ -384,7 +421,14 @@ mod tests {
     #[test]
     fn every_preset_writes_a_config_loam_reads() {
         for p in ["diataxis", "standard", "minimal"] {
-            let text = config_text("docs", Some("cairn/items"), &preset(p).unwrap(), true, "");
+            let text = config_text(
+                "docs",
+                Some("cairn/items"),
+                &preset(p).unwrap(),
+                true,
+                "README.md",
+                "",
+            );
             let c = Config::parse(Path::new("/"), &text).unwrap();
             assert!(c.warnings.is_empty(), "{:?}", c.warnings);
             assert_eq!(c.kinds.last().unwrap().dir, "");

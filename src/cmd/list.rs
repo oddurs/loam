@@ -33,6 +33,9 @@ pub fn summary_json(page: &Page) -> Value {
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     let tree = ctx.tree()?;
+    if let Some(k) = &args.kind {
+        super::kind(&tree.config, k)?;
+    }
     let pages: Vec<&Page> = tree
         .pages
         .values()

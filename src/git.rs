@@ -8,7 +8,7 @@
 
 use anyhow::{Context, Result, bail};
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, BufReader, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
@@ -375,6 +375,39 @@ impl Git {
     pub fn date_of(&self, rev: &str) -> Option<String> {
         let text = self.run(&["log", "-1", "--format=%cs", rev, "--"]).ok()?;
         Some(text.trim().to_string()).filter(|s| !s.is_empty())
+    }
+
+    /// Which of `paths` git ignores, asked in one process. A path need not
+    /// exist: a file built rather than committed usually does not.
+    pub fn ignored(&self, paths: &[String]) -> HashSet<String> {
+        if paths.is_empty() {
+            return HashSet::new();
+        }
+        let child = self
+            .command()
+            .args(["check-ignore", "--stdin", "-z"])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .spawn();
+        let Ok(mut child) = child else {
+            return HashSet::new();
+        };
+        if let Some(mut input) = child.stdin.take() {
+            for p in paths {
+                let _ = input.write_all(p.as_bytes());
+                let _ = input.write_all(b"\0");
+            }
+        }
+        // Exit status 1 is "none of them": not a failure.
+        let Ok(out) = child.wait_with_output() else {
+            return HashSet::new();
+        };
+        String::from_utf8_lossy(&out.stdout)
+            .split('\0')
+            .filter(|p| !p.is_empty())
+            .map(str::to_string)
+            .collect()
     }
 
     /// Whether history was cut short by a shallow clone.

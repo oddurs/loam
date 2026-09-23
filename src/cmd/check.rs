@@ -42,6 +42,8 @@ pub struct Args {
 /// Findings that are errors unless the project says otherwise: a page that
 /// cannot be read at all, and an index that does not match its pages.
 const ERRORS: &[&str] = &["invalid-encoding", "malformed-frontmatter", "stale-index"];
+/// Reported only when a project asks: a note says how many there were.
+const QUIET: &[&str] = &["ignored-link"];
 
 pub struct Reported {
     pub path: String,
@@ -123,6 +125,9 @@ pub fn message(f: &Finding) -> String {
             format!("link to `{d}`, which is superseded; link to what replaced it")
         }
         "stale-index" => "the index is not what `loam render` would write; run it".into(),
+        "ignored-link" => format!(
+            "link to `{d}`, a file git ignores: built rather than committed, so it cannot be checked"
+        ),
         "covers-nothing" if d.split('/').any(|s| s == "..") => {
             format!("covers `{d}`, which leaves the repository, so it matches nothing")
         }
@@ -133,7 +138,7 @@ pub fn message(f: &Finding) -> String {
 }
 
 /// Every file in the repository, as git sees it or, without git, as it is.
-fn repo_files(tree: &Tree) -> Vec<String> {
+pub fn repo_files(tree: &Tree) -> Vec<String> {
     if let Ok(git) = crate::git::Git::open(&tree.config.root)
         && let Ok(files) = git.files()
     {
@@ -271,6 +276,13 @@ pub fn collect(
     all.extend(judgements(tree));
     all.extend(covers_nothing(tree));
     let mut notes = Vec::new();
+    let ignored = ignored_links(tree, &mut all);
+    if ignored > 0 && !tree.config.severity.contains_key("ignored-link") {
+        notes.push(format!(
+            "{ignored} link(s) point at files git ignores — built, not committed, so not checked; \
+             `ignored-link = \"warning\"` under [check.severity] lists them"
+        ));
+    }
     if with_stale {
         let (found, n) = stale(tree)?;
         all.extend(found);
@@ -298,6 +310,8 @@ pub fn collect(
                 .unwrap_or_else(|| {
                     if ERRORS.contains(&finding.code) {
                         "error"
+                    } else if QUIET.contains(&finding.code) {
+                        "ignore"
                     } else {
                         "warning"
                     }
@@ -311,6 +325,37 @@ pub fn collect(
         })
         .collect();
     Ok((reported, notes))
+}
+
+/// A broken link to a file git ignores is not broken so much as unseen: the
+/// file is built — a generated reference, an API page — and never committed,
+/// so no checkout has it. Such findings become `ignored-link`, which is quiet
+/// unless a project asks for it. Returns how many there were.
+fn ignored_links(tree: &Tree, all: &mut [(String, Finding)]) -> usize {
+    let targets: Vec<(usize, String)> = all
+        .iter()
+        .enumerate()
+        .filter(|(_, (_, f))| f.code == "broken-link")
+        .filter_map(|(i, (path, f))| Some((i, crate::tree::resolve(path, f.detail.as_deref()?).0?)))
+        .collect();
+    if targets.is_empty() {
+        return 0;
+    }
+    let Ok(git) = crate::git::Git::open(&tree.config.root) else {
+        return 0;
+    };
+    let mut paths: Vec<String> = targets.iter().map(|(_, t)| t.clone()).collect();
+    paths.sort();
+    paths.dedup();
+    let ignored = git.ignored(&paths);
+    let mut n = 0;
+    for (i, target) in targets {
+        if ignored.contains(&target) {
+            all[i].1.code = "ignored-link";
+            n += 1;
+        }
+    }
+    n
 }
 
 /// For a link broken only by the case of its letters, the file it meant:

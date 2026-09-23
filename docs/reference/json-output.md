@@ -42,12 +42,13 @@ none of those.
 
 ## `search`
 
-The same objects as `list`, best match first, each with three more keys:
+The same objects as `list`, best match first, each with four more keys:
 
 | Key | |
 | --- | --- |
 | `rank` | `title`, `summary` or `body`: where every word was first found. |
-| `line` | The line of the first match in the body, or `null`. |
+| `score` | How well it matched, the number the order comes from. |
+| `line` | The line in the body with the most of the words, or `null`. |
 | `text` | That line, trimmed, or `null`. |
 
 Exit status is 1 when nothing matches, with `[]` printed.

@@ -104,8 +104,8 @@ fn mapped(old: &str, new: &str, p: &str) -> String {
 }
 
 /// A destination written again for its new place: the same target, reached
-/// from `from` — root-relative if it was, with its query and fragment as
-/// written.
+/// from `from` — root-relative if it was, starting `./` if it did, with its
+/// query and fragment as written.
 fn rewrite(raw: &str, angle: bool, from: &str, target: &str) -> String {
     let cut = raw.find(['?', '#']).unwrap_or(raw.len());
     let (path, suffix) = raw.split_at(cut);
@@ -116,6 +116,10 @@ fn rewrite(raw: &str, angle: bool, from: &str, target: &str) -> String {
     };
     if path.ends_with('/') && !new_path.ends_with('/') {
         new_path.push('/');
+    }
+    // Written the author's way: `./x.md` stays `./x.md`.
+    if path.starts_with("./") && !new_path.starts_with("../") && !new_path.starts_with('/') {
+        new_path.insert_str(0, "./");
     }
     let new_path = if angle {
         new_path

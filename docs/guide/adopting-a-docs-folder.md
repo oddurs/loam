@@ -40,7 +40,12 @@ next: correct any guess above in loam.toml, then `loam check`.
 each directory that holds pages, and adds a kind at the docs root for anything
 else. It writes [`loam.toml`](../reference/loam-toml.md) and nothing more. Every
 line is a guess you can see: the kind it chose, and the title it read from the
-page's first heading.
+page's first heading. Past forty pages it gives a count for each kind instead,
+and lists only the pages with something to fix.
+
+The index goes in the folder's `README.md`, as here. A site's docs folder —
+mkdocs, VitePress, Docusaurus — usually opens with an `index.md` instead, and
+then that is the index, rather than a second home page beside it.
 
 A folder without directories gets one kind. A folder you would rather sort
 into a known shape can start from a preset: `loam init --preset diataxis`
@@ -56,7 +61,10 @@ $ loam check
 ok: 37 page(s), 0 warning(s)
 ```
 
-poptop's links were already sound. On measure-of-the-world, the same command
+poptop's links were already sound. A link to a file git ignores — a reference
+generated when the site is built, never committed — is not called broken, since
+no checkout has it; `check` says how many there were instead. On
+measure-of-the-world, the same command
 found seven broken links, six of which worked on the author's Mac:
 
 ```console

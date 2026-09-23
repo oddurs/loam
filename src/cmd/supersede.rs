@@ -51,14 +51,7 @@ fn add(lines: &mut Lines, page: &Page, key: &str, current: &[String], value: Str
 
 /// The two rewritten files, (path, contents), leaving out any unchanged.
 pub fn plan(tree: &Tree, old: &str, new: &str) -> Result<Vec<(String, String)>> {
-    let (Some(o), Some(n)) = (tree.pages.get(old), tree.pages.get(new)) else {
-        let missing = if tree.pages.contains_key(old) {
-            new
-        } else {
-            old
-        };
-        bail!("{missing} is not a page");
-    };
+    let (o, n) = (super::page(tree, old)?, super::page(tree, new)?);
     if old == new {
         bail!("a page cannot supersede itself");
     }
