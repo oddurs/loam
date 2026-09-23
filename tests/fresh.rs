@@ -579,3 +579,33 @@ fn replaying_history_with_at() {
     assert_eq!(at(&before), "fresh");
     assert_eq!(at(&changed), "stale");
 }
+
+#[test]
+fn a_shallow_clone_says_so() {
+    let repo = engine();
+    repo.write("src/engine/step.rs", "fn step() { 11 }\n");
+    repo.commit("change");
+    let clone = tempfile::tempdir().unwrap();
+    let url = format!("file://{}", repo.dir.path().display());
+    let out = Command::new("git")
+        .args(["clone", "-q", "--depth", "1", &url])
+        .arg(clone.path().join("c"))
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let out = Command::new(env!("CARGO_BIN_EXE_loam"))
+        .args(["check", "--stale"])
+        .current_dir(clone.path().join("c"))
+        .env("NO_COLOR", "1")
+        .output()
+        .unwrap();
+    assert!(
+        text(&out).contains("note: this is a shallow clone"),
+        "{}",
+        text(&out)
+    );
+}

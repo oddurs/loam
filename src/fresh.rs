@@ -303,6 +303,16 @@ pub fn assess(tree: &Tree, git: &Git, opts: &Options) -> Result<Report> {
     }
 
     let mut notes = Vec::new();
+    // A shallow clone — CI's default — has no history before its first
+    // commit, so every page looks as if it was written there, and nothing can
+    // be stale. Silence would be a claim.
+    if git.is_shallow() {
+        notes.push(
+            "this is a shallow clone, so history stops short and pages read as fresher than they are; \
+             fetch the whole history (in GitHub Actions, `fetch-depth: 0` on actions/checkout)"
+                .to_string(),
+        );
+    }
     if moved > 0 {
         notes.push(format!(
             "{moved} page(s) were reviewed at a commit that is not on this branch — squashed or rebased away — \

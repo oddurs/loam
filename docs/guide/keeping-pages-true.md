@@ -110,6 +110,16 @@ A project that wants the gate adds `--strict`.
 A page changed in the same pull request as its code is not reported — its
 author is plausibly updating it.
 
+CI must fetch the whole history. A shallow clone — `actions/checkout`'s
+default — has none before its one commit, so every page looks freshly written
+and nothing is ever stale; loam says so when it sees one. In GitHub Actions:
+
+```yaml
+- uses: actions/checkout@v7
+  with:
+    fetch-depth: 0
+```
+
 ## Research, which goes stale by age
 
 A page about the world rather than the code — which Markdown crates exist,

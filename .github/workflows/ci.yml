@@ -32,6 +32,10 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The whole history: `loam check --stale` compares pages against it,
+          # and a shallow clone would make every page look freshly written.
+          fetch-depth: 0
       # rustup installs the toolchain named in rust-toolchain.toml on the first
       # cargo invocation, so there is nothing to pin twice.
       - uses: Swatinem/rust-cache@v2

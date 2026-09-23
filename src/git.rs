@@ -258,6 +258,12 @@ impl Git {
         out.status.success().then_some(out.stdout)
     }
 
+    /// Whether history was cut short by a shallow clone.
+    pub fn is_shallow(&self) -> bool {
+        self.run(&["rev-parse", "--is-shallow-repository"])
+            .is_ok_and(|s| s.trim() == "true")
+    }
+
     pub fn head(&self) -> Option<String> {
         self.resolve("HEAD")
     }
