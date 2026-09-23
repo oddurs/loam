@@ -22,7 +22,7 @@ dir = "cairn/items"
 id_width = 4
 default_type = "feature"
 default_status = "backlog"
-# url = "https://github.com/oddurs/loam/blob/main"   # once the repository is public
+url = "https://github.com/oddurs/loam/blob/main"
 
 # A new project has no closed items written before anything read their
 # criteria, so the gate costs nothing to turn on now and a great deal to turn
