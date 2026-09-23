@@ -45,6 +45,11 @@ The commit to compare from — the *baseline* — is, in order:
 Each fallback is announced, once per run, so a number nobody asked for is
 never silently in play.
 
+One more thing is announced: a shallow clone. It has no history before its
+first commit, so every page looks as if it was written there and nothing can be
+stale. That is continuous integration's default, and a check that passes for
+ever because it cannot see is worse than no check.
+
 ## What counts as a change
 
 Every non-merge commit after the baseline that changed a covered file, with
