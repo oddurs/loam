@@ -5,7 +5,7 @@ covers:
 order: 1
 summary: Every command, every option, and what each exit status means.
 reviewed:
-  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  commit: cbde7bbb97979e73ef427e33b614a1a421ab65c9
   date: 2026-09-23
 ---
 
