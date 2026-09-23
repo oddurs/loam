@@ -5,7 +5,7 @@ covers:
   - src/index.rs
 order: 1
 reviewed:
-  commit: cbde7bbb97979e73ef427e33b614a1a421ab65c9
+  commit: c4481a37a7dbd5329ab14d815ae064eb0b706180
   date: 2026-09-23
 ---
 
