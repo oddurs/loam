@@ -683,6 +683,10 @@ fn mv_moves_a_directory_and_refuses_to_overwrite() {
     let out = repo.loam(&["mv", "docs/why/old.md", "docs/guide/start.md"]);
     assert_eq!(code(&out), 2);
     assert!(stderr(&out).contains("already exists"));
+    // Not loam's own configuration.
+    let out = repo.loam(&["mv", "loam.toml", "elsewhere.toml"]);
+    assert_eq!(code(&out), 2);
+    assert!(repo.path("loam.toml").exists());
     // Into an existing directory, as mv(1) does.
     assert_eq!(
         code(&repo.loam(&["mv", "docs/why/old.md", "docs/guide"])),

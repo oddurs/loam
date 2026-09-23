@@ -40,10 +40,61 @@ fn row(index_dir: &str, page: &Page, extra: Option<String>) -> String {
         None => page
             .summary
             .as_deref()
+            .map(|s| {
+                if page.summary_from == Some("paragraph") {
+                    lead(s, 160)
+                } else {
+                    s
+                }
+            })
             .map(|s| rebase(s, page, index_dir))
             .unwrap_or_default(),
     };
     format!("| {link} | {} |", cell(&note))
+}
+
+/// The first sentence of a paragraph (0066). A summary somebody wrote in
+/// frontmatter is shown whole — its length was chosen. One inferred from the
+/// first paragraph was not, and a paragraph can run to eighty words, which
+/// makes a row that is mostly one cell. A sentence ends at `.`, `?` or `!`
+/// before a space, unless it closes a common abbreviation or sits inside a
+/// code span, link or parentheses.
+/// Whole sentences from the start of `text`, as many as fit in `limit` bytes,
+/// and always at least one: a paragraph's opening, without a cut mid-thought.
+pub fn lead(text: &str, limit: usize) -> &str {
+    let mut end = first_sentence(text).len();
+    while end < text.len() {
+        let rest = text[end..].trim_start();
+        let next = end + (text.len() - end - rest.len()) + first_sentence(rest).len();
+        if next > limit {
+            break;
+        }
+        end = next;
+    }
+    &text[..end]
+}
+
+pub fn first_sentence(text: &str) -> &str {
+    const ABBREVIATIONS: &[&str] = &[
+        "e.g.", "i.e.", "etc.", "vs.", "cf.", "approx.", "no.", "dr.", "mr.", "ms.", "st.",
+    ];
+    let b = text.as_bytes();
+    let (mut code, mut depth) = (false, 0i32);
+    for (i, &c) in b.iter().enumerate() {
+        match c {
+            b'`' => code = !code,
+            b'[' | b'(' if !code => depth += 1,
+            b']' | b')' if !code => depth -= 1,
+            b'.' | b'?' | b'!' if !code && depth <= 0 && b.get(i + 1) == Some(&b' ') => {
+                let word = text[..=i].rsplit(' ').next().unwrap_or("");
+                if !ABBREVIATIONS.iter().any(|a| word.eq_ignore_ascii_case(a)) {
+                    return &text[..=i];
+                }
+            }
+            _ => {}
+        }
+    }
+    text
 }
 
 /// A summary's relative links, rewritten to work from the index rather than
@@ -255,4 +306,29 @@ pub fn render(tree: &Tree) -> Result<Target> {
         rendered: lines.render(),
         current,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{first_sentence, lead};
+
+    #[test]
+    fn first_sentences() {
+        assert_eq!(first_sentence("One. Two."), "One.");
+        assert_eq!(first_sentence("Uses e.g. this. Then."), "Uses e.g. this.");
+        assert_eq!(
+            first_sentence("Run `make x. y` now. Then."),
+            "Run `make x. y` now."
+        );
+        assert_eq!(
+            first_sentence("See [a. b](x.md) here. More."),
+            "See [a. b](x.md) here."
+        );
+        assert_eq!(first_sentence("No end"), "No end");
+        assert_eq!(first_sentence("Is it? Yes."), "Is it?");
+        assert_eq!(
+            first_sentence("Version 1.2 is out. Ok."),
+            "Version 1.2 is out."
+        );
+    }
 }

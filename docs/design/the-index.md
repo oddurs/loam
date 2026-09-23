@@ -36,6 +36,14 @@ title ([0064](../../cairn/items/0064-order-a-page-s-place-among-its-kind.md)),
 because a guide's first page is first on purpose. A summary's own links are
 rewritten to work from the index.
 
+A summary written in frontmatter is shown whole: its length was chosen. One
+loam took from a first paragraph was not, and a paragraph can run to eighty
+words, so the index shows its whole sentences up to about 160 characters —
+always at least one ([0066](../../cairn/items/0066-long-first-paragraphs-make-a-long-index.md)).
+The first sentence alone was tried and lost too much: "Thank you for interest
+in *The Measure of the World*!" is a first sentence, and says nothing about
+the page.
+
 Pages that no declared kind holds are listed under *Other*, rather than hidden,
 because `check` is already saying something about them. Superseded pages go in
 a last section, each with what replaced it. A kind with `index = false` is left

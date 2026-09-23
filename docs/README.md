@@ -13,7 +13,7 @@ How do I do this? A task, start to finish, with real output.
 
 | | |
 |---|---|
-| [Adopting a docs folder](guide/adopting-a-docs-folder.md) | Point loam at a `docs/` folder that already exists, see what it makes of every page, and replace the hand-kept index with a generated one. Nothing here requires changing a page. |
+| [Adopting a docs folder](guide/adopting-a-docs-folder.md) | Point loam at a `docs/` folder that already exists, see what it makes of every page, and replace the hand-kept index with a generated one. |
 | [Writing, moving and replacing pages](guide/writing-pages.md) | What a good page looks like to loam, and the three commands that change pages: `new`, `mv` and `supersede`. |
 | [Keeping pages true](guide/keeping-pages-true.md) | Say what code a page describes, find the pages it has moved out from under, and mark them read again. |
 | [Checking docs in CI](guide/checking-docs-in-ci.md) | One command that fails a build when a link breaks, a page cannot be read, or the index has drifted. |

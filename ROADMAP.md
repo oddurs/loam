@@ -112,7 +112,7 @@ The docs folder is an indexable source: a site, a search box or another program 
 
 ## later — Someday
 
-`··········` 0% · 0 of 4 done
+`###·······` 25% · 1 of 4 done
 
 Filed so it is not forgotten, and not scheduled so it is not pretended to.
 
@@ -121,5 +121,8 @@ Filed so it is not forgotten, and not scheduled so it is not pretended to.
 - [ ] `0057` Is an MCP server worth it when the command line is this small? <sup>question · p3 · s</sup>
 - [ ] `0058` Where do images and figures beside a page live? <sup>question · p3 · s</sup>
 - [ ] `0065` A label shorter than the title, for listings <sup>feature · p2 · s</sup>
-- [ ] `0066` Long first paragraphs make a long index <sup>feature · p2 · s</sup>
+
+### done
+
+- [x] `0066` Long first paragraphs make a long index <sup>feature · p2 · s</sup>
 

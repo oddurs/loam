@@ -233,6 +233,13 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         let name = old.rsplit('/').next().unwrap_or(&old);
         new = join(&new, name);
     }
+    // Moving the configuration would leave the repository unreadable; the
+    // docs root is named in it, not found by where it is.
+    if old == crate::config::CONFIG_FILE {
+        bail!(
+            "{old} is loam's own configuration; move the docs with `loam mv`, and leave it where it is"
+        );
+    }
     if new == old {
         bail!("{old} is already there");
     }
