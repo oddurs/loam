@@ -1,4 +1,6 @@
 ---
+covers:
+  - src/index.rs
 order: 2
 summary: Why the index is generated between markers in a file people also write in, and what it lists.
 ---

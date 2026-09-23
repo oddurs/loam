@@ -1,11 +1,18 @@
 ---
+covers:
+  - src/reading.rs
+  - src/cmd/list.rs
+  - src/cmd/show.rs
+  - src/cmd/search.rs
+  - src/cmd/stale.rs
+  - src/cmd/check.rs
 order: 3
-summary: What `--json` prints for check, list, show and search, for programs and agents.
+summary: What `--json` prints for check, list, show, search and stale, for programs and agents.
 ---
 
 # JSON output
 
-`check`, `list`, `show` and `search` print JSON on standard output with
+`check`, `list`, `show`, `search` and `stale` print JSON on standard output with
 `--json`, and nothing else there. Keys may be added; none will be removed or
 change meaning without a new major version of loam. Every path is relative to
 the repository, with `/` between its parts.
@@ -46,7 +53,60 @@ Exit status is 1 when nothing matches, with `[]` printed.
 
 One object: the page's reading, exactly as the conformance corpus shapes it
 ([spec/corpus/README.md](../../spec/corpus/README.md#the-shape-of-a-reading)),
-plus `path` and `body`, the text after the frontmatter.
+plus `path`, `body`, the text after the frontmatter, and `freshness`, as one
+page of [`stale`](#stale) gives it, or `null` outside a git repository.
+
+## `stale`
+
+Real output, from measure-of-the-world, one page of it:
+
+```json
+{
+  "notes": [],
+  "pages": [
+    {
+      "added": 22,
+      "age": 259,
+      "baseline": {
+        "commit": "0aa28b0a963cf4aaa5ffd25b3b5cf70faf2ef7a0",
+        "date": "2026-01-07",
+        "how": "last-edit"
+      },
+      "commits": [
+        {
+          "commit": "cc486cc96e95bea21f46f3956aec23335665d9d1",
+          "date": "2026-09-09",
+          "subject": "Fix the build pipeline so failures are visible"
+        }
+      ],
+      "path": "docs/releases.md",
+      "patterns": [
+        {
+          "added": 22,
+          "commits": 1,
+          "latest": "Fix the build pipeline so failures are visible",
+          "pattern": ".github/workflows",
+          "removed": 0
+        }
+      ],
+      "removed": 0,
+      "stale_after": null,
+      "state": "stale"
+    }
+  ]
+}
+```
+
+| Key | |
+| --- | --- |
+| `state` | `stale`, `updating` (stale, but changed alongside its code), `fresh`, `unknown` (no `covers`) or `generated`. |
+| `baseline.how` | What the page was compared from: `reviewed`, `introduced` (the commit that brought a review onto this branch, after a squash or rebase), `dated` (the last commit on or before the review's date), `last-edit` (never reviewed: the last commit that changed its body) or `new` (never committed). |
+| `age` | Days from the baseline's date to today, or `null`. |
+| `stale_after` | The kind's limit in days, when the page has outlived it; otherwise `null`. |
+| `patterns` | Per including pattern of `covers`, what changed under it, most first. |
+| `notes` | What `stale` would print once per run: how many pages fell back, and to what. |
+
+Exit status is 1 when any page is `stale`.
 
 ## `check`
 

@@ -1,4 +1,7 @@
 ---
+covers:
+  - src/config.rs
+  - src/cmd/init.rs
 order: 2
 summary: Every key loam.toml can hold, and which of them a reader of the format must honour.
 ---
@@ -90,3 +93,4 @@ whatever no other kind claims. A page's frontmatter may name its kind instead.
 | `description` | | A paragraph under that heading. |
 | `template` | | The body `new` writes under the title. If it begins with frontmatter, that frontmatter opens the page. |
 | `index` | | `false` leaves the kind's pages out of the index. Default `true`. |
+| `stale_after` | | How long a page of this kind stays true without a review, as `180d`, `26w`, `6m` or `1y`. For research, which goes stale because the world moves, not the code. |

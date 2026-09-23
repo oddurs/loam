@@ -48,6 +48,7 @@ backlog:
 # loam's own docs, checked by loam.
 docs: $(LOAM)
 	$(LOAM) check --strict --render
+	$(LOAM) check --stale --quiet
 
 $(LOAM): FORCE
 	$(CARGO) build -q

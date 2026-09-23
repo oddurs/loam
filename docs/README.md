@@ -15,6 +15,7 @@ How do I do this? A task, start to finish, with real output.
 |---|---|
 | [Adopting a docs folder](guide/adopting-a-docs-folder.md) | Point loam at a `docs/` folder that already exists, see what it makes of every page, and replace the hand-kept index with a generated one. Nothing here requires changing a page. |
 | [Writing, moving and replacing pages](guide/writing-pages.md) | What a good page looks like to loam, and the three commands that change pages: `new`, `mv` and `supersede`. |
+| [Keeping pages true](guide/keeping-pages-true.md) | Say what code a page describes, find the pages it has moved out from under, and mark them read again. |
 | [Checking docs in CI](guide/checking-docs-in-ci.md) | One command that fails a build when a link breaks, a page cannot be read, or the index has drifted. |
 
 ## Reference
@@ -25,7 +26,7 @@ What does this mean? Facts, tables and settings, checked against the code where 
 |---|---|
 | [Commands](reference/commands.md) | Every command, every option, and what each exit status means. |
 | [loam.toml](reference/loam-toml.md) | Every key loam.toml can hold, and which of them a reader of the format must honour. |
-| [JSON output](reference/json-output.md) | What `--json` prints for check, list, show and search, for programs and agents. |
+| [JSON output](reference/json-output.md) | What `--json` prints for check, list, show, search and stale, for programs and agents. |
 | [Findings](reference/findings.md) | Every code `loam check` reports, how severe it is by default, and what to do about it. |
 
 ## Design
@@ -36,5 +37,6 @@ Why is it like this? The shape of the thing, and the argument for it.
 |---|---|
 | [Pages, items and the line between them](design/pages-and-items.md) | Why a page is not a cairn item, what goes in each, and what loam will never do. |
 | [The index](design/the-index.md) | Why the index is generated between markers in a file people also write in, and what it lists. |
+| [How loam decides a page is stale](design/staleness.md) | What loam compares a page against, why the size of a change orders the report but hides nothing, and what squashing does to a review. |
 
 <!-- loam:index:end -->

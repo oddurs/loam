@@ -52,6 +52,28 @@ moved docs/guide/whats-slow.md → docs/guide/finding-what-is-slow.md
 
 The whole walk-through is [Adopting a docs folder](docs/guide/adopting-a-docs-folder.md).
 
+## Is it still true?
+
+A page can say what code it describes, and loam asks git whether that code has
+moved on without it. On measure-of-the-world, with three pages given `covers`:
+
+```console
+$ loam stale
+docs/build.md   never reviewed; last edited 14 days ago at cc486cc
+  Makefile   2 commit(s), +37 −3   "Add prose lint"
+  latexmkrc  1 commit(s), +7 −0   "Add proof engine; cut overfull lines from 122 to 41"
+docs/publication.md   never reviewed; last edited 14 days ago at a880c3d
+  src/preamble.tex  1 commit(s), +33 −1   "Add proof engine; cut overfull lines from 122 to 41"
+docs/releases.md   never reviewed; last edited 259 days ago at 0aa28b0
+  .github/workflows  1 commit(s), +22 −0   "Fix the build pipeline so failures are visible"
+
+3 stale, 0 being updated, 0 fresh, 13 unknown (no covers), 0 generated
+```
+
+All three were right. `loam review PAGE` records that a page has been read
+against the code as it is now, and `loam check --stale` puts the same warnings
+on a pull request without failing it. See [Keeping pages true](docs/guide/keeping-pages-true.md).
+
 ## Commands
 
 | | |
@@ -63,6 +85,8 @@ The whole walk-through is [Adopting a docs folder](docs/guide/adopting-a-docs-fo
 | `loam list`, `show`, `search` | What is written, and where; all with `--json` |
 | `loam mv OLD NEW` | Move a page or a directory, and rewrite every link to it |
 | `loam supersede OLD NEW` | Record that one page replaces another, on both pages |
+| `loam stale` | Pages whose covered code changed since they were last reviewed |
+| `loam review PAGE` | Record that a page was read against the code as it is now |
 
 Every command is in [Commands](docs/reference/commands.md).
 
@@ -100,10 +124,12 @@ it knows as files and JSON. Nothing else. It will not:
 
 ## Status
 
-v0.1: the format is specified, and loam is useful on the three folders it was
-designed against, each adopted and checking clean. Next is v0.2, which asks
-the question the project exists for: has the code a page describes moved on
-without it? The plan is in [`ROADMAP.md`](ROADMAP.md).
+v0.2: loam knows when a page is wrong. The format is specified, loam is useful
+on the three folders it was designed against, and it can say which pages the
+code has moved out from under — tested by replaying two repositories' whole
+histories ([0038](cairn/items/0038-what-should-a-page-say-it-covers.md)). Next
+is v0.3: agents that find what is written before writing it again. The plan is
+in [`ROADMAP.md`](ROADMAP.md).
 
 ```sh
 cairn list --view decide    # decisions and questions still open

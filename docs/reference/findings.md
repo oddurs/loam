@@ -1,4 +1,7 @@
 ---
+covers:
+  - src/tree.rs
+  - src/cmd/check.rs
 order: 4
 summary: Every code `loam check` reports, how severe it is by default, and what to do about it.
 ---
@@ -6,7 +9,7 @@ summary: Every code `loam check` reports, how severe it is by default, and what 
 # Findings
 
 The format defines most of these ([spec §6.5](../../spec/README.md#65-findings)),
-and any reader of it reports them the same way. The last four are loam's own
+and any reader of it reports them the same way. The last six are loam's own
 judgements. Every severity can be changed in
 [`[check.severity]`](loam-toml.md#checkseverity).
 
@@ -30,3 +33,5 @@ judgements. Every severity can be changed in
 | `successor-without-superseded` | warning | `superseded_by` names a successor, but the status says otherwise. | Make it `superseded`, or remove the successor. |
 | `link-to-superseded` | warning | A link to a superseded page, from anything but its successor. | Link to what replaced it. |
 | `stale-index` | error | The index is not what `loam render` would write (with `--render`). | Run `loam render`. |
+| `covers-nothing` | warning | A pattern in `covers` matches no file: the code it named was moved or deleted, and the page reads as fresh. | Point `covers` at where the code went, or remove it. |
+| `stale` | warning | The page's covered code changed since it was reviewed, or it has outlived its kind's `stale_after` (with `--stale`). | Read it against the code, fix what is wrong, and `loam review` it. |

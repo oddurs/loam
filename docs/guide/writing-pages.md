@@ -1,4 +1,9 @@
 ---
+covers:
+  - src/cmd/new.rs
+  - src/cmd/mv.rs
+  - src/cmd/supersede.rs
+  - src/write.rs
 order: 2
 ---
 

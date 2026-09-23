@@ -1,4 +1,7 @@
 ---
+covers:
+  - src/main.rs
+  - src/cmd
 order: 1
 summary: Every command, every option, and what each exit status means.
 ---
@@ -16,7 +19,7 @@ from the docs root.
 | Status | Meaning |
 | --- | --- |
 | 0 | Success. |
-| 1 | The command ran and found what it reports: a failing finding (`check`), an index out of date (`render --check`), no match (`search`). |
+| 1 | The command ran and found what it reports: a failing finding (`check`), an index out of date (`render --check`), no match (`search`), a stale page (`stale`). |
 | 2 | The command could not run: no `loam.toml`, a format this loam does not read, a page that is not there, a path that is taken. The message says which. |
 
 ## `init`
@@ -34,12 +37,14 @@ loam read from every page. Refuses to replace an existing `loam.toml`.
 
 Report broken links and anchors, malformed frontmatter, unclaimed pages and
 the rest of the [findings](findings.md), each as `loam: path:line: message
-[code]` on standard error.
+[code]` on standard error. In GitHub Actions each is also printed as a workflow
+command, so it appears as an annotation on the line it concerns.
 
 | Option | |
 | --- | --- |
 | `-s`, `--strict` | Fail on warnings as well as errors. |
 | `--render` | Also fail when the index is not what `render` would write. |
+| `--stale` | Also report pages whose covered code changed since they were reviewed, as warnings on their `covers:` line. A page changed alongside its code is left out. |
 | `--json` | Print the findings as [JSON](json-output.md#check) on standard output. |
 | `-q`, `--quiet` | Print nothing when everything passes. |
 
@@ -102,6 +107,30 @@ directory. Never overwrites.
 | Option | |
 | --- | --- |
 | `-n`, `--dry-run` | Print each change, and change nothing. |
+
+## `stale`
+
+Pages whose covered code changed since they were last reviewed, most changed
+first, each with the patterns, commits and lines behind it; then pages being
+updated alongside their code; then a count of fresh, unknown (no `covers`) and
+generated pages. A page never reviewed is compared from the last commit that
+changed its body. Needs git.
+
+| Option | |
+| --- | --- |
+| `--all` | Also list the fresh, unknown and generated pages by name. |
+| `--at REV` | Judge as the repository was at `REV`, with the pages as they are now: for replaying history. |
+| `--json` | Print [JSON](json-output.md#stale). |
+
+## `review PAGE…`
+
+Record that each page was read against the code at `HEAD`: sets `reviewed` to
+that commit and today's date, keeping anything else under `reviewed`. Warns,
+without refusing, when a covered file has uncommitted changes.
+
+| Option | |
+| --- | --- |
+| `--note TEXT` | Add a line to a `## Review log` at the end of the page. |
 
 ## `supersede OLD NEW`
 

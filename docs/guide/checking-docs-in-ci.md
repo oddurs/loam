@@ -1,5 +1,7 @@
 ---
-order: 3
+covers:
+  - src/cmd/check.rs
+order: 4
 summary: One command that fails a build when a link breaks, a page cannot be read, or the index has drifted.
 ---
 
@@ -36,4 +38,7 @@ The codes are listed in [Findings](../reference/findings.md).
 ## loam's own CI
 
 This repository runs `make check`, which includes `loam check --strict
---render` on these pages, beside the tests and the conformance corpus.
+--render` on these pages, beside the tests and the conformance corpus, and
+then `loam check --stale`, whose warnings annotate a pull request without
+failing it. For the whole of staleness, see
+[Keeping pages true](keeping-pages-true.md).

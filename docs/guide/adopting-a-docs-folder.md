@@ -1,4 +1,8 @@
 ---
+covers:
+  - src/cmd/init.rs
+  - src/cmd/render.rs
+  - src/index.rs
 order: 1
 ---
 
