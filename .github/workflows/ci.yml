@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to a branch makes the run in flight pointless.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  # cairn checks this repository's backlog; pinned, so a cairn release cannot
+  # fail a build that changed nothing.
+  CAIRN_VERSION: v0.2.1
+
+jobs:
+  check:
+    # Both: loam compares paths exactly (spec §2), and macOS is where a
+    # filesystem that ignores case would hide it if it did not.
+    name: check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+      # rustup installs the toolchain named in rust-toolchain.toml on the first
+      # cargo invocation, so there is nothing to pin twice.
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: python3 -m pip install pyyaml
+      - name: Install cairn
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/oddurs/cairn/main/install.sh \
+            | CAIRN_BINDIR="$HOME/.local/bin" sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - run: make check

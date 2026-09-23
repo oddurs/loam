@@ -1,0 +1,40 @@
+[package]
+# `loam` is taken on crates.io by an unrelated crate (see cairn item 0020), so
+# the package is published as `loam-md`, as cairn's is as `cairn-md`. The
+# binary it installs is still `loam`.
+name = "loam-md"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "MIT"
+description = "A repository's written context — research, design, reference, guides — as Markdown under a schema"
+readme = "README.md"
+repository = "https://github.com/oddurs/loam"
+homepage = "https://github.com/oddurs/loam"
+keywords = ["docs", "markdown", "documentation", "cairn", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+authors = ["Oddur Sigurdsson <oddurs@gmail.com>"]
+exclude = ["/.github", "/spec/corpus"]
+
+[[bin]]
+name = "loam"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive", "wrap_help"] }
+html-escape = "0.2.15"
+regex = "1.13"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+toml = "1.1.6"
+unicode-properties = "0.1.4"
+yaml-rust2 = "0.13"
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1
