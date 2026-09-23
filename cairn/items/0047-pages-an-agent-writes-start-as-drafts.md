@@ -2,13 +2,14 @@
 id: 47
 title: Pages an agent writes start as drafts
 type: feature
-status: backlog
+status: done
 milestone: v0.3
 depends_on:
 - 18
 - 46
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p1
 pillar:
 - agents
@@ -33,6 +34,10 @@ for it.
 
 ## Acceptance criteria
 
-- [ ] Agent-created pages are drafts; person-created are not
-- [ ] The index marks drafts
-- [ ] The limitation is documented, in those words
+- [x] Agent-created pages are drafts; person-created are not
+- [x] The index marks drafts
+- [x] The limitation is documented, in those words
+
+## 2026-09-23
+
+[agents] status = "draft", which init now writes. An agent is one when it says so — --agent NAME, LOAM_AGENT, or CAIRN_AGENT so one variable serves both programs — or when loam recognises one: AI_AGENT, which Claude Code and others have begun to set, and Claude Code's CLAUDECODE. That last part departs from cairn, which detects nothing; the reasoning is in src/agent.rs: a guard rail an agent must remember to turn on is mostly not there, and a false detection costs a draft a person promotes with one command. The limitation is documented in docs/guide/working-with-agents.md in the item's words: a guard rail and not a boundary, since an agent with a shell can edit the frontmatter.

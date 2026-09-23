@@ -82,18 +82,21 @@ A page can say what code it describes, and loam can say when that code has moved
 
 ## v0.3 — Agents write into it
 
-`··········` 0% · 0 of 6 done
+`#########·` 83% · 5 of 6 done
 
 An agent told to research something finds what is already written before writing it again, and writes what it finds where it belongs.
 
 ### backlog
 
 - [ ] `0046` agent prints a contract generated from the live schema <sup>feature · p0 · m</sup>
-- [ ] `0047` Pages an agent writes start as drafts <sup>feature · p1 · s</sup>
-- [ ] `0048` Warn before writing a page that already exists under another name <sup>feature · p1 · m</sup>
-- [ ] `0049` context: the pages that matter for a path, within a budget <sup>feature · p0 · m</sup>
-- [ ] `0050` After code changes, say which pages to reread <sup>feature · p1 · s</sup>
-- [ ] `0067` set a frontmatter key from the command line <sup>feature · p2 · s</sup>
+
+### done
+
+- [x] `0047` Pages an agent writes start as drafts <sup>feature · p1 · s</sup>
+- [x] `0048` Warn before writing a page that already exists under another name <sup>feature · p1 · m</sup>
+- [x] `0049` context: the pages that matter for a path, within a budget <sup>feature · p0 · m</sup>
+- [x] `0050` After code changes, say which pages to reread <sup>feature · p1 · s</sup>
+- [x] `0067` set a frontmatter key from the command line <sup>feature · p2 · s</sup>
 
 ## v0.4 — Feeds a site
 
