@@ -17,6 +17,8 @@ How do I do this? A task, start to finish, with real output.
 | [Writing, moving and replacing pages](guide/writing-pages.md) | What a good page looks like to loam, and the three commands that change pages: `new`, `mv` and `supersede`. |
 | [Keeping pages true](guide/keeping-pages-true.md) | Say what code a page describes, find the pages it has moved out from under, and mark them read again. |
 | [Checking docs in CI](guide/checking-docs-in-ci.md) | One command that fails a build when a link breaks, a page cannot be read, or the index has drifted. |
+| [Working with agents](guide/working-with-agents.md) | Give an agent the contract, and let loam keep it from writing the same page twice, in the wrong place, or as the truth. |
+| [Claude Code hooks](guide/claude-code-hooks.md) | Two hooks that bring a file's pages to Claude Code as it edits, and send it back to the pages it made stale before it stops. |
 
 ## Reference
 
@@ -26,7 +28,7 @@ What does this mean? Facts, tables and settings, checked against the code where 
 |---|---|
 | [Commands](reference/commands.md) | Every command, every option, and what each exit status means. |
 | [loam.toml](reference/loam-toml.md) | Every key loam.toml can hold, and which of them a reader of the format must honour. |
-| [JSON output](reference/json-output.md) | What `--json` prints for check, list, show, search and stale, for programs and agents. |
+| [JSON output](reference/json-output.md) | What `--json` prints for check, context, list, show, search and stale, for programs and agents. |
 | [Findings](reference/findings.md) | Every code `loam check` reports, how severe it is by default, and what to do about it. |
 
 ## Design

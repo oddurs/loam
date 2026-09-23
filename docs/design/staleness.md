@@ -71,6 +71,16 @@ measure-of-the-world that was worth rereading
   --stale` does not warn about it.
 - **A generated page** is kept true by its generator.
 
+## What a change just made stale
+
+`stale` asks what history says. An agent that has just edited three files asks
+something narrower: which pages has *this* change made wrong? `stale
+--working-tree` answers it from the uncommitted changes alone, and `--since
+REV` from the commits since `REV` — every page covering a changed file, whatever
+its baseline, less those changed alongside. No review, no size, no ordering
+beyond the pages' own: it is a list to work through before stopping, not a
+judgement about history.
+
 ## Why patterns and not symbols
 
 A page could name functions instead of files, and a change to a comment beside

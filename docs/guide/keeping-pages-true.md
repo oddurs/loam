@@ -69,6 +69,11 @@ and saying nothing would be a claim. A page that has never been reviewed is
 compared from the last commit that changed what it says — a change to its
 frontmatter alone does not count. `--json` gives the same for a program.
 
+Before committing, `loam stale --working-tree` asks a narrower question —
+which pages cover what you have just changed — and `--since REV` asks it of the
+commits since `REV`. That is the list to work through before you stop; an
+agent's stop hook can ask it for you ([Claude Code hooks](claude-code-hooks.md)).
+
 ## 3. `loam review`
 
 When you have read the page against the code and it is true — or you have made

@@ -74,6 +74,12 @@ title = "Other pages"
 | --- | --- | --- |
 | `after-change` | | A shell command run in the repository after `new`, `mv` or `supersede` changes pages. A command beginning `loam ` runs the loam that is running, not whichever is first on `$PATH`. |
 
+## `[agents]`
+
+| Key | | |
+| --- | --- | --- |
+| `status` | | `"draft"`: a page an agent writes with `new` starts as a draft. `"current"`, or absent: it does not. `init` writes `"draft"`. |
+
 ## `[check.severity]`
 
 Each key is a [finding's code](findings.md); each value is `"error"`,

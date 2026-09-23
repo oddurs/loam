@@ -4,6 +4,9 @@ covers:
   - src/cmd/render.rs
   - src/index.rs
 order: 1
+reviewed:
+  commit: f8a76459bd01ba4adc3eaf5a01976e20e5c75697
+  date: 2026-09-23
 ---
 
 # Adopting a docs folder
@@ -129,3 +132,7 @@ moved docs/guide/whats-slow.md → docs/guide/finding-what-is-slow.md
 
 [Writing pages](writing-pages.md) covers those, and
 [checking in CI](checking-docs-in-ci.md) how to keep it all true.
+
+## Review log
+
+- 2026-09-23, at f8a7645: init now writes [agents] status = draft; the walk-through's output and claims are unchanged

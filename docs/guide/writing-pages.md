@@ -56,6 +56,12 @@ The page goes in its kind's directory, named from its title by cairn's rule,
 with the kind's `template` under the title. `--draft` marks it a draft. It
 never overwrites: if the name is taken, it says which page has it.
 
+It also refuses to write a second page on the same thing. When the title shares
+most of its words with a page of the same kind, `new` names that page, asks a
+person at a terminal whether to write anyway, and refuses anything else unless
+it passes `--anyway`. A page an agent writes starts as a draft, when the
+project asks for that ([Working with agents](working-with-agents.md)).
+
 ## `loam mv`
 
 ```console

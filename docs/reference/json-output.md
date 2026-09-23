@@ -7,12 +7,12 @@ covers:
   - src/cmd/stale.rs
   - src/cmd/check.rs
 order: 3
-summary: What `--json` prints for check, list, show, search and stale, for programs and agents.
+summary: What `--json` prints for check, context, list, show, search and stale, for programs and agents.
 ---
 
 # JSON output
 
-`check`, `list`, `show`, `search` and `stale` print JSON on standard output with
+`check`, `context`, `list`, `show`, `search` and `stale` print JSON on standard output with
 `--json`, and nothing else there. Keys may be added; none will be removed or
 change meaning without a new major version of loam. Every path is relative to
 the repository, with `/` between its parts.
@@ -107,6 +107,63 @@ Real output, from measure-of-the-world, one page of it:
 | `notes` | What `stale` would print once per run: how many pages fell back, and to what. |
 
 Exit status is 1 when any page is `stale`.
+
+With `--working-tree` or `--since`, the shape is different, because the
+question is:
+
+```json
+{
+  "changed": ["src/engine/scheduler.rs"],
+  "pages": [
+    {
+      "path": "docs/design/scheduling.md",
+      "state": "reread",
+      "patterns": [{"pattern": "src/engine", "files": ["src/engine/scheduler.rs"]}]
+    }
+  ]
+}
+```
+
+`state` is `reread`, or `updating` when the page changed too. Exit status is 1
+when any page is to be reread.
+
+## `context`
+
+Real output from `loam context src/index.rs --json` in this repository, its
+first page, with the body and the freshness cut short:
+
+```json
+{
+  "paths": [
+    "src/index.rs"
+  ],
+  "budget": 8192,
+  "used": 8139,
+  "pages": [
+    {
+      "body": "# The index\n\nA docs folder's `README.md` usually holds a tab…",
+      "freshness": {
+        "state": "fresh",
+        "baseline": {
+          "commit": "8014b2028b53bb545804c7fcdea22c6b8b776719",
+          "date": "2026-09-22",
+          "how": "last-edit"
+        }
+      },
+      "included": "full",
+      "path": "docs/design/the-index.md",
+      "summary": "Why the index is generated between markers in a file people also write in, and what it lists.",
+      "title": "The index",
+      "why": "covers src/index.rs"
+    }
+  ]
+}
+```
+
+`why` says how the page was found: `covers …`, `mentions …` or `linked from …`.
+`freshness` is a page of [`stale`](#stale), or `null` outside git. `included`
+is `full`, `summary` or `left out`, as the text form decided within the budget;
+`body` is given for `full` pages only. `used` is the size of the text form.
 
 ## `check`
 

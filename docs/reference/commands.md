@@ -19,7 +19,7 @@ from the docs root.
 | Status | Meaning |
 | --- | --- |
 | 0 | Success. |
-| 1 | The command ran and found what it reports: a failing finding (`check`), an index out of date (`render --check`), no match (`search`), a stale page (`stale`). |
+| 1 | The command ran and found what it reports: a failing finding (`check`), an index out of date (`render --check`), no match (`search`), a stale page or one to reread (`stale`), a page like the one `new` was asked for. |
 | 2 | The command could not run: no `loam.toml`, a format this loam does not read, a page that is not there, a path that is taken. The message says which. |
 
 ## `init`
@@ -64,9 +64,15 @@ Refuses a file that exists without the markers, and says what to add.
 Write a page in `KIND`'s directory, named from `TITLE`, with the title as its
 heading and the kind's template under it, and print its path. Never overwrites.
 
+A page an agent writes starts as a draft when `loam.toml` says `[agents] status =
+"draft"`. `new` refuses, with exit status 1, when a page of the same kind looks
+like the one asked for, and names it; a person at a terminal is asked instead.
+
 | Option | |
 | --- | --- |
 | `--draft` | Give the page `status: draft`. |
+| `--agent NAME` | Write as this agent; also read from `LOAM_AGENT`, `CAIRN_AGENT`, `AI_AGENT`, or Claude Code's `CLAUDECODE`. |
+| `--anyway` | Write it even though a page like it exists. |
 
 ## `list`
 
@@ -120,6 +126,8 @@ changed its body. Needs git.
 | --- | --- |
 | `--all` | Also list the fresh, unknown and generated pages by name. |
 | `--at REV` | Judge as the repository was at `REV`, with the pages as they are now: for replaying history. |
+| `--working-tree` | Instead, the pages covering files with uncommitted changes, whatever their history: what to reread before stopping. |
+| `--since REV` | Instead, the pages covering files changed since `REV`. With `--working-tree`, both. |
 | `--json` | Print [JSON](json-output.md#stale). |
 
 ## `review PAGE…`
@@ -131,6 +139,37 @@ without refusing, when a covered file has uncommitted changes.
 | Option | |
 | --- | --- |
 | `--note TEXT` | Add a line to a `## Review log` at the end of the page. |
+
+## `set PAGE KEY=VALUE…`
+
+Change a page's frontmatter: `key=value` sets, `key=` removes, `key+=value` and
+`key-=value` add to and take from a list. No other byte of the page changes.
+The format's own keys are held to their types — a `status` of draft, current or
+superseded, an `order` that is a whole number, a declared `kind` — and
+`reviewed` is left to `review`. Any other key is written as typed: `weight=3` is
+a number.
+
+## `context PATH…`
+
+The pages that matter for these files: those whose `covers` match, most
+specific first; then those that mention a path; then those the covering pages
+link to — each with whether it is still true. Whole pages while they fit the
+budget, then their summaries, then the rest named as left out.
+
+| Option | |
+| --- | --- |
+| `--budget BYTES` | The most to print: `8000`, or `8k` for 8192. Default `8k`, about 2,000 tokens. |
+| `--json` | Print [JSON](json-output.md#context). |
+
+## `agent`
+
+Print the instructions an agent needs — where each kind of page lives, and the
+loop of search, new, set, supersede, stale and review — generated from
+`loam.toml`.
+
+| Option | |
+| --- | --- |
+| `-w`, `--write FILE` | Insert the block in `FILE`, as `AGENTS.md`, or replace it where it already is, leaving the rest of the file alone. |
 
 ## `supersede OLD NEW`
 

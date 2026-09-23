@@ -87,6 +87,9 @@ on a pull request without failing it. See [Keeping pages true](docs/guide/keepin
 | `loam supersede OLD NEW` | Record that one page replaces another, on both pages |
 | `loam stale` | Pages whose covered code changed since they were last reviewed |
 | `loam review PAGE` | Record that a page was read against the code as it is now |
+| `loam context PATH` | The pages about a file, within a budget: what an agent reads before changing it |
+| `loam set PAGE KEY=VALUE` | Frontmatter from the command line, changing no other byte |
+| `loam agent` | The instructions an agent needs, generated from `loam.toml` |
 
 Every command is in [Commands](docs/reference/commands.md).
 
