@@ -16,30 +16,30 @@ person; `cairn next` shows what can start.
 
 ## v0.0 — Written down
 
-`··········` 0% · 0 of 14 done
+`##########` 100% · 14 of 14 done
 
 Nothing is built until the format is specified and the decisions that shape it are made.
 
-### backlog
+### done
 
-- [ ] `0013` A separate program that reads cairn, rather than a type inside it <sup>decision · p0 · s</sup>
-- [ ] `0014` Tense divides the backlog from the docs <sup>decision · p0 · s</sup>
-- [ ] `0015` Where an architecture decision record lives <sup>decision · p0 · s</sup>
-- [ ] `0016` A page is addressed by its path, not by a number <sup>decision · p0 · s</sup>
-- [ ] `0017` Page kinds belong to the project, and presets come from real folders <sup>decision · p1 · s</sup>
-- [ ] `0018` A page is draft, current or superseded, and never done <sup>decision · p1 · s</sup>
-- [ ] `0019` Declare the boundary: one repository, no server, no HTML <sup>decision · p1 · s</sup>
-- [ ] `0020` Settle the name <sup>decision · p1 · s</sup>
-- [ ] `0021` Does a page need frontmatter at all? <sup>question · p0 · s</sup>
-- [ ] `0022` How does a page link to a cairn item? <sup>question · p1 · s</sup>
-- [ ] `0023` Write the page format specification, version 1 <sup>spec · p0 · m</sup>
-- [ ] `0024` Links are part of the format <sup>spec · p1 · s</sup>
-- [ ] `0025` Version the format from the first release <sup>spec · p1 · s</sup>
-- [ ] `0026` A corpus of pages that must always parse, taken from real folders <sup>chore · p1 · s</sup>
+- [x] `0013` A separate program that reads cairn, rather than a type inside it <sup>decision · p0 · s</sup>
+- [x] `0014` Tense divides the backlog from the docs <sup>decision · p0 · s</sup>
+- [x] `0015` Where an architecture decision record lives <sup>decision · p0 · s</sup>
+- [x] `0016` A page is addressed by its path, not by a number <sup>decision · p0 · s</sup>
+- [x] `0017` Page kinds belong to the project, and presets come from real folders <sup>decision · p1 · s</sup>
+- [x] `0018` A page is draft, current or superseded, and never done <sup>decision · p1 · s</sup>
+- [x] `0019` Declare the boundary: one repository, no server, no HTML <sup>decision · p1 · s</sup>
+- [x] `0020` Settle the name <sup>decision · p1 · s</sup>
+- [x] `0021` Does a page need frontmatter at all? <sup>question · p0 · s</sup>
+- [x] `0022` How does a page link to a cairn item? <sup>question · p1 · s</sup>
+- [x] `0023` Write the page format specification, version 1 <sup>spec · p0 · m</sup>
+- [x] `0024` Links are part of the format <sup>spec · p1 · s</sup>
+- [x] `0025` Version the format from the first release <sup>spec · p1 · s</sup>
+- [x] `0026` A corpus of pages that must always parse, taken from real folders <sup>chore · p1 · s</sup>
 
 ## v0.1 — Useful to me
 
-`··········` 0% · 0 of 11 done
+`··········` 0% · 0 of 14 done
 
 loam replaces the hand-kept table in a `docs/README.md` and catches the link that broke last week — in three real repositories, not a demo.
 
@@ -56,6 +56,9 @@ loam replaces the hand-kept table in a `docs/README.md` and catches the link tha
 - [ ] `0035` A page that supersedes another says so, and so does the other <sup>feature · p2 · s</sup>
 - [ ] `0036` Adopt code-as-color, poptop and measure-of-the-world <sup>chore · p0 · m</sup>
 - [ ] `0037` A README that says what loam is and is not <sup>docs · p2 · s</sup>
+- [ ] `0060` Generated files in a docs folder <sup>question · p2 · s</sup>
+- [ ] `0061` Move code-as-color's five ADRs into its cairn backlog <sup>chore · p2 · s</sup>
+- [ ] `0062` Round-trip cases for every must the spec puts on a writer <sup>chore · p2 · s</sup>
 
 ## v0.2 — Knows when it is wrong
 

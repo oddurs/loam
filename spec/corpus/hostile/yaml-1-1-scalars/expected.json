@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/scalars.md": {
+      "anchors": [
+        "unquoted"
+      ],
+      "findings": [
+        {
+          "code": "unknown-kind",
+          "detail": "on",
+          "line": 1
+        },
+        {
+          "code": "unknown-status",
+          "detail": "no",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "custom": 31,
+        "date": "2026-09-22",
+        "kind": "on",
+        "status": "no",
+        "summary": "12:30",
+        "title": "yes",
+        "version": 1.2
+      },
+      "kind": "on",
+      "kind_from": "frontmatter",
+      "links": [],
+      "status": "no",
+      "status_from": "frontmatter",
+      "summary": "12:30",
+      "summary_from": "frontmatter",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "yes",
+      "title_from": "frontmatter"
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/core-tag.md": {
+      "anchors": [
+        "core-tags-are-honoured"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "number": 7,
+        "title": "2026"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "2026",
+      "title_from": "frontmatter"
+    },
+    "docs/core-tagged-key.md": {
+      "anchors": [
+        "a-core-tag-on-a-key-is-honoured"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "12": "twelve"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A core tag on a key is honoured",
+      "title_from": "heading"
+    },
+    "docs/custom.md": {
+      "anchors": [
+        "a-local-tag"
+      ],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A local tag",
+      "title_from": "heading"
+    },
+    "docs/merge.md": {
+      "anchors": [
+        "no-merge-key-in-yaml-12-core"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "base": {
+          "kind": "page"
+        },
+        "merged": {
+          "<<": {
+            "kind": "page"
+          },
+          "extra": 1
+        }
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "No merge key in YAML 1.2 core",
+      "title_from": "heading"
+    },
+    "docs/tagged-key.md": {
+      "anchors": [
+        "a-tag-on-a-key-counts-too"
+      ],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A tag on a key counts too",
+      "title_from": "heading"
+    },
+    "docs/timestamp.md": {
+      "anchors": [
+        "a-tag-outside-the-core-schema"
+      ],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Makes the frontmatter malformed.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A tag outside the core schema",
+      "title_from": "heading"
+    }
+  }
+}

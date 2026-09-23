@@ -1,0 +1,20 @@
+format = 1
+
+[docs]
+root = "documentation"
+
+[[kind]]
+name = "guide"
+dir = "guide"
+
+[[kind]]
+name = "advanced"
+dir = "guide/advanced/"
+
+[[kind]]
+name = "design"
+dir = "design"
+description = "ignored by a reader"
+
+[extra]
+unknown = "a reader ignores this table"

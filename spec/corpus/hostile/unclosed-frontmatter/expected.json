@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/unclosed.md": {
+      "anchors": [],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "no closing delimiter",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": null,
+      "title_from": null
+    }
+  }
+}

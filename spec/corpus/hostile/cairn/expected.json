@@ -1,0 +1,123 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/cites.md": {
+      "anchors": [
+        "cites-the-backlog"
+      ],
+      "findings": [
+        {
+          "code": "stale-cairn-link",
+          "detail": "../cairn/items/0072-old-title.md",
+          "line": 4
+        },
+        {
+          "code": "stale-cairn-link",
+          "detail": "../cairn/items/72-old.md",
+          "line": 4
+        },
+        {
+          "code": "broken-cairn-link",
+          "detail": "../cairn/items/0008-x.md",
+          "line": 5
+        },
+        {
+          "code": "broken-cairn-link",
+          "detail": "../cairn/items/0099-never-was.md",
+          "line": 5
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "cairn",
+          "destination": "../cairn/items/0072-better-title.md",
+          "fragment": null,
+          "item": 72,
+          "line": 3,
+          "target": "cairn/items/0072-better-title.md"
+        },
+        {
+          "class": "cairn",
+          "destination": "../cairn/items/0072-better-title.md#context",
+          "fragment": "context",
+          "item": 72,
+          "line": 3,
+          "target": "cairn/items/0072-better-title.md"
+        },
+        {
+          "class": "cairn",
+          "current": "cairn/items/0072-better-title.md",
+          "destination": "../cairn/items/0072-old-title.md",
+          "fragment": null,
+          "item": 72,
+          "line": 4,
+          "target": "cairn/items/0072-old-title.md"
+        },
+        {
+          "class": "cairn",
+          "current": "cairn/items/0072-better-title.md",
+          "destination": "../cairn/items/72-old.md",
+          "fragment": null,
+          "item": 72,
+          "line": 4,
+          "target": "cairn/items/72-old.md"
+        },
+        {
+          "class": "cairn",
+          "destination": "../cairn/items/0099-never-was.md",
+          "fragment": null,
+          "item": 99,
+          "line": 5,
+          "target": "cairn/items/0099-never-was.md"
+        },
+        {
+          "class": "cairn",
+          "destination": "../cairn/items/0008-x.md",
+          "fragment": null,
+          "item": 8,
+          "line": 5,
+          "target": "cairn/items/0008-x.md"
+        },
+        {
+          "class": "file",
+          "destination": "../cairn/items/",
+          "fragment": null,
+          "line": 6,
+          "target": "cairn/items"
+        },
+        {
+          "class": "file",
+          "destination": "../cairn/items/README.md",
+          "fragment": null,
+          "line": 6,
+          "target": "cairn/items/README.md"
+        },
+        {
+          "class": "file",
+          "destination": "../cairn/items/sub/0009-nested.md",
+          "fragment": null,
+          "line": 6,
+          "target": "cairn/items/sub/0009-nested.md"
+        },
+        {
+          "class": "file",
+          "destination": "../cairn/items/0005-figure.png",
+          "fragment": null,
+          "line": 6,
+          "target": "cairn/items/0005-figure.png"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Resolves: [0072](../cairn/items/0072-better-title.md), [with anchor](../cairn/items/0072-better-title.md#context). Stale: [0072](../cairn/items/0072-old-title.md), [leading zeros](../cairn/items/72-old.md). Broken: [0099](../cairn/items/0099-never-was.md), and [0008](../cairn/items/0008-x.md), because the name, not the frontmatter, is read. Ordinary links: [the directory](../cairn/items/), [its readme](../cairn/items/README.md), [nested](../cairn/items/sub/0009-nested.md), [not Markdown](../cairn/items/0005-figure.png).",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Cites the backlog",
+      "title_from": "heading"
+    }
+  }
+}

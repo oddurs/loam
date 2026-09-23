@@ -1,0 +1,21 @@
+name: spec
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # The format is the only thing built so far, so it is the only thing CI
+  # proves: the reference reader against the corpus, and the text shared with
+  # cairn's specification still word for word cairn's.
+  spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: python3 -m pip install pyyaml
+      - run: python3 spec/conformance.py
+      - run: python3 spec/shared.py

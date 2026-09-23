@@ -1,0 +1,147 @@
+{
+  "format": 1,
+  "pages": {
+    "documentation/design/README.md": {
+      "anchors": [
+        "a-readme-is-a-page"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "design",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A README is a page",
+      "title_from": "heading"
+    },
+    "documentation/design/choice.md": {
+      "anchors": [
+        "a-kind-nobody-declared"
+      ],
+      "findings": [
+        {
+          "code": "unknown-kind",
+          "detail": "decision",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "kind": "decision"
+      },
+      "kind": "decision",
+      "kind_from": "frontmatter",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A kind nobody declared",
+      "title_from": "heading"
+    },
+    "documentation/design/other.md": {
+      "anchors": [
+        "frontmatter-overrides-the-directory"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "kind": "guide"
+      },
+      "kind": "guide",
+      "kind_from": "frontmatter",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Frontmatter overrides the directory",
+      "title_from": "heading"
+    },
+    "documentation/guide-notes.md": {
+      "anchors": [
+        "guide-notes-is-not-under-guide"
+      ],
+      "findings": [
+        {
+          "code": "unclaimed",
+          "detail": null,
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": null,
+      "kind_from": null,
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "guide-notes is not under guide/",
+      "title_from": "heading"
+    },
+    "documentation/guide/advanced/deep.md": {
+      "anchors": [
+        "deep-the-longest-claim-wins"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "advanced",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Deep: the longest claim wins",
+      "title_from": "heading"
+    },
+    "documentation/guide/advanced/deeper/deepest.md": {
+      "anchors": [
+        "deeper-still"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "advanced",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Deeper still",
+      "title_from": "heading"
+    },
+    "documentation/guide/start.md": {
+      "anchors": [
+        "start"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "guide",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Start",
+      "title_from": "heading"
+    }
+  }
+}

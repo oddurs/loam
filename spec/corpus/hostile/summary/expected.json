@@ -1,0 +1,315 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/break-first.md": {
+      "anchors": [
+        "break-first"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Break first",
+      "title_from": "heading"
+    },
+    "docs/code-first.md": {
+      "anchors": [
+        "code-first"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Code first",
+      "title_from": "heading"
+    },
+    "docs/frontmatter-wins.md": {
+      "anchors": [
+        "frontmatter-wins"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "summary": "From frontmatter."
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "From frontmatter.",
+      "summary_from": "frontmatter",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Frontmatter wins",
+      "title_from": "heading"
+    },
+    "docs/heading-next.md": {
+      "anchors": [
+        "heading-next",
+        "background"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Heading next",
+      "title_from": "heading"
+    },
+    "docs/html-first.md": {
+      "anchors": [
+        "html-first"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "HTML first",
+      "title_from": "heading"
+    },
+    "docs/inline-markup.md": {
+      "anchors": [
+        "inline-markup"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "joined.md",
+          "fragment": null,
+          "line": 3,
+          "target": "docs/joined.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Kept **as written**, with `code` and [a link](joined.md).",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Inline markup",
+      "title_from": "heading"
+    },
+    "docs/interrupted.md": {
+      "anchors": [
+        "interrupted"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "A paragraph a list interrupts:",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Interrupted",
+      "title_from": "heading"
+    },
+    "docs/joined.md": {
+      "anchors": [
+        "joined"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "A summary that runs over three lines is joined with single spaces.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Joined",
+      "title_from": "heading"
+    },
+    "docs/list-first.md": {
+      "anchors": [
+        "list-first"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "List first",
+      "title_from": "heading"
+    },
+    "docs/no-title.md": {
+      "anchors": [
+        "then-a-heading"
+      ],
+      "findings": [
+        {
+          "code": "untitled",
+          "detail": null,
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "No heading at all, so this paragraph is the summary.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": null,
+      "title_from": null
+    },
+    "docs/quote-first.md": {
+      "anchors": [
+        "quote-first"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Quote first",
+      "title_from": "heading"
+    },
+    "docs/refdef.md": {
+      "anchors": [
+        "reference-definition"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "external",
+          "destination": "https://example.com",
+          "fragment": null,
+          "line": 3,
+          "target": null
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Reference definition",
+      "title_from": "heading"
+    },
+    "docs/setext.md": {
+      "anchors": [
+        "setext-title"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "The summary, after a setext title.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Setext title",
+      "title_from": "heading"
+    },
+    "docs/table-first.md": {
+      "anchors": [
+        "table-first"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Table first",
+      "title_from": "heading"
+    },
+    "docs/two-pictures.md": {
+      "anchors": [
+        "two-pictures"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "file",
+          "destination": "a.png",
+          "fragment": null,
+          "line": 3,
+          "target": "docs/a.png"
+        },
+        {
+          "class": "file",
+          "destination": "b.png",
+          "fragment": null,
+          "line": 5,
+          "target": "docs/b.png"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "The summary, after both.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Two pictures",
+      "title_from": "heading"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/fences.md": {
+      "anchors": [
+        "fences",
+        "a-heading-the-backtick-line-above-was-not-a-fence",
+        "visible"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Fences",
+      "title_from": "heading"
+    }
+  }
+}

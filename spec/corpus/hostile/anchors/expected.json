@@ -1,0 +1,306 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/anchors.md": {
+      "anchors": [
+        "anchors",
+        "hello-world",
+        "hello-world-1",
+        "hello-world-1-1",
+        "hello-world-2",
+        "setext-level-one",
+        "setext-level-two",
+        "café-résumé",
+        "café-decomposed",
+        "þórs-hammer--and-code",
+        "emph-and-under-and-snake_case_name-and-init",
+        "a--b-é",
+        "link-text-and-",
+        "c--c",
+        "100--done-",
+        "closing-hashes",
+        "html-tag",
+        "e_scaped--chars",
+        "über-日本語-١٢٣-ⓐ-",
+        "renamed-heading",
+        "old-name",
+        "explicit",
+        "single",
+        "both",
+        "over-two-lines"
+      ],
+      "findings": [
+        {
+          "code": "broken-link",
+          "detail": "x.png",
+          "line": 24
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#café-decomposed",
+          "line": 58
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#Hello-World",
+          "line": 62
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#not-a-heading-in-a-fence",
+          "line": 62
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#not-an-anchor-either",
+          "line": 62
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#in-a-code-span",
+          "line": 63
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#not-a-heading-in-a-quote",
+          "line": 63
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#not-this",
+          "line": 63
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "anchors.md",
+          "fragment": null,
+          "line": 24,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "file",
+          "destination": "x.png",
+          "fragment": null,
+          "line": 24,
+          "target": "docs/x.png"
+        },
+        {
+          "class": "page",
+          "destination": "#hello-world-2",
+          "fragment": "hello-world-2",
+          "line": 56,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#hello-world-1-1",
+          "fragment": "hello-world-1-1",
+          "line": 56,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#setext-level-one",
+          "fragment": "setext-level-one",
+          "line": 56,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#café-résumé",
+          "fragment": "café-résumé",
+          "line": 57,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#caf%C3%A9-r%C3%A9sum%C3%A9",
+          "fragment": "café-résumé",
+          "line": 57,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#café-decomposed",
+          "fragment": "café-decomposed",
+          "line": 57,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#café-decomposed",
+          "fragment": "café-decomposed",
+          "line": 58,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#þórs-hammer--and-code",
+          "fragment": "þórs-hammer--and-code",
+          "line": 58,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#emph-and-under-and-snake_case_name-and-init",
+          "fragment": "emph-and-under-and-snake_case_name-and-init",
+          "line": 59,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#a--b-é",
+          "fragment": "a--b-é",
+          "line": 59,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#link-text-and-",
+          "fragment": "link-text-and-",
+          "line": 59,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#c--c",
+          "fragment": "c--c",
+          "line": 60,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#100--done-",
+          "fragment": "100--done-",
+          "line": 60,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#closing-hashes",
+          "fragment": "closing-hashes",
+          "line": 60,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#html-tag",
+          "fragment": "html-tag",
+          "line": 60,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#e_scaped--chars",
+          "fragment": "e_scaped--chars",
+          "line": 61,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#über-日本語-١٢٣-ⓐ-",
+          "fragment": "über-日本語-١٢٣-ⓐ-",
+          "line": 61,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#explicit",
+          "fragment": "explicit",
+          "line": 61,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#single",
+          "fragment": "single",
+          "line": 61,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#both",
+          "fragment": "both",
+          "line": 61,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#Hello-World",
+          "fragment": "Hello-World",
+          "line": 62,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#not-a-heading-in-a-fence",
+          "fragment": "not-a-heading-in-a-fence",
+          "line": 62,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#not-an-anchor-either",
+          "fragment": "not-an-anchor-either",
+          "line": 62,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#not-a-heading-in-a-quote",
+          "fragment": "not-a-heading-in-a-quote",
+          "line": 63,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#over-two-lines",
+          "fragment": "over-two-lines",
+          "line": 63,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#old-name",
+          "fragment": "old-name",
+          "line": 63,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#renamed-heading",
+          "fragment": "renamed-heading",
+          "line": 63,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#not-this",
+          "fragment": "not-this",
+          "line": 63,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#in-a-code-span",
+          "fragment": "in-a-code-span",
+          "line": 63,
+          "target": "docs/anchors.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Anchors",
+      "title_from": "heading"
+    }
+  }
+}

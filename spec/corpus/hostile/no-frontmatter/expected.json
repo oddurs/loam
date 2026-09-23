@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/plain.md": {
+      "anchors": [
+        "a-plain-page",
+        "more"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Nothing but Markdown, the way most pages already are.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A plain page",
+      "title_from": "heading"
+    }
+  }
+}

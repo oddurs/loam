@@ -1,0 +1,86 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/old.md": {
+      "anchors": [
+        "old"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Old",
+      "title_from": "heading"
+    },
+    "docs/types.md": {
+      "anchors": [
+        "wrong-types-fall-back-to-inference"
+      ],
+      "findings": [
+        {
+          "code": "malformed-key",
+          "detail": "kind",
+          "line": 1
+        },
+        {
+          "code": "malformed-key",
+          "detail": "status",
+          "line": 1
+        },
+        {
+          "code": "malformed-key",
+          "detail": "summary",
+          "line": 1
+        },
+        {
+          "code": "malformed-key",
+          "detail": "superseded_by",
+          "line": 1
+        },
+        {
+          "code": "malformed-key",
+          "detail": "supersedes",
+          "line": 1
+        },
+        {
+          "code": "malformed-key",
+          "detail": "title",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "kind": [
+          "page"
+        ],
+        "status": true,
+        "summary": {
+          "a": "b"
+        },
+        "superseded_by": [
+          "old.md",
+          4
+        ],
+        "supersedes": 3,
+        "title": 2026
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "This is the summary.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Wrong types fall back to inference",
+      "title_from": "heading"
+    }
+  }
+}

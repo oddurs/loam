@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/break.md": {
+      "anchors": [],
+      "findings": [
+        {
+          "code": "untitled",
+          "detail": null,
+          "line": 1
+        }
+      ],
+      "frontmatter": {},
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "But the first `---` opened frontmatter.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": null,
+      "title_from": null
+    }
+  }
+}

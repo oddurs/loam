@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/empty.md": {
+      "anchors": [],
+      "findings": [
+        {
+          "code": "untitled",
+          "detail": null,
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": null,
+      "title_from": null
+    },
+    "docs/no-h1.md": {
+      "anchors": [
+        "only-a-second-level-heading"
+      ],
+      "findings": [
+        {
+          "code": "untitled",
+          "detail": null,
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": null,
+      "title_from": null
+    }
+  }
+}

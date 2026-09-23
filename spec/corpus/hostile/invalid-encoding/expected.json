@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/fine.md": {
+      "anchors": [
+        "fine"
+      ],
+      "findings": [
+        {
+          "code": "broken-anchor",
+          "detail": "latin1.md#café",
+          "line": 3
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "latin1.md#café",
+          "fragment": "café",
+          "line": 3,
+          "target": "docs/latin1.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "[latin1](latin1.md#café) is broken: a file that cannot be read has no anchors.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Fine",
+      "title_from": "heading"
+    },
+    "docs/latin1.md": {
+      "anchors": [],
+      "findings": [
+        {
+          "code": "invalid-encoding",
+          "detail": null,
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": null,
+      "title_from": null
+    }
+  }
+}

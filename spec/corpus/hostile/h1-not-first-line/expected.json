@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/before.md": {
+      "anchors": [
+        "title-after-it"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Title after it",
+      "title_from": "heading"
+    },
+    "docs/late.md": {
+      "anchors": [
+        "the-title-comes-later"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "external",
+          "destination": "https://example.com/badge.svg",
+          "fragment": null,
+          "line": 1,
+          "target": null
+        },
+        {
+          "class": "external",
+          "destination": "https://example.com",
+          "fragment": null,
+          "line": 1,
+          "target": null
+        },
+        {
+          "class": "file",
+          "destination": "logo.png",
+          "fragment": null,
+          "line": 1,
+          "target": "docs/logo.png"
+        },
+        {
+          "class": "file",
+          "destination": "shot.png",
+          "fragment": null,
+          "line": 5,
+          "target": "docs/shot.png"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "This paragraph is the summary: the picture above it is passed over.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "The title comes later",
+      "title_from": "heading"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/comments.md": {
+      "anchors": [
+        "comment-only-frontmatter"
+      ],
+      "findings": [],
+      "frontmatter": {},
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Comment-only frontmatter",
+      "title_from": "heading"
+    },
+    "docs/dots.md": {
+      "anchors": [
+        "heading"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "title": "Closed with dots"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "A body after `...`.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Closed with dots",
+      "title_from": "frontmatter"
+    },
+    "docs/empty.md": {
+      "anchors": [
+        "empty-frontmatter"
+      ],
+      "findings": [],
+      "frontmatter": {},
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Is an empty mapping.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Empty frontmatter",
+      "title_from": "heading"
+    }
+  }
+}

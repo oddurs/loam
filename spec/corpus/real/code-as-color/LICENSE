@@ -1,0 +1,56 @@
+This repository carries two different things under two different terms.
+
+────────────────────────────────────────────────────────────────────────
+THE ENGINE — everything under engine/, figures/ and outline/
+────────────────────────────────────────────────────────────────────────
+
+MIT License
+
+Copyright (c) 2026 Oddur Sigurdsson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+────────────────────────────────────────────────────────────────────────
+THE BOOK — everything under book/, docs/ and research/
+────────────────────────────────────────────────────────────────────────
+
+Copyright (c) 2026 Oddur Sigurdsson. All rights reserved.
+
+The prose, the outline and the distilled research notes are published here so
+that readers can follow the work, file corrections and rebuild the figures.
+That is not a grant of redistribution rights. You may read it, quote it with
+attribution as you would any published text, and open a pull request against
+it. You may not republish it in whole or in substantial part without written
+permission.
+
+This is the conservative default. If you would rather the text were openly
+licensed — CC BY-SA or CC BY-NC — that is a one-line change here, and worth
+making deliberately rather than by omission.
+
+────────────────────────────────────────────────────────────────────────
+THIRD-PARTY MATERIAL
+────────────────────────────────────────────────────────────────────────
+
+fonts/    ET Book, © 2015 Dmitry Krasny, Bonnie Scranton, Edward Tufte.
+          MIT licensed; see fonts/LICENSE.
+
+data/     Published colorimetric standards and datasets, retrieved from the
+          Colour & Vision Research Laboratory database and from Sharma, Wu &
+          Dalal's CIEDE2000 conformance set. Used for scholarly illustration;
+          see data/SOURCES.md for the provenance of each file.

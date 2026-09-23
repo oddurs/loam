@@ -1,0 +1,569 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/README.md": {
+      "anchors": [
+        "documentation",
+        "the-short-version"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "concept.md",
+          "fragment": null,
+          "line": 7,
+          "target": "docs/concept.md"
+        },
+        {
+          "class": "page",
+          "destination": "outline.md",
+          "fragment": null,
+          "line": 8,
+          "target": "docs/outline.md"
+        },
+        {
+          "class": "page",
+          "destination": "voice.md",
+          "fragment": null,
+          "line": 9,
+          "target": "docs/voice.md"
+        },
+        {
+          "class": "page",
+          "destination": "design.md",
+          "fragment": null,
+          "line": 10,
+          "target": "docs/design.md"
+        },
+        {
+          "class": "page",
+          "destination": "architecture.md",
+          "fragment": null,
+          "line": 11,
+          "target": "docs/architecture.md"
+        },
+        {
+          "class": "page",
+          "destination": "authoring.md",
+          "fragment": null,
+          "line": 12,
+          "target": "docs/authoring.md"
+        },
+        {
+          "class": "page",
+          "destination": "research.md",
+          "fragment": null,
+          "line": 13,
+          "target": "docs/research.md"
+        },
+        {
+          "class": "page",
+          "destination": "writing-process.md",
+          "fragment": null,
+          "line": 14,
+          "target": "docs/writing-process.md"
+        },
+        {
+          "class": "page",
+          "destination": "releases.md",
+          "fragment": null,
+          "line": 15,
+          "target": "docs/releases.md"
+        },
+        {
+          "class": "file",
+          "destination": "decisions/",
+          "fragment": null,
+          "line": 16,
+          "target": "docs/decisions"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Context for *Three Numbers* — the book, and the engine that builds it.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Documentation",
+      "title_from": "heading"
+    },
+    "docs/architecture.md": {
+      "anchors": [
+        "architecture",
+        "the-two-halves-of-the-theme",
+        "the-figure-pipeline",
+        "why-watch-mode-forks",
+        "the-outline-pipeline",
+        "generated-artefacts"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Node 24 executes the TypeScript directly — there is no transpiler and no bundler. The only external dependency is Typst.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Architecture",
+      "title_from": "heading"
+    },
+    "docs/authoring.md": {
+      "anchors": [
+        "authoring",
+        "a-chapter",
+        "status-and-when-the-engine-stops-touching-a-chapter",
+        "what-the-emitter-does-for-you",
+        "what-outline-check-catches",
+        "a-figure",
+        "a-source",
+        "the-loop"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "voice.md",
+          "fragment": null,
+          "line": 58,
+          "target": "docs/voice.md"
+        },
+        {
+          "class": "page",
+          "destination": "research.md",
+          "fragment": null,
+          "line": 118,
+          "target": "docs/research.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Authoring",
+      "title_from": "heading"
+    },
+    "docs/concept.md": {
+      "anchors": [
+        "concept",
+        "the-thesis",
+        "who-it-is-for",
+        "the-claim-we-are-allowed-to-make",
+        "what-the-book-is-not",
+        "the-commitment-that-is-infrastructure-not-marketing"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Concept",
+      "title_from": "heading"
+    },
+    "docs/decisions/0001-pdf-not-web.md": {
+      "anchors": [
+        "pdf-not-an-interactive-web-book",
+        "context",
+        "decision",
+        "consequences"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "decision",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "**Status:** accepted",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "PDF, not an interactive web book",
+      "title_from": "heading"
+    },
+    "docs/decisions/0002-typst-not-latex.md": {
+      "anchors": [
+        "typst-rather-than-latex",
+        "context",
+        "decision",
+        "consequences"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "decision",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "**Status:** accepted",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Typst rather than LaTeX",
+      "title_from": "heading"
+    },
+    "docs/decisions/0003-no-transpiler.md": {
+      "anchors": [
+        "node-24-runs-the-typescript-directly",
+        "context",
+        "decision",
+        "consequences"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "decision",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "**Status:** accepted",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Node 24 runs the TypeScript directly",
+      "title_from": "heading"
+    },
+    "docs/decisions/0004-figures-are-code.md": {
+      "anchors": [
+        "figures-are-code-not-assets",
+        "context",
+        "decision",
+        "consequences"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "decision",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "**Status:** accepted",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Figures are code, not assets",
+      "title_from": "heading"
+    },
+    "docs/decisions/0005-et-book.md": {
+      "anchors": [
+        "et-book-with-a-documented-fallback",
+        "context",
+        "decision",
+        "consequences"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "decision",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "**Status:** accepted",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "ET Book, with a documented fallback",
+      "title_from": "heading"
+    },
+    "docs/decisions/README.md": {
+      "anchors": [
+        "decisions"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "decision",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "0001-pdf-not-web.md",
+          "fragment": null,
+          "line": 6,
+          "target": "docs/decisions/0001-pdf-not-web.md"
+        },
+        {
+          "class": "page",
+          "destination": "0002-typst-not-latex.md",
+          "fragment": null,
+          "line": 7,
+          "target": "docs/decisions/0002-typst-not-latex.md"
+        },
+        {
+          "class": "page",
+          "destination": "0003-no-transpiler.md",
+          "fragment": null,
+          "line": 8,
+          "target": "docs/decisions/0003-no-transpiler.md"
+        },
+        {
+          "class": "page",
+          "destination": "0004-figures-are-code.md",
+          "fragment": null,
+          "line": 9,
+          "target": "docs/decisions/0004-figures-are-code.md"
+        },
+        {
+          "class": "page",
+          "destination": "0005-et-book.md",
+          "fragment": null,
+          "line": 10,
+          "target": "docs/decisions/0005-et-book.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Short records of the calls that would otherwise be re-litigated, each with what it cost. A decision with no stated consequence has not been made carefully.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Decisions",
+      "title_from": "heading"
+    },
+    "docs/design.md": {
+      "anchors": [
+        "design",
+        "page",
+        "type",
+        "diagram-grammar",
+        "the-series-palette",
+        "where-we-depart-from-tufte"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "The book is set in the manner of Edward Tufte's: a wide outer margin carrying notes and diagrams, figures placed beside the sentence that discusses them, and a diagram grammar that spends ink on data and nothing else.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Design",
+      "title_from": "heading"
+    },
+    "docs/outline.md": {
+      "anchors": [
+        "outline",
+        "part-i--light",
+        "1-light-as-a-signal",
+        "2-three-numbers",
+        "3-the-standard-observer",
+        "part-ii--spaces",
+        "4-chromaticity-and-its-shadows",
+        "5-building-an-rgb-space",
+        "6-the-transfer-function",
+        "7-perceptual-spaces-and-the-cylinders-on-top-of-them",
+        "part-iii--operations",
+        "8-mixing-light",
+        "9-distance",
+        "10-gamuts-clipping-and-mapping",
+        "11-adaptation-and-white",
+        "part-iv--pixels",
+        "12-quantisation-and-banding",
+        "13-dithering",
+        "14-palettes",
+        "15-ink",
+        "16-colour-in-the-rendering-pipeline",
+        "part-v--people",
+        "17-colour-vision-deficiency",
+        "18-contrast-legibility-and-the-standards",
+        "19-what-three-numbers-cannot-hold"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Generated by `node engine/cli.ts outline docs` from the per-chapter declarations in `outline/`. Each section carries the argument it will make, a word budget, the figures it needs and the sources it rests on — a heading with nothing under it is not an outline, and `check` enforces that.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Outline",
+      "title_from": "heading"
+    },
+    "docs/releases.md": {
+      "anchors": [
+        "releases",
+        "what-a-version-means",
+        "cutting-one",
+        "what-ci-then-does",
+        "the-version-stamp"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Releases",
+      "title_from": "heading"
+    },
+    "docs/research.md": {
+      "anchors": [
+        "research-and-citation",
+        "the-rules",
+        "what-cite-check-audits",
+        "evidence-sheets"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "One Markdown record per source in `research/sources/<key>.md`. Bibliographic data in frontmatter; in the body, the distilled claims the book is permitted to rely on.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Research and citation",
+      "title_from": "heading"
+    },
+    "docs/roadmap-intro.md": {
+      "anchors": [],
+      "findings": [
+        {
+          "code": "broken-link",
+          "detail": "cairn/items",
+          "line": 1
+        },
+        {
+          "code": "untitled",
+          "detail": null,
+          "line": 1
+        },
+        {
+          "code": "broken-link",
+          "detail": "docs/writing-process.md",
+          "line": 8
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "file",
+          "destination": "cairn/items",
+          "fragment": null,
+          "line": 1,
+          "target": "docs/cairn/items"
+        },
+        {
+          "class": "file",
+          "destination": "docs/writing-process.md",
+          "fragment": null,
+          "line": 8,
+          "target": "docs/docs/writing-process.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": null,
+      "title_from": null
+    },
+    "docs/voice.md": {
+      "anchors": [
+        "voice",
+        "the-register",
+        "tics-we-have-agreed-to-avoid",
+        "things-to-keep",
+        "citations"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Voice",
+      "title_from": "heading"
+    },
+    "docs/writing-process.md": {
+      "anchors": [
+        "the-writing-process",
+        "the-unit-of-work-is-a-chapter",
+        "five-stages-deliberately-separate",
+        "the-per-chapter-loop",
+        "1-research",
+        "2-figures-first",
+        "3-draft",
+        "4-revise",
+        "5-close-the-gate",
+        "what-the-machine-checks-and-what-it-cannot",
+        "the-passes",
+        "cadence",
+        "adding-work"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "file",
+          "destination": "../cairn/items",
+          "fragment": null,
+          "line": 7,
+          "target": "cairn/items"
+        },
+        {
+          "class": "file",
+          "destination": "../ROADMAP.md",
+          "fragment": null,
+          "line": 8,
+          "target": "ROADMAP.md"
+        },
+        {
+          "class": "page",
+          "destination": "voice.md",
+          "fragment": null,
+          "line": 111,
+          "target": "docs/voice.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Nineteen chapters written by improvisation will be nineteen different chapters. This is the loop each one goes through, why the stages are separate, and which gates are machine-checked and which are not.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "The writing process",
+      "title_from": "heading"
+    }
+  }
+}

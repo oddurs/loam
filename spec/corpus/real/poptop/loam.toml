@@ -1,0 +1,23 @@
+format = 1
+
+[links]
+cairn = "cairn/items"
+
+[[kind]]
+name = "guide"
+dir = "guide"
+
+[[kind]]
+name = "reference"
+dir = "reference"
+
+[[kind]]
+name = "design"
+dir = "design"
+
+[[kind]]
+name = "roadmap"
+dir = "roadmaps"
+
+[[kind]]
+name = "page"

@@ -2,12 +2,13 @@
 id: 25
 title: Version the format from the first release
 type: spec
-status: backlog
+status: done
 milestone: v0.0
 depends_on:
 - 23
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p1
 pillar:
 - format
@@ -33,5 +34,9 @@ Refuse an unknown format with a message naming both versions.
 
 ## Acceptance criteria
 
-- [ ] spec/README.md updated
-- [ ] A corpus case exercises it
+- [x] spec/README.md updated
+- [x] A corpus case exercises it
+
+## 2026-09-22
+
+Written as spec §9, with the list of what costs a number. Writing it found one thing the item did not foresee: 'unknown configuration keys are ignored' lets the configuration grow, but a key that changes which files are pages would then be silently ignored by an older reader. §9 now says such a key costs a number even though it is optional. Corpus: hostile/format-unknown, format-missing, format-as-string; spec/reader.py refuses with a message naming both versions.

@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/guide/in.md": {
+      "anchors": [
+        "claimed"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "guide",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Claimed",
+      "title_from": "heading"
+    },
+    "docs/loose.md": {
+      "anchors": [
+        "no-kind-claims-the-docs-root"
+      ],
+      "findings": [
+        {
+          "code": "unclaimed",
+          "detail": null,
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": null,
+      "kind_from": null,
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "No kind claims the docs root",
+      "title_from": "heading"
+    }
+  }
+}

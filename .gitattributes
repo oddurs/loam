@@ -6,3 +6,7 @@ ROADMAP.md merge=cairn
 # The driver unions its sequence fields, where two branches both meant what
 # they added, and leaves everything else to a person.
 cairn/items/*.md merge=cairn
+
+# The corpus pins bytes: CRLF endings, a byte order mark, a file that is not
+# UTF-8. Git must hand each file back exactly as it was committed.
+spec/corpus/** -text

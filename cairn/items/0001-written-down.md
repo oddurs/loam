@@ -3,9 +3,11 @@ id: 1
 key: v0.0
 title: Written down
 type: milestone
-status: backlog
+status: done
+assignee: Oddur Sigurdsson
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p0
 ---
 
@@ -24,6 +26,10 @@ its reasoning in this backlog.
 
 ## Acceptance criteria
 
-- [ ] Every decision and question in this milestone is closed
-- [ ] `spec/README.md` is version 1
-- [ ] The corpus holds the three real docs folders and passes the conformance script
+- [x] Every decision and question in this milestone is closed
+- [x] `spec/README.md` is version 1
+- [x] The corpus holds the three real docs folders and passes the conformance script
+
+## 2026-09-22
+
+Closed on 2026-09-22. Every decision and question is closed with its reasoning; spec/README.md is version 1; the corpus holds the three real folders and 29 hostile cases, and two readers written independently from the spec agree on all of it. Filed along the way for v0.1: 0060 (generated files in a docs folder), 0061 (move code-as-color's ADRs into cairn), 0062 (round-trip cases for the writer's musts).

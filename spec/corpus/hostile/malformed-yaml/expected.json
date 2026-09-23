@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/bad-yaml.md": {
+      "anchors": [
+        "the-heading-still-counts"
+      ],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "And so does this summary.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "The heading still counts",
+      "title_from": "heading"
+    },
+    "docs/not-a-mapping.md": {
+      "anchors": [
+        "a-sequence-is-not-frontmatter"
+      ],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not a mapping",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A sequence is not frontmatter",
+      "title_from": "heading"
+    },
+    "docs/scalar.md": {
+      "anchors": [
+        "neither-is-a-scalar"
+      ],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not a mapping",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Neither is a scalar",
+      "title_from": "heading"
+    }
+  }
+}

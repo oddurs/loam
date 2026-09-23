@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/bom-no-frontmatter.md": {
+      "anchors": [
+        "byte-order-mark-no-frontmatter"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Still a title.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Byte order mark, no frontmatter",
+      "title_from": "heading"
+    },
+    "docs/bom.md": {
+      "anchors": [
+        "byte-order-mark"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "status": "draft"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "draft",
+      "status_from": "frontmatter",
+      "summary": "The mark is not content.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Byte order mark",
+      "title_from": "heading"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/mixed.md": {
+      "anchors": [
+        "heading"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "title": "Mixed"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "First line second line.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Mixed",
+      "title_from": "frontmatter"
+    }
+  }
+}

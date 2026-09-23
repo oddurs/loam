@@ -1,0 +1,193 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/claims.md": {
+      "anchors": [
+        "claims-a-successor-that-does-not-claim-it"
+      ],
+      "findings": [
+        {
+          "code": "one-sided-supersession",
+          "detail": "new.md",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "status": "current",
+        "superseded_by": "new.md"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "frontmatter",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [
+        "new.md"
+      ],
+      "supersedes": [],
+      "title": "Claims a successor that does not claim it",
+      "title_from": "heading"
+    },
+    "docs/ghost-successor.md": {
+      "anchors": [
+        "superseded-by-a-page-that-does-not-exist"
+      ],
+      "findings": [
+        {
+          "code": "broken-supersession",
+          "detail": "nowhere.md",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "superseded_by": "nowhere.md"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "superseded",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [
+        "nowhere.md"
+      ],
+      "supersedes": [],
+      "title": "Superseded by a page that does not exist",
+      "title_from": "heading"
+    },
+    "docs/missing.md": {
+      "anchors": [
+        "names-a-page-that-is-not-there"
+      ],
+      "findings": [
+        {
+          "code": "broken-supersession",
+          "detail": "gone.md",
+          "line": 1
+        },
+        {
+          "code": "one-sided-supersession",
+          "detail": "/docs/new.md",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "supersedes": [
+          "gone.md",
+          "/docs/new.md"
+        ]
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [
+        "gone.md",
+        "/docs/new.md"
+      ],
+      "title": "Names a page that is not there",
+      "title_from": "heading"
+    },
+    "docs/new.md": {
+      "anchors": [
+        "new"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "supersedes": "old.md"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [
+        "old.md"
+      ],
+      "title": "New",
+      "title_from": "heading"
+    },
+    "docs/old.md": {
+      "anchors": [
+        "old"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "superseded_by": [
+          "new.md"
+        ]
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "superseded",
+      "status_from": "default",
+      "summary": "Status is inferred from superseded_by.",
+      "summary_from": "paragraph",
+      "superseded_by": [
+        "new.md"
+      ],
+      "supersedes": [],
+      "title": "Old",
+      "title_from": "heading"
+    },
+    "docs/one-sided.md": {
+      "anchors": [
+        "one-sided"
+      ],
+      "findings": [
+        {
+          "code": "one-sided-supersession",
+          "detail": "./sub/../unaware.md",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "supersedes": [
+          "./sub/../unaware.md"
+        ]
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [
+        "./sub/../unaware.md"
+      ],
+      "title": "One-sided",
+      "title_from": "heading"
+    },
+    "docs/unaware.md": {
+      "anchors": [
+        "unaware-it-was-replaced"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Unaware it was replaced",
+      "title_from": "heading"
+    }
+  }
+}

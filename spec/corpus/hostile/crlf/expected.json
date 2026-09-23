@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/crlf.md": {
+      "anchors": [
+        "crlf"
+      ],
+      "findings": [
+        {
+          "code": "broken-anchor",
+          "detail": "other.md#nowhere",
+          "line": 7
+        }
+      ],
+      "frontmatter": {
+        "summary": "Written on Windows."
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "other.md#other-page",
+          "fragment": "other-page",
+          "line": 7,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md#nowhere",
+          "fragment": "nowhere",
+          "line": 7,
+          "target": "docs/other.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Written on Windows.",
+      "summary_from": "frontmatter",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "CRLF",
+      "title_from": "heading"
+    },
+    "docs/other.md": {
+      "anchors": [
+        "other-page"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Text.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Other page",
+      "title_from": "heading"
+    }
+  }
+}

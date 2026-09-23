@@ -1,0 +1,323 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/a file.md": {
+      "anchors": [
+        "a-file-with-a-space"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A file with a space",
+      "title_from": "heading"
+    },
+    "docs/guide.md": {
+      "anchors": [
+        "links",
+        "heading-with-a-link"
+      ],
+      "findings": [
+        {
+          "code": "broken-anchor",
+          "detail": "other.md#no-such-section",
+          "line": 11
+        },
+        {
+          "code": "broken-link",
+          "detail": "missing.md",
+          "line": 11
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "#no-such-heading",
+          "line": 12
+        },
+        {
+          "code": "broken-anchor",
+          "detail": "/README.md#nowhere",
+          "line": 12
+        },
+        {
+          "code": "broken-link",
+          "detail": "OTHER.md",
+          "line": 12
+        },
+        {
+          "code": "broken-link",
+          "detail": "missing.png",
+          "line": 13
+        },
+        {
+          "code": "escapes-repository",
+          "detail": "../../outside.md",
+          "line": 13
+        },
+        {
+          "code": "broken-link",
+          "detail": "missing-image.png",
+          "line": 20
+        },
+        {
+          "code": "broken-link",
+          "detail": "missing-ref.md",
+          "line": 22
+        },
+        {
+          "code": "broken-link",
+          "detail": "missing-in-heading.md",
+          "line": 38
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "other.md",
+          "fragment": null,
+          "line": 3,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md#a-section",
+          "fragment": "a-section",
+          "line": 3,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "#links",
+          "fragment": "links",
+          "line": 3,
+          "target": "docs/guide.md"
+        },
+        {
+          "class": "file",
+          "destination": "sub/",
+          "fragment": null,
+          "line": 4,
+          "target": "docs/sub"
+        },
+        {
+          "class": "file",
+          "destination": "sub",
+          "fragment": null,
+          "line": 4,
+          "target": "docs/sub"
+        },
+        {
+          "class": "file",
+          "destination": "/README.md#install",
+          "fragment": "install",
+          "line": 4,
+          "target": "README.md"
+        },
+        {
+          "class": "file",
+          "destination": "../src/main.rs#L1",
+          "fragment": "L1",
+          "line": 5,
+          "target": "src/main.rs"
+        },
+        {
+          "class": "page",
+          "destination": "other.md?plain=1#a-section",
+          "fragment": "a-section",
+          "line": 5,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "a file.md",
+          "fragment": null,
+          "line": 6,
+          "target": "docs/a file.md"
+        },
+        {
+          "class": "page",
+          "destination": "a%20file.md",
+          "fragment": null,
+          "line": 6,
+          "target": "docs/a file.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md",
+          "fragment": null,
+          "line": 6,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md",
+          "fragment": null,
+          "line": 6,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "external",
+          "destination": "https://example.com/nope",
+          "fragment": null,
+          "line": 8,
+          "target": null
+        },
+        {
+          "class": "external",
+          "destination": "mailto:a@example.com",
+          "fragment": null,
+          "line": 8,
+          "target": null
+        },
+        {
+          "class": "external",
+          "destination": "//example.com/x",
+          "fragment": null,
+          "line": 9,
+          "target": null
+        },
+        {
+          "class": "external",
+          "destination": "cairn:72",
+          "fragment": null,
+          "line": 9,
+          "target": null
+        },
+        {
+          "class": "file",
+          "destination": "missing.md",
+          "fragment": null,
+          "line": 11,
+          "target": "docs/missing.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md#no-such-section",
+          "fragment": "no-such-section",
+          "line": 11,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "#no-such-heading",
+          "fragment": "no-such-heading",
+          "line": 12,
+          "target": "docs/guide.md"
+        },
+        {
+          "class": "file",
+          "destination": "OTHER.md",
+          "fragment": null,
+          "line": 12,
+          "target": "docs/OTHER.md"
+        },
+        {
+          "class": "file",
+          "destination": "/README.md#nowhere",
+          "fragment": "nowhere",
+          "line": 12,
+          "target": "README.md"
+        },
+        {
+          "class": "outside",
+          "destination": "../../outside.md",
+          "fragment": null,
+          "line": 13,
+          "target": null
+        },
+        {
+          "class": "file",
+          "destination": "missing.png",
+          "fragment": null,
+          "line": 13,
+          "target": "docs/missing.png"
+        },
+        {
+          "class": "page",
+          "destination": "other.md#",
+          "fragment": null,
+          "line": 15,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "file",
+          "destination": "missing-image.png",
+          "fragment": null,
+          "line": 20,
+          "target": "docs/missing-image.png"
+        },
+        {
+          "class": "page",
+          "destination": "other.md",
+          "fragment": null,
+          "line": 20,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "file",
+          "destination": "missing-ref.md",
+          "fragment": null,
+          "line": 22,
+          "target": "docs/missing-ref.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md#a-section",
+          "fragment": "a-section",
+          "line": 23,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md",
+          "fragment": null,
+          "line": 36,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "file",
+          "destination": "missing-in-heading.md",
+          "fragment": null,
+          "line": 38,
+          "target": "docs/missing-in-heading.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "Good: [page](other.md), [anchor](other.md#a-section), [self](#links), [directory](sub/), [directory without slash](sub), [root-relative](/README.md#install), [out of docs](../src/main.rs#L1), [query](other.md?plain=1#a-section), [spaces](<a file.md>), [percent](a%20file.md), [title](other.md \"Other\"), [padded](  other.md  ).",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Links",
+      "title_from": "heading"
+    },
+    "docs/other.md": {
+      "anchors": [
+        "other",
+        "a-section"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Other",
+      "title_from": "heading"
+    }
+  }
+}

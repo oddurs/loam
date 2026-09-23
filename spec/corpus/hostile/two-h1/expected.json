@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/two.md": {
+      "anchors": [
+        "first-title",
+        "second-title"
+      ],
+      "findings": [],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": "The summary.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "First title",
+      "title_from": "heading"
+    }
+  }
+}

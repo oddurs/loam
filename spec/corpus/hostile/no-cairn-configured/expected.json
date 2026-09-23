@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/cites.md": {
+      "anchors": [
+        "without-linkscairn"
+      ],
+      "findings": [
+        {
+          "code": "broken-link",
+          "detail": "../cairn/items/0072-old-title.md",
+          "line": 3
+        }
+      ],
+      "frontmatter": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "file",
+          "destination": "../cairn/items/0072-old-title.md",
+          "fragment": null,
+          "line": 3,
+          "target": "cairn/items/0072-old-title.md"
+        }
+      ],
+      "status": "current",
+      "status_from": "default",
+      "summary": "[0072](../cairn/items/0072-old-title.md) is an ordinary broken link.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Without links.cairn",
+      "title_from": "heading"
+    }
+  }
+}

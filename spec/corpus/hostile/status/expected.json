@@ -1,0 +1,112 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/current.md": {
+      "anchors": [
+        "current"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "status": "current"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "frontmatter",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Current",
+      "title_from": "heading"
+    },
+    "docs/done.md": {
+      "anchors": [
+        "done-is-not-a-page-status"
+      ],
+      "findings": [
+        {
+          "code": "unknown-status",
+          "detail": "done",
+          "line": 1
+        }
+      ],
+      "frontmatter": {
+        "status": "done"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "done",
+      "status_from": "frontmatter",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Done is not a page status",
+      "title_from": "heading"
+    },
+    "docs/draft.md": {
+      "anchors": [
+        "draft"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "status": "draft"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "draft",
+      "status_from": "frontmatter",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Draft",
+      "title_from": "heading"
+    },
+    "docs/null.md": {
+      "anchors": [
+        "null-is-absent"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "status": null,
+        "title": null
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Null is absent",
+      "title_from": "heading"
+    },
+    "docs/superseded.md": {
+      "anchors": [
+        "superseded-saying-nothing-about-by-what"
+      ],
+      "findings": [],
+      "frontmatter": {
+        "status": "superseded"
+      },
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "status": "superseded",
+      "status_from": "frontmatter",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Superseded, saying nothing about by what",
+      "title_from": "heading"
+    }
+  }
+}

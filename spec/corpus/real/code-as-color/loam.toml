@@ -1,0 +1,11 @@
+format = 1
+
+[links]
+cairn = "cairn/items"
+
+[[kind]]
+name = "decision"
+dir = "decisions"
+
+[[kind]]
+name = "page"
