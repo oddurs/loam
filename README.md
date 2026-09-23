@@ -95,12 +95,25 @@ Every command is in [Commands](docs/reference/commands.md).
 
 ## Install
 
+On Linux or macOS, the latest release:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/oddurs/loam/main/install.sh | sh
+```
+
+puts `loam` in `~/.local/bin` (`LOAM_DIR` to choose another, `LOAM_VERSION`
+for a release other than the latest), after checking it against its published
+checksum. In GitHub Actions, the [action](action.yml) installs it and runs the
+check in one step — see [Checking docs in CI](docs/guide/checking-docs-in-ci.md).
+
+From source, anywhere Rust 1.98 runs:
+
 ```sh
 cargo install --locked --git https://github.com/oddurs/loam
 ```
 
 The crate is `loam-md` — `loam` was taken on crates.io — and the command it
-installs is `loam`. It needs Rust 1.98.
+installs is `loam`.
 
 ## The format
 

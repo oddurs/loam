@@ -1,0 +1,46 @@
+name: loam
+description: Check a repository's docs with loam — broken links, malformed pages, a drifted index, stale pages.
+author: Oddur Sigurdsson
+branding:
+  icon: book-open
+  color: green
+
+inputs:
+  args:
+    description: >
+      What to run, as arguments to loam. Empty to only install it, for steps
+      of your own.
+    default: check --strict --render
+  version:
+    description: >
+      The release to install, as v0.3.0. By default, the release this action
+      was named at (`oddurs/loam@v0.3.0`), or the latest release when it was
+      named at a branch.
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Install loam
+      shell: bash
+      env:
+        LOAM_VERSION: ${{ inputs.version }}
+        ACTION_REF: ${{ github.action_ref }}
+      run: |
+        if [ -z "$LOAM_VERSION" ]; then
+          case "$ACTION_REF" in
+            v[0-9]*) LOAM_VERSION=$ACTION_REF ;;
+            *) LOAM_VERSION=latest ;;
+          esac
+        fi
+        export LOAM_VERSION
+        export LOAM_DIR="$RUNNER_TEMP/loam/bin"
+        sh "$GITHUB_ACTION_PATH/install.sh"
+        echo "$LOAM_DIR" >> "$GITHUB_PATH"
+    - name: loam ${{ inputs.args }}
+      if: inputs.args != ''
+      shell: bash
+      env:
+        ARGS: ${{ inputs.args }}
+      # Word-split on purpose: `args` is a command line.
+      run: loam $ARGS
