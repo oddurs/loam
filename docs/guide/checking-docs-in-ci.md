@@ -1,0 +1,39 @@
+---
+order: 3
+summary: One command that fails a build when a link breaks, a page cannot be read, or the index has drifted.
+---
+
+# Checking docs in CI
+
+One command fails a build when a link breaks, a page cannot be read, or the
+index has drifted from the pages:
+
+```sh
+loam check --strict --render
+```
+
+`--strict` fails on warnings as well as errors; a broken link is a warning,
+because on a working copy it is often a page not written yet. `--render` also
+fails when the index is not what `loam render` would write. Exit status is 0
+when nothing fails, 1 when something does, and 2 when the check could not run
+— no `loam.toml`, or one from a format this loam does not read.
+
+For a program rather than a log, `--json` prints every finding with its path,
+line, code, severity and message ([JSON output](../reference/json-output.md)).
+
+## Making a finding fatal, or quiet
+
+`loam.toml` can move any finding's severity:
+
+```toml
+[check.severity]
+unclaimed = "error"      # every page must be in a kind's directory
+untitled = "ignore"      # this folder has pages without headings, on purpose
+```
+
+The codes are listed in [Findings](../reference/findings.md).
+
+## loam's own CI
+
+This repository runs `make check`, which includes `loam check --strict
+--render` on these pages, beside the tests and the conformance corpus.

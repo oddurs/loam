@@ -1,0 +1,54 @@
+# loam.toml — how loam reads this repository's docs.
+#
+#   loam check     what is broken: links, anchors, frontmatter
+#   loam render    regenerate the index between its markers
+#   loam list      every page, its kind and its status
+#
+# The page format is https://github.com/oddurs/loam/blob/main/spec/README.md
+
+format = 1
+
+[docs]
+root = "docs"
+
+# A link into this directory is a reference to a cairn item, checked by its number.
+[links]
+cairn = "cairn/items"
+
+[index]
+# Relative to the docs root. loam writes only between the two marker lines.
+path = "README.md"
+
+[hooks]
+after-change = "loam render --quiet"
+
+# Kinds, in the order the index presents them. A page's kind is the one whose
+# directory holds it; a kind at "." takes whatever no other kind claims.
+
+[[kind]]
+name = "guide"
+dir = "guide"
+description = "How do I do this? A task, start to finish, with real output."
+
+[[kind]]
+name = "reference"
+dir = "reference"
+description = "What does this mean? Facts, tables and settings, checked against the code where they can be."
+
+[[kind]]
+name = "design"
+dir = "design"
+description = "Why is it like this? The shape of the thing, and the argument for it."
+template = """
+## What it is
+
+## Why it is this way
+
+## What it rules out
+"""
+
+# Whatever no other kind claims.
+[[kind]]
+name = "page"
+dir = "."
+title = "Other pages"

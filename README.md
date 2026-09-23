@@ -1,23 +1,14 @@
 # loam
 
-*Working name — see [`0020`](cairn/items/0020-settle-the-name.md).*
-
 A repository's written context — research, design, reference, guides — kept as
-Markdown under a schema, the way [cairn](https://github.com/oddurs/cairn) keeps
-its backlog.
+Markdown pages under a schema, the way [cairn](https://github.com/oddurs/cairn)
+keeps its backlog.
 
-No program is built yet. What exists is the format: [`spec/README.md`](spec/README.md)
-says what a page is, how its title and summary are read when nobody wrote them
-down, and which links are broken, precisely enough to implement a reader from.
-[`spec/reader.py`](spec/reader.py) is one, and [`spec/corpus`](spec/corpus)
-holds three real docs folders and the cases written to break it. The plan is in
-[`ROADMAP.md`](ROADMAP.md), and the arguments behind it are in `cairn/items`.
-
-```sh
-python3 spec/conformance.py     # the reader against the corpus
-python3 spec/shared.py          # the text shared with cairn's spec, still shared
-python3 spec/reader.py spec/corpus/real/poptop | less
-```
+Loam is the soil a project grows in. Here it is the `docs/` folder you already
+have: loam reads it as it is, generates the index you were keeping by hand,
+finds the link that broke last week, and moves a page without breaking the
+links to it. A plain Markdown file with a heading is already a page. Nothing has
+to be rewritten to adopt it.
 
 ## How it fits
 
@@ -27,9 +18,72 @@ python3 spec/reader.py spec/corpus/real/poptop | less
 | **loam** | knowledge: how it is now | a page at a path that is kept true | is this still true? |
 | **harrow** | a view onto cairn | — | what needs me? |
 
-A question is a cairn item, and its answer, if it outlives the question, is a
-page. A plan with steps is a milestone. A page cites the items that made it the
-way it is.
+**A cairn item records why something changed. A page says how it is now.** A
+question is an item; its answer, if it outlives the question, is a page. A plan
+with steps is a milestone. A decision is an item, and the design page states
+what was decided and links it. The reasoning is in
+[Pages, items and the line between them](docs/design/pages-and-items.md).
+
+## Quickstart
+
+On [poptop](https://github.com/oddurs/poptop), whose 37 pages have no
+frontmatter at all — real output, abridged:
+
+```console
+$ loam init
+docs/README.md                               page       "poptop documentation"
+docs/design/answering-questions.md           design     "The keys, and the questions they answer"
+…
+wrote loam.toml: 37 page(s), kinds guide (docs/guide/), reference (docs/reference/), design (docs/design/), roadmap (docs/roadmaps/), page (docs/)
+no page was changed.
+
+$ loam check
+ok: 37 page(s), 0 warning(s)
+
+$ loam render                      # after putting two marker lines in docs/README.md
+rendered docs/README.md
+
+$ loam mv docs/guide/whats-slow.md docs/guide/finding-what-is-slow.md
+moved docs/guide/whats-slow.md → docs/guide/finding-what-is-slow.md
+  rewrote 1 link(s) in README.md
+  rewrote 1 link(s) in docs/README.md
+  rewrote 1 link(s) in docs/guide/first-run.md
+```
+
+The whole walk-through is [Adopting a docs folder](docs/guide/adopting-a-docs-folder.md).
+
+## Commands
+
+| | |
+| --- | --- |
+| `loam init` | Adopt the docs folder here: write `loam.toml`, change no page |
+| `loam check` | Broken links and anchors, malformed frontmatter, unclaimed pages — each with a file and line |
+| `loam render` | Generate the index between its markers; `--check` for CI |
+| `loam new KIND TITLE` | A page where its kind lives, from the kind's template |
+| `loam list`, `show`, `search` | What is written, and where; all with `--json` |
+| `loam mv OLD NEW` | Move a page or a directory, and rewrite every link to it |
+| `loam supersede OLD NEW` | Record that one page replaces another, on both pages |
+
+Every command is in [Commands](docs/reference/commands.md).
+
+## Install
+
+```sh
+cargo install --locked --git https://github.com/oddurs/loam
+```
+
+The crate is `loam-md` — `loam` was taken on crates.io — and the command it
+installs is `loam`. It needs Rust 1.98.
+
+## The format
+
+A page is specified independently of this program, in
+[`spec/README.md`](spec/README.md): what a page is, how its title, summary, kind
+and status are read when nobody wrote them down, which links are broken, and
+what costs a format version. [`spec/reader.py`](spec/reader.py) is a second
+reader, written from the specification, and [`spec/corpus`](spec/corpus) holds
+three real docs folders and the cases written to break a reader. loam and the
+reader in `spec/` are held to the same corpus in CI.
 
 ## What loam is not
 
@@ -44,10 +98,16 @@ it knows as files and JSON. Nothing else. It will not:
 - **edit prose.** `$EDITOR` does that.
 - **use the network.** Not even to check an external link.
 
-## Start here
+## Status
+
+v0.1: the format is specified, and loam is useful on the three folders it was
+designed against, each adopted and checking clean. Next is v0.2, which asks
+the question the project exists for: has the code a page describes moved on
+without it? The plan is in [`ROADMAP.md`](ROADMAP.md).
 
 ```sh
 cairn list --view decide    # decisions and questions still open
 cairn next                  # what can start
-cairn roadmap
 ```
+
+MIT licensed. See [LICENSE](LICENSE).
