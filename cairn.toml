@@ -1,0 +1,297 @@
+# cairn.toml — the schema for loam's roadmap.
+#
+# loam is a working name (see the naming decision). The project keeps a
+# repository's written context — research, design, plans, reference — as
+# Markdown under a schema, the way cairn keeps its backlog.
+#
+# Planning here is argued before it is built, so the schema leans on the types
+# that carry reasoning: `decision`, `question` and `spec` come before the code
+# they decide.
+#
+#   cairn config          show the resolved schema
+#   cairn check           validate every item against it
+#   cairn list --view decide
+#                         what is waiting on a person to make up their mind
+
+format = 3
+
+[project]
+name = "loam"
+description = "A repository's written context — research, design, plans — as Markdown under a schema."
+dir = "cairn/items"
+id_width = 4
+default_type = "feature"
+default_status = "backlog"
+# url = "https://github.com/oddurs/loam/blob/main"   # once the repository is public
+
+# A new project has no closed items written before anything read their
+# criteria, so the gate costs nothing to turn on now and a great deal to turn
+# on later. Criteria live under one heading, so an example checkbox inside a
+# proposal is not mistaken for one.
+require_criteria = true
+criteria_section = "Acceptance criteria"
+
+# Agents claim work here too. A week untouched is worth seeing, never revoked.
+claim_stale_after = 7
+
+# ─── Item types ──────────────────────────────────────────────────────────────
+# Three kinds of work and three kinds of thinking. The thinking types come
+# first because in this project they come first.
+
+[[type]]
+name = "decision"
+icon = "◆"
+color = "magenta"
+description = "A choice with alternatives and costs. Open means undecided; done means decided."
+template = """
+## Context
+
+## Options
+
+## Recommendation
+
+## Consequences
+
+## Acceptance criteria
+
+- [ ] The decision is stated in one sentence under Recommendation
+- [ ] What it rules out is written down
+"""
+
+[[type]]
+name = "question"
+icon = "?"
+color = "yellow"
+description = "A spike: something that has to be found out before it can be decided or built."
+template = """
+## Question
+
+## Why it has to be answered first
+
+## Options
+
+## What would settle it
+
+## Answer
+
+<!-- Filled in when the spike closes. -->
+
+## Acceptance criteria
+
+- [ ] Answer written, with the evidence that settled it
+"""
+
+[[type]]
+name = "spec"
+icon = "§"
+color = "blue"
+description = "A change to the format specification. The spec changes before the format does."
+template = """
+## Current text
+
+## Proposed text
+
+## What a conforming reader has to do differently
+
+## Acceptance criteria
+
+- [ ] spec/README.md updated
+- [ ] A corpus case exercises it
+"""
+
+[[type]]
+name = "feature"
+icon = "+"
+color = "cyan"
+template = """
+## Problem
+
+## Proposal
+
+## Costs
+
+## Acceptance criteria
+
+- [ ]
+"""
+
+[[type]]
+name = "bug"
+icon = "!"
+color = "red"
+template = """
+## What happens
+
+## What should happen
+
+## Reproduction
+
+1.
+
+## Acceptance criteria
+
+- [ ] A test reproduces it and passes
+"""
+
+[[type]]
+name = "chore"
+icon = "~"
+color = "gray"
+template = """
+## What
+
+## Acceptance criteria
+
+- [ ]
+"""
+
+[[type]]
+name = "docs"
+icon = "*"
+color = "blue"
+template = """
+## What is missing
+
+## Acceptance criteria
+
+- [ ]
+"""
+
+# ─── Types that group work ───────────────────────────────────────────────────
+# A milestone is when; a pillar is what for. Work ships in exactly one
+# milestone and may serve several pillars — the staleness check is both
+# `freshness` and `agents`, because a stale page is how an agent gets misled.
+
+[[type]]
+name = "milestone"
+icon = "▲"
+description = "A release: what the program can honestly claim once it lands"
+groups = "one"
+inverse = "scheduled"
+
+[[type]]
+name = "pillar"
+icon = "▣"
+description = "A standing concern the program answers; items serve one or more"
+groups = "many"
+inverse = "serves"
+
+# ─── Statuses ────────────────────────────────────────────────────────────────
+# `planned` means argued and ready to build; `backlog` means filed. For a
+# decision, `done` reads as decided and `dropped` as no longer a question.
+
+[[status]]
+name = "backlog"
+category = "open"
+color = "gray"
+
+[[status]]
+name = "planned"
+category = "open"
+color = "blue"
+
+[[status]]
+name = "doing"
+label = "in progress"
+category = "active"
+color = "yellow"
+
+[[status]]
+name = "blocked"
+category = "active"
+color = "red"
+
+[[status]]
+name = "done"
+category = "done"
+color = "green"
+
+[[status]]
+name = "dropped"
+category = "dropped"
+color = "gray"
+board = false
+
+# ─── Fields ──────────────────────────────────────────────────────────────────
+
+[[field]]
+name = "priority"
+kind = "enum"
+values = ["p0", "p1", "p2", "p3"]
+default = "p2"
+column = true
+agent = "propose"         # the order of the plan is a person's call
+description = "p0 blocks the milestone it is in"
+
+[[field]]
+name = "effort"
+kind = "enum"
+values = ["s", "m", "l", "xl"]
+column = true
+description = "Rough size, not an estimate"
+
+# The thing loam itself will do for pages, done here for decisions: a decision
+# that replaces another says so, and the old one answers `superseded_by`.
+[[field]]
+name = "supersedes"
+kind = "ref"
+target = "*"
+cardinality = "many"
+by = "id"
+acyclic = true
+inverse = "superseded_by"
+description = "an earlier decision this one replaces"
+
+# ─── Saved views ─────────────────────────────────────────────────────────────
+
+[[view]]
+name = "decide"
+description = "Decisions and questions still open — what is waiting on a person"
+filter = "type=decision|question,category=open"
+sort = "priority,id"
+columns = ["id", "type", "title", "priority", "milestone"]
+
+[[view]]
+name = "now"
+description = "What is actually being worked on"
+filter = "category=active"
+sort = "priority,id"
+
+[[view]]
+name = "next"
+description = "Startable work, most important first"
+filter = "ready=true,category=open"
+sort = "priority,milestone,id"
+
+[[view]]
+name = "spec"
+description = "Changes to the format that have not landed"
+filter = "type=spec,category=open|active"
+sort = "id"
+
+[[view]]
+name = "triage"
+description = "Filed but not yet placed in a milestone"
+filter = "milestone=,category=open"
+columns = ["id", "type", "title", "created"]
+
+# ─── Hooks ───────────────────────────────────────────────────────────────────
+
+[hooks]
+after-create = "cairn render -q"
+after-change = "cairn render -q"
+after-remove = "cairn render -q"
+
+# ─── Rendered roadmap ────────────────────────────────────────────────────────
+
+[render]
+target = "ROADMAP.md"
+title = "Roadmap"
+group_by = "milestone"
+include = "category!=dropped"
+checkbox = true
+show_ids = true
+progress = true
+group_by_status = true
+link_items = false
+header = "doc/roadmap-intro.md"
