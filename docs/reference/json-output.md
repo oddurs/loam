@@ -8,6 +8,9 @@ covers:
   - src/cmd/check.rs
 order: 3
 summary: What `--json` prints for check, context, list, show, search and stale, for programs and agents.
+reviewed:
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  date: 2026-09-23
 ---
 
 # JSON output
@@ -54,7 +57,9 @@ Exit status is 1 when nothing matches, with `[]` printed.
 One object: the page's reading, exactly as the conformance corpus shapes it
 ([spec/corpus/README.md](../../spec/corpus/README.md#the-shape-of-a-reading)),
 plus `path`, `body`, the text after the frontmatter, and `freshness`, as one
-page of [`stale`](#stale) gives it, or `null` outside a git repository.
+page of [`stale`](#stale) gives it, or `null` outside a git repository. When
+the repository's history could not be read, `freshness` is `null` and
+`freshness_error` says why; otherwise `freshness_error` is `null`.
 
 ## `stale`
 
@@ -139,6 +144,7 @@ first page, with the body and the freshness cut short:
   ],
   "budget": 8192,
   "used": 8139,
+  "freshness_error": null,
   "pages": [
     {
       "body": "# The index\n\nA docs folder's `README.md` usually holds a tab…",
@@ -161,7 +167,8 @@ first page, with the body and the freshness cut short:
 ```
 
 `why` says how the page was found: `covers …`, `mentions …` or `linked from …`.
-`freshness` is a page of [`stale`](#stale), or `null` outside git. `included`
+`freshness` is a page of [`stale`](#stale), or `null` outside git, or when
+history could not be read, which `freshness_error` then explains. `included`
 is `full`, `summary` or `left out`, as the text form decided within the budget;
 `body` is given for `full` pages only. `used` is the size of the text form.
 

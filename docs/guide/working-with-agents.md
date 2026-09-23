@@ -6,6 +6,9 @@ covers:
   - src/cmd/context.rs
   - src/cmd/set.rs
   - src/agent.rs
+reviewed:
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  date: 2026-09-23
 ---
 
 # Working with agents
@@ -92,11 +95,12 @@ $ loam context src/fresh.rs
 Pages whose `covers` match the path come first, the most specific first; then
 pages that mention the path; then pages the covering pages link to. Each says
 whether it is still true. A stale page is flagged, never left out: being told a
-page is stale is itself context.
+page is stale is itself context. So is being told staleness could not be read,
+which is said rather than left for the pages to read as fresh.
 
 `--budget` caps the output in bytes — `8k` by default, about four bytes to a
-token. Pages go in whole while they fit, then as their summaries, and the rest
-are named as left out. [Claude Code hooks](claude-code-hooks.md) wires this in
+token, and never exceeded. Pages go in whole while they fit, then as their
+summaries, and the rest are named as left out. [Claude Code hooks](claude-code-hooks.md) wires this in
 so it arrives without being asked for.
 
 ## 5. Before it stops
@@ -108,7 +112,7 @@ docs/design/staleness.md   covers src/fresh.rs, changed and not yet committed
 ```
 
 names the pages covering what the agent has changed and not committed;
-`--since REV` does the same for the commits since `REV`. A page changed
+`--since REV` does the same for the commits since the branch left `REV`. A page changed
 alongside the code is left out. The exit status is 1 when there is something to
 reread, which is what a stop hook needs.
 

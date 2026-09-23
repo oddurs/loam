@@ -614,3 +614,275 @@ fn a_shallow_clone_says_so() {
         text(&out)
     );
 }
+
+// What follows was found by an agent told to make staleness wrong, or slow.
+
+fn page_covering(covers: &str) -> String {
+    format!("---\ncovers:\n  - {covers}\n---\n\n# P\n\nBody.\n")
+}
+
+#[test]
+fn a_project_in_a_subdirectory_of_its_repository() {
+    let repo = Repo::new();
+    std::fs::remove_file(repo.path("loam.toml")).unwrap();
+    repo.write("proj/loam.toml", CONFIG);
+    repo.write("proj/src/a.rs", "fn a() {}\n");
+    repo.write("proj/docs/p.md", &page_covering("src/a.rs"));
+    repo.commit("init");
+    repo.write("proj/src/a.rs", "fn a() { 1 }\n");
+    repo.commit("change");
+    let out = Command::new(env!("CARGO_BIN_EXE_loam"))
+        .args(["stale", "--json"])
+        .current_dir(repo.path("proj"))
+        .env_remove("CLAUDECODE")
+        .output()
+        .unwrap();
+    let v: Value = serde_json::from_slice(&out.stdout).unwrap();
+    assert_eq!(v["pages"][0]["state"], "stale", "{v}");
+    repo.write("proj/src/a.rs", "fn a() { 2 }\n");
+    let out = Command::new(env!("CARGO_BIN_EXE_loam"))
+        .args(["stale", "--working-tree"])
+        .current_dir(repo.path("proj"))
+        .env_remove("CLAUDECODE")
+        .output()
+        .unwrap();
+    assert!(
+        text(&out).contains("docs/p.md   covers src/a.rs"),
+        "{}",
+        text(&out)
+    );
+}
+
+#[test]
+fn a_page_covering_its_own_directory_is_not_stale_from_being_written() {
+    let repo = Repo::new();
+    repo.write("docs/p.md", &page_covering("docs"));
+    repo.commit("init");
+    let out = repo.loam(&["review", "docs/p.md"]);
+    assert!(!text(&out).contains("lock"), "{}", text(&out));
+    repo.commit("review");
+    assert_eq!(repo.state("docs/p.md"), "fresh");
+    repo.write("docs/other.md", "# Other\n");
+    repo.commit("another page");
+    assert_eq!(repo.state("docs/p.md"), "stale", "other pages still count");
+}
+
+#[test]
+fn an_edit_before_the_latest_change_is_not_an_update() {
+    let repo = Repo::new();
+    repo.write("src/a.rs", "fn a() {}\n");
+    repo.write("docs/p.md", &page_covering("src"));
+    repo.commit("init");
+    assert_eq!(code(&repo.loam(&["review", "docs/p.md"])), 0);
+    repo.commit("review");
+    repo.write("src/a.rs", "fn a() { 1 }\n");
+    repo.commit("a small change");
+    let page = repo.read("docs/p.md").replace("Body", "The body");
+    repo.write("docs/p.md", &page);
+    repo.commit("a typo");
+    assert_eq!(
+        repo.state("docs/p.md"),
+        "updating",
+        "edited after the change"
+    );
+    repo.write("src/b.rs", "fn b() {}\n".repeat(50).as_str());
+    repo.commit("a large change");
+    assert_eq!(
+        repo.state("docs/p.md"),
+        "stale",
+        "the typo answers nothing newer"
+    );
+}
+
+#[test]
+fn paths_git_would_quote_are_read() {
+    let repo = Repo::new();
+    for (i, name) in ["q\"x.rs", "b\\s.rs", "tab\tx.rs"].iter().enumerate() {
+        repo.write(&format!("src/{name}"), "x\n");
+        let covers = format!(
+            "\"src/{}\"",
+            name.replace('\\', "\\\\")
+                .replace('"', "\\\"")
+                .replace('\t', "\\t")
+        );
+        repo.write(&format!("docs/p{i}.md"), &page_covering(&covers));
+    }
+    repo.commit("init");
+    for name in ["q\"x.rs", "b\\s.rs", "tab\tx.rs"] {
+        repo.write(&format!("src/{name}"), "y\n");
+    }
+    repo.commit("change");
+    for i in 0..3 {
+        assert_eq!(repo.state(&format!("docs/p{i}.md")), "stale", "p{i}");
+    }
+}
+
+#[test]
+fn a_pattern_leaving_the_repository_spoils_nothing_else() {
+    let repo = Repo::new();
+    repo.write("src/a.rs", "fn a() {}\n");
+    repo.write("docs/a.md", &page_covering("src"));
+    repo.write("docs/bad.md", &page_covering("../outside"));
+    repo.commit("init");
+    repo.write("src/a.rs", "fn a() { 1 }\n");
+    repo.commit("change");
+    assert_eq!(repo.state("docs/a.md"), "stale");
+    let out = repo.loam(&["check"]);
+    assert!(
+        text(&out).contains("which leaves the repository"),
+        "{}",
+        text(&out)
+    );
+    let out = repo.loam(&["context", "src/a.rs"]);
+    assert!(text(&out).contains("STALE"), "{}", text(&out));
+}
+
+#[test]
+fn moving_a_page_does_not_make_it_fresh() {
+    let repo = Repo::new();
+    repo.write("src/a.rs", "fn a() {}\n");
+    repo.write("docs/p.md", &page_covering("src"));
+    repo.commit("init");
+    repo.write("src/a.rs", "fn a() { 1 }\n");
+    repo.commit("change");
+    assert_eq!(repo.state("docs/p.md"), "stale");
+    repo.git(&["mv", "docs/p.md", "docs/q.md"]);
+    repo.commit("move");
+    assert_eq!(repo.state("docs/q.md"), "stale");
+}
+
+#[test]
+fn what_a_merge_itself_changed_counts() {
+    let repo = Repo::new();
+    repo.write("src/a.rs", "fn a() {}\n");
+    repo.write("other.txt", "one\n");
+    repo.write("docs/p.md", &page_covering("src"));
+    repo.commit("init");
+    assert_eq!(code(&repo.loam(&["review", "docs/p.md"])), 0);
+    repo.commit("review");
+    repo.git(&["checkout", "-q", "-b", "side"]);
+    repo.write("other.txt", "side\n");
+    repo.commit("side");
+    repo.git(&["checkout", "-q", "main"]);
+    repo.write("other.txt", "main\n");
+    repo.commit("main");
+    let _ = Command::new("git")
+        .args(["merge", "-q", "side"])
+        .current_dir(repo.dir.path())
+        .output();
+    repo.write("other.txt", "resolved\n");
+    repo.write("src/a.rs", "fn a() { rewritten() }\n");
+    repo.commit("merge, rewriting src/a.rs as well");
+    assert_eq!(repo.state("docs/p.md"), "stale");
+}
+
+#[test]
+fn since_counts_from_where_the_branches_parted() {
+    let repo = Repo::new();
+    repo.write("src/a.rs", "a\n");
+    repo.write("src/b.rs", "b\n");
+    repo.write("docs/a.md", &page_covering("src/a.rs"));
+    repo.write("docs/b.md", &page_covering("src/b.rs"));
+    repo.commit("init");
+    repo.git(&["checkout", "-q", "-b", "feat"]);
+    repo.write("src/a.rs", "a2\n");
+    repo.commit("feat");
+    repo.git(&["checkout", "-q", "main"]);
+    repo.write("src/b.rs", "b2\n");
+    repo.commit("main moved");
+    repo.git(&["checkout", "-q", "feat"]);
+    let t = text(&repo.loam(&["stale", "--since", "main"]));
+    assert!(t.contains("docs/a.md"), "{t}");
+    assert!(
+        !t.contains("docs/b.md"),
+        "main's own change is not this branch's: {t}"
+    );
+}
+
+#[test]
+fn which_page_was_edited_decides_which_is_being_updated() {
+    for edited in ["a", "b"] {
+        let repo = Repo::new();
+        repo.write("src/x.rs", "x\n");
+        repo.write("docs/a.md", &page_covering("src"));
+        repo.write("docs/b.md", &page_covering("src"));
+        repo.commit("init");
+        repo.write("src/x.rs", "y\n");
+        repo.write(
+            &format!("docs/{edited}.md"),
+            &page_covering("src").replace("Body", "Updated"),
+        );
+        repo.commit("code and one page");
+        let other = if edited == "a" { "b" } else { "a" };
+        assert_eq!(
+            repo.state(&format!("docs/{edited}.md")),
+            "fresh",
+            "{edited}"
+        );
+        repo.write("src/x.rs", "z\n");
+        repo.write(
+            &format!("docs/{edited}.md"),
+            &page_covering("src").replace("Body", "Updated again"),
+        );
+        repo.commit("code and the same page");
+        assert_eq!(
+            repo.state(&format!("docs/{edited}.md")),
+            "fresh",
+            "{edited}"
+        );
+        assert_eq!(repo.state(&format!("docs/{other}.md")), "stale", "{other}");
+    }
+}
+
+#[test]
+fn a_small_budget_is_kept_and_still_names_what_was_left_out() {
+    let repo = Repo::new();
+    repo.write("src/a.rs", "a\n");
+    for name in ["one", "two", "three"] {
+        repo.write(&format!("docs/{name}.md"), &page_covering("src"));
+    }
+    repo.commit("init");
+    for budget in [200, 230, 260, 300, 500] {
+        let out = repo.loam(&["context", "src/a.rs", "--budget", &budget.to_string()]);
+        assert_eq!(code(&out), 0);
+        assert!(out.stdout.len() <= budget, "{budget}: {}", out.stdout.len());
+        let t = String::from_utf8_lossy(&out.stdout);
+        let shown = t.matches("\n## ").count();
+        assert!(
+            shown == 3 || t.contains("left out, over the budget"),
+            "{budget}: {t}"
+        );
+    }
+    assert_eq!(
+        code(&repo.loam(&["context", "src/a.rs", "--budget", "60"])),
+        2
+    );
+}
+
+#[test]
+fn an_empty_repository_has_nothing_stale() {
+    let repo = Repo::new();
+    repo.write("docs/p.md", &page_covering("src"));
+    let out = repo.loam(&["stale"]);
+    assert_eq!(code(&out), 0, "{}", text(&out));
+    assert!(text(&out).contains("no commits yet"), "{}", text(&out));
+    assert_eq!(code(&repo.loam(&["check", "--stale"])), 0);
+}
+
+#[test]
+fn judging_a_commit_before_the_review_sets_the_review_aside() {
+    let repo = Repo::new();
+    repo.write("src/a.rs", "a\n");
+    repo.write("docs/p.md", &page_covering("src"));
+    repo.commit("init");
+    repo.write("src/a.rs", "b\n");
+    let before = repo.commit("change");
+    repo.write("README", "later\n");
+    repo.commit("later");
+    assert_eq!(code(&repo.loam(&["review", "docs/p.md"])), 0);
+    repo.commit("review");
+    let t = text(&repo.loam(&["stale", "--at", &before]));
+    assert!(t.contains("reviewed after the commit being judged"), "{t}");
+    assert!(!t.contains("does not have"), "{t}");
+    assert!(t.contains("1 stale"), "{t}");
+}

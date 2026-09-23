@@ -4,6 +4,9 @@ covers:
   - src/cmd/check.rs
 order: 4
 summary: Every code `loam check` reports, how severe it is by default, and what to do about it.
+reviewed:
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  date: 2026-09-23
 ---
 
 # Findings
@@ -33,5 +36,5 @@ judgements. Every severity can be changed in
 | `successor-without-superseded` | warning | `superseded_by` names a successor, but the status says otherwise. | Make it `superseded`, or remove the successor. |
 | `link-to-superseded` | warning | A link to a superseded page, from anything but its successor. | Link to what replaced it. |
 | `stale-index` | error | The index is not what `loam render` would write (with `--render`). | Run `loam render`. |
-| `covers-nothing` | warning | A pattern in `covers` matches no file: the code it named was moved or deleted, and the page reads as fresh. | Point `covers` at where the code went, or remove it. |
+| `covers-nothing` | warning | A pattern in `covers` matches no file: the code it named was moved or deleted, or the pattern leaves the repository with `..`, and the page reads as fresh. | Point `covers` at where the code went, or remove it. |
 | `stale` | warning | The page's covered code changed since it was reviewed, or it has outlived its kind's `stale_after` (with `--stale`). | Read it against the code, fix what is wrong, and `loam review` it. |

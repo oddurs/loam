@@ -5,7 +5,7 @@ covers:
   - src/index.rs
 order: 1
 reviewed:
-  commit: f8a76459bd01ba4adc3eaf5a01976e20e5c75697
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
   date: 2026-09-23
 ---
 
@@ -88,10 +88,12 @@ $ loam check --strict --render
 ok: 37 page(s), 0 warning(s)
 ```
 
-Everything outside the markers is left as it was. Between them, loam writes a
-section per kind, in the order `loam.toml` declares them, and a row per page:
-its title, and its summary — the first paragraph under its title, unless its
-frontmatter gives a `summary`. [The index](../design/the-index.md) says why.
+Everything outside the markers is left as it was; a marker counts only alone
+on its line and outside code, so a sentence or an example that mentions one is
+safe. Between them, loam writes a section per kind, in the order `loam.toml`
+declares them, and a row per page: its title, and its summary — the opening
+sentences of the first paragraph under its title, as many as fit in 160 bytes,
+unless its frontmatter gives a `summary`, which is shown whole. [The index](../design/the-index.md) says why.
 
 To keep the hand-kept order and the hand-written notes, give each page an
 `order` and a `summary`:
@@ -136,3 +138,4 @@ moved docs/guide/whats-slow.md → docs/guide/finding-what-is-slow.md
 ## Review log
 
 - 2026-09-23, at f8a7645: init now writes [agents] status = draft; the walk-through's output and claims are unchanged
+- 2026-09-23, at a6213f6: the index's markers count only on their own lines outside code, and inferred summaries are cut to whole sentences within 160 bytes; both now said

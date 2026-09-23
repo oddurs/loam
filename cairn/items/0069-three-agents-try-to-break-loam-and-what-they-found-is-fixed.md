@@ -33,7 +33,7 @@ at fault, the spec says what is right and both readers agree on a corpus case.
 
 - [x] Every write-path finding has a test in tests/writes.rs or write.rs, and passes
 - [x] Every reader finding has a corpus case both readers agree on
-- [ ] Every freshness finding is fixed or recorded as its own item
+- [x] Every freshness finding is fixed or recorded as its own item
 - [ ] The stress corpus and the fuzzer show no disagreement on well-formed input
 
 ## 2026-09-23
@@ -43,3 +43,15 @@ Reader findings fixed together. Spec changes: footnote labels are not definition
 ## 2026-09-23
 
 Left alone: on YAML that is malformed anyway, yaml-rust2 and PyYAML sometimes disagree on whether it is 'not YAML' or 'not a mapping' (a tab before a comment, content after a comment inside a plain scalar). Both readers report malformed-frontmatter and read no frontmatter; only the detail differs. Checked that realistic versions of each agree.
+
+## 2026-09-23
+
+Freshness findings, all fixed but one left as designed: git.rs now reads history with -z and --relative (quoted paths; a project in a subdirectory of its repository), counts a merge by its remerge diff (what it changed beyond merging), and diffs --since from the merge base. fresh.rs judges every page from one log over the union of their pathspecs, from the octopus merge base of their baselines, and assigns commits per page with an in-memory ancestry walk of rev-list --parents; page history is one log of the docs dir with -M --raw, followed through renames, and bodies come from one cat-file --batch. A page's own file never counts against it. 'Being updated' now needs an edit in or after the newest covered change. show and context judge only the pages they print and say when history could not be read. context counts its header, keeps back room for the left-out note only when something is left out, and refuses budgets under 200. An empty repository is nothing stale, with a note; --at before a review sets it aside, with a note. Timings on the reviewer's repositories: stale 5.9s -> 0.26s (5000 commits, 60 pages); show 49s -> 0.21s (200 pages); cairn 6.9s -> 0.43s. Same verdicts on all three before and after.
+
+## 2026-09-23
+
+Left as designed: 'context docs/q.md' does not list q.md itself. The caller has the page open; context is the pages around a file, and a page covering docs/ still appears.
+
+## 2026-09-23
+
+Found while testing the fixes: the write lock sat in the docs root, so review (which asks git for uncommitted files while holding it) saw .loam.lock as an uncommitted change, and a user's git status could show it mid-command. It now lives in the git directory, falling back to the docs root only without git.

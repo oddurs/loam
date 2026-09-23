@@ -5,6 +5,9 @@ covers:
   - src/cmd/stale.rs
   - src/cmd/review.rs
   - src/fresh.rs
+reviewed:
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  date: 2026-09-23
 ---
 
 # Keeping pages true
@@ -67,11 +70,11 @@ Pages are ordered by how much their code changed, not by how long ago. A page
 with no `covers` is *unknown*, never *fresh*: loam has nothing to judge it by,
 and saying nothing would be a claim. A page that has never been reviewed is
 compared from the last commit that changed what it says — a change to its
-frontmatter alone does not count. `--json` gives the same for a program.
+frontmatter alone does not count, and nor does moving it. `--json` gives the same for a program.
 
 Before committing, `loam stale --working-tree` asks a narrower question —
 which pages cover what you have just changed — and `--since REV` asks it of the
-commits since `REV`. That is the list to work through before you stop; an
+commits since your branch left `REV`. That is the list to work through before you stop; an
 agent's stop hook can ask it for you ([Claude Code hooks](claude-code-hooks.md)).
 
 ## 3. `loam review`
@@ -112,8 +115,9 @@ Actions as an annotation on the pull request. It exits 0: a stale page is not a
 broken build, and a check that fails for one gets turned off within the week.
 A project that wants the gate adds `--strict`.
 
-A page changed in the same pull request as its code is not reported — its
-author is plausibly updating it.
+A page changed in the same pull request as its code, or after it, is not
+reported — its author is plausibly updating it. A page changed only before the
+latest change to its code is.
 
 CI must fetch the whole history. A shallow clone — `actions/checkout`'s
 default — has none before its one commit, so every page looks freshly written

@@ -3,6 +3,9 @@ covers:
   - src/cmd/check.rs
 order: 4
 summary: One command that fails a build when a link breaks, a page cannot be read, or the index has drifted.
+reviewed:
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  date: 2026-09-23
 ---
 
 # Checking docs in CI

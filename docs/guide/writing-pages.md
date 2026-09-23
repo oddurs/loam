@@ -6,7 +6,7 @@ covers:
   - src/write.rs
 order: 2
 reviewed:
-  commit: 0dfdfc2d47308c0bb8935a2281e3bed9b95da1c3
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
   date: 2026-09-23
 ---
 
@@ -105,6 +105,11 @@ written back, so it cannot be reordered or requoted; a key loam sets is quoted
 only when it would otherwise read back as something else. Line endings, a byte
 order mark and every line loam was not asked to change are kept byte for byte.
 
+Two commands writing at once take turns. Each reads the pages only once it
+holds a lock — kept in the git directory, so it never shows as a change — and
+so one never writes back what it read before the other wrote.
+
 ## Review log
 
 - 2026-09-23, at 0dfdfc2: write.rs gained set_mapping for review; it keeps other fields under a key, so what the page promises about frontmatter still holds
+- 2026-09-23, at a6213f6: writes take turns under a lock in the git directory; said, with the rest still true after the write fixes

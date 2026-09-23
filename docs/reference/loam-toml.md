@@ -4,6 +4,9 @@ covers:
   - src/cmd/init.rs
 order: 2
 summary: Every key loam.toml can hold, and which of them a reader of the format must honour.
+reviewed:
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  date: 2026-09-23
 ---
 
 # loam.toml
@@ -55,6 +58,9 @@ title = "Other pages"
 | Key | | |
 | --- | --- | --- |
 | `root` | *format* | The docs root, relative to the repository. Default `docs`. |
+
+Paths here and in `[links]` and `[[kind]]` may be written `./docs`, `docs/` or
+`docs`: empty segments and `.` are ignored.
 
 ## `[links]`
 

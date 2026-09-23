@@ -123,6 +123,9 @@ pub fn message(f: &Finding) -> String {
             format!("link to `{d}`, which is superseded; link to what replaced it")
         }
         "stale-index" => "the index is not what `loam render` would write; run it".into(),
+        "covers-nothing" if d.split('/').any(|s| s == "..") => {
+            format!("covers `{d}`, which leaves the repository, so it matches nothing")
+        }
         "covers-nothing" => format!("covers `{d}`, which matches no file in the repository"),
         "stale" => format!("stale: {d}"),
         _ => f.message(),
@@ -216,6 +219,7 @@ fn stale(tree: &Tree) -> Result<(Located, Vec<String>)> {
         &crate::fresh::Options {
             at: None,
             today: None,
+            only: None,
         },
     )?;
     let mut out = Vec::new();

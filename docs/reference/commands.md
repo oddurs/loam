@@ -4,6 +4,9 @@ covers:
   - src/cmd
 order: 1
 summary: Every command, every option, and what each exit status means.
+reviewed:
+  commit: a6213f6f41f75d99ed3c7dd8d1d86e326ffab1c8
+  date: 2026-09-23
 ---
 
 # Commands
@@ -127,7 +130,7 @@ changed its body. Needs git.
 | `--all` | Also list the fresh, unknown and generated pages by name. |
 | `--at REV` | Judge as the repository was at `REV`, with the pages as they are now: for replaying history. |
 | `--working-tree` | Instead, the pages covering files with uncommitted changes, whatever their history: what to reread before stopping. |
-| `--since REV` | Instead, the pages covering files changed since `REV`. With `--working-tree`, both. |
+| `--since REV` | Instead, the pages covering files changed on this branch since it left `REV`, not counting what changed on `REV` meanwhile. With `--working-tree`, both. |
 | `--json` | Print [JSON](json-output.md#stale). |
 
 ## `review PAGE…`
@@ -155,12 +158,14 @@ a number.
 
 The pages that matter for these files: those whose `covers` match, most
 specific first; then those that mention a path; then those the covering pages
-link to — each with whether it is still true. Whole pages while they fit the
-budget, then their summaries, then the rest named as left out.
+link to — each with whether it is still true, or why that could not be read.
+Whole pages while they fit the budget, then their summaries, then the rest
+named as left out. Nothing printed goes over the budget, its first line
+included.
 
 | Option | |
 | --- | --- |
-| `--budget BYTES` | The most to print: `8000`, or `8k` for 8192. Default `8k`, about 2,000 tokens. |
+| `--budget BYTES` | The most to print: `8000`, or `8k` for 8192, and at least 200. Default `8k`, about 2,000 tokens. |
 | `--json` | Print [JSON](json-output.md#context). |
 
 ## `agent`

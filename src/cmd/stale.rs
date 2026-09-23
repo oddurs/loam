@@ -196,6 +196,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         &Options {
             at: args.at.as_deref(),
             today,
+            only: None,
         },
     )?;
     let count = |s: State| report.pages.iter().filter(|f| f.state == s).count();

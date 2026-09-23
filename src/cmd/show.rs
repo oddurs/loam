@@ -3,7 +3,10 @@
 // Copyright (c) 2026 Oddur Sigurdsson. MIT licensed; see LICENSE.
 
 use super::Ctx;
+use crate::fresh::Freshness;
+use crate::tree::Tree;
 use anyhow::{Result, bail};
+use std::collections::{HashMap, HashSet};
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -24,20 +27,8 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         );
     };
     // Whether it is still true, when there is a history to ask.
-    let freshness = crate::git::Git::open(&tree.config.root)
-        .ok()
-        .and_then(|git| {
-            let report = crate::fresh::assess(
-                &tree,
-                &git,
-                &crate::fresh::Options {
-                    at: None,
-                    today: None,
-                },
-            )
-            .ok()?;
-            report.pages.into_iter().find(|f| f.path == path)
-        });
+    let (mut freshness, trouble) = freshness(&tree, &HashSet::from([path.clone()]));
+    let freshness = freshness.remove(&path);
     if args.json {
         let mut v = crate::reading::page_json(page);
         v["path"] = serde_json::json!(page.path);
@@ -45,6 +36,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         v["freshness"] = freshness
             .as_ref()
             .map_or(serde_json::Value::Null, super::stale::freshness_json);
+        v["freshness_error"] = serde_json::json!(trouble);
         println!("{}", serde_json::to_string_pretty(&v)?);
         return Ok(0);
     }
@@ -97,6 +89,9 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             }
         };
         println!("    fresh  {state}");
+    }
+    if let Some(e) = &trouble {
+        println!("    fresh  could not be read: {e}");
     }
     if !page.covers.is_empty() {
         println!("   covers  {}", page.covers.join(", "));
@@ -156,4 +151,32 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         println!();
     }
     Ok(0)
+}
+
+/// Whether each of `only` is still true, and what went wrong if that could not
+/// be read. Not being in a git repository is not something going wrong: there
+/// is just no history to ask.
+pub fn freshness(
+    tree: &Tree,
+    only: &HashSet<String>,
+) -> (HashMap<String, Freshness>, Option<String>) {
+    let Ok(git) = crate::git::Git::open(&tree.config.root) else {
+        return (HashMap::new(), None);
+    };
+    let opts = crate::fresh::Options {
+        at: None,
+        today: None,
+        only: Some(only),
+    };
+    match crate::fresh::assess(tree, &git, &opts) {
+        Ok(report) => (
+            report
+                .pages
+                .into_iter()
+                .map(|f| (f.path.clone(), f))
+                .collect(),
+            None,
+        ),
+        Err(e) => (HashMap::new(), Some(format!("{e:#}"))),
+    }
 }

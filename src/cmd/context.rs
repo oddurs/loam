@@ -21,7 +21,7 @@ use crate::fresh::{Freshness, State};
 use crate::tree::{LinkClass, Page, Tree};
 use anyhow::{Result, bail};
 use serde_json::json;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -43,10 +43,17 @@ pub fn parse_budget(text: &str) -> Result<usize> {
         None => (t.as_str(), 1),
     };
     match n.parse::<usize>() {
-        Ok(v) if v > 0 => Ok(v * mult),
+        Ok(v) if v * mult >= MIN_BUDGET => Ok(v * mult),
+        Ok(_) => bail!(
+            "a budget under {MIN_BUDGET} bytes cannot hold a page's heading and the names of those left out"
+        ),
         _ => bail!("a budget is a number of bytes, as 8000 or 8k, not `{text}`"),
     }
 }
+
+/// The smallest budget worth printing: a header, a page's heading and
+/// summary, or a note naming what was left out.
+pub const MIN_BUDGET: usize = 200;
 
 pub struct Hit<'a> {
     pub page: &'a Page,
@@ -159,55 +166,77 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         .map(|p| ctx.repo_path(&tree.config, p))
         .collect::<Result<_>>()?;
     let hits = gather(&tree, &paths);
-    let freshness: HashMap<String, Freshness> = crate::git::Git::open(&tree.config.root)
-        .ok()
-        .and_then(|git| {
-            crate::fresh::assess(
-                &tree,
-                &git,
-                &crate::fresh::Options {
-                    at: None,
-                    today: None,
-                },
-            )
-            .ok()
-        })
-        .map(|r| r.pages.into_iter().map(|f| (f.path.clone(), f)).collect())
-        .unwrap_or_default();
+    // Whether each is still true, asked only of the pages found. Not being in
+    // a git repository is no error; failing to read one is said, since a page
+    // shown without its staleness would read as fresh.
+    let only: HashSet<String> = hits.iter().map(|h| h.page.path.clone()).collect();
+    let (freshness, trouble) = super::show::freshness(&tree, &only);
 
-    // Room kept for saying what was left out.
-    const TRAILER: usize = 160;
     let mut out = format!(
         "# loam context for {} (within {budget} bytes)\n",
         paths.join(", ")
     );
-    let mut included: Vec<(&Hit, &'static str)> = Vec::new();
+    if let Some(e) = &trouble {
+        out.push_str(&format!(
+            "(whether these pages are still true could not be read: {e})\n"
+        ));
+    }
+    if out.len() + 40 > budget {
+        bail!(
+            "the paths are too long to name within {budget} bytes; pass fewer, or a larger --budget"
+        );
+    }
+    let parts: Vec<(String, String)> = hits
+        .iter()
+        .map(|h| {
+            let p = h.page;
+            let title = p.title.as_deref().unwrap_or("(untitled)");
+            let head = format!(
+                "\n## {} — {}\n({}{})\n",
+                p.path,
+                title,
+                h.why,
+                freshness_note(freshness.get(&p.path))
+            );
+            let body = format!("{head}\n{}\n", p.body.trim());
+            let short = format!(
+                "{head}{}\n",
+                p.summary
+                    .as_deref()
+                    .map_or(String::new(), |s| format!("{s}\n"))
+            );
+            (body, short)
+        })
+        .collect();
+    // Fill the budget, keeping back `reserve` bytes for the note of what was
+    // left out: nothing when everything fits, and when something does not,
+    // room for the note however few names it then has space for.
+    let fill = |reserve: usize| {
+        let mut used = out.len();
+        let mut how: Vec<Option<&'static str>> = Vec::new();
+        for (body, short) in &parts {
+            if used + body.len() + reserve <= budget {
+                used += body.len();
+                how.push(Some("full"));
+            } else if used + short.len() + reserve <= budget {
+                used += short.len();
+                how.push(Some("summary"));
+            } else {
+                how.push(None);
+            }
+        }
+        how
+    };
+    let mut how = fill(0);
+    if how.iter().any(Option::is_none) {
+        how = fill(format!("\nleft out, over the budget ({}): …\n", hits.len()).len());
+    }
     let mut left: Vec<&Hit> = Vec::new();
-    for h in &hits {
-        let p = h.page;
-        let title = p.title.as_deref().unwrap_or("(untitled)");
-        let head = format!(
-            "\n## {} — {}\n({}{})\n",
-            p.path,
-            title,
-            h.why,
-            freshness_note(freshness.get(&p.path))
-        );
-        let body = format!("{head}\n{}\n", p.body.trim());
-        let short = format!(
-            "{head}{}\n",
-            p.summary
-                .as_deref()
-                .map_or(String::new(), |s| format!("{s}\n"))
-        );
-        if out.len() + body.len() + TRAILER <= budget {
-            out.push_str(&body);
-            included.push((h, "full"));
-        } else if out.len() + short.len() + TRAILER <= budget {
-            out.push_str(&short);
-            included.push((h, "summary"));
-        } else {
-            left.push(h);
+    for ((h, (body, short)), how) in hits.iter().zip(&parts).zip(&how) {
+        match how {
+            Some("full") => out.push_str(body),
+            Some(_) => out.push_str(short),
+            None => left.push(h),
         }
     }
     if hits.is_empty() {
@@ -215,9 +244,10 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         out.push_str("If one should, give it `covers` (`loam set <PAGE> covers+=<PATH>`).\n");
     } else if !left.is_empty() {
         let mut trailer = format!("\nleft out, over the budget ({}):", left.len());
-        for h in &left {
+        for (i, h) in left.iter().enumerate() {
             let next = format!(" {}", h.page.path);
-            if out.len() + trailer.len() + next.len() + 5 > budget {
+            let more = if i + 1 < left.len() { " …".len() } else { 0 };
+            if out.len() + trailer.len() + next.len() + more + 1 > budget {
                 trailer.push_str(" …");
                 break;
             }
@@ -226,23 +256,17 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         trailer.push('\n');
         out.push_str(&trailer);
     }
-    // Never past the budget, whatever the pages were.
-    if out.len() > budget {
-        let mut cut = budget;
-        while !out.is_char_boundary(cut) {
-            cut -= 1;
-        }
-        out.truncate(cut);
-    }
+    debug_assert!(out.len() <= budget || hits.is_empty());
 
     if args.json {
         let pages: Vec<_> = hits
             .iter()
             .map(|h| {
-                let how = included
+                let i = hits
                     .iter()
-                    .find(|(i, _)| std::ptr::eq(*i, h))
-                    .map_or("left out", |(_, how)| *how);
+                    .position(|o| std::ptr::eq(o, h))
+                    .expect("one of them");
+                let how = how[i].unwrap_or("left out");
                 json!({
                     "path": h.page.path,
                     "title": h.page.title,
@@ -254,7 +278,13 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
                 })
             })
             .collect();
-        let v = json!({ "paths": paths, "budget": budget, "used": out.len(), "pages": pages });
+        let v = json!({
+            "paths": paths,
+            "budget": budget,
+            "used": out.len(),
+            "freshness_error": trouble,
+            "pages": pages,
+        });
         println!("{}", serde_json::to_string_pretty(&v)?);
         return Ok(0);
     }

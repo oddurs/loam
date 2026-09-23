@@ -27,12 +27,41 @@ pub struct Lock {
     path: PathBuf,
 }
 
+/// The git directory of the work tree `root` is in: `.git`, or where a
+/// `.git` file points, as a worktree's does. Found without running git.
+fn git_dir(root: &Path) -> Option<PathBuf> {
+    let mut dir = root.to_path_buf();
+    loop {
+        let dot = dir.join(".git");
+        if dot.is_dir() {
+            return Some(dot);
+        }
+        if let Ok(text) = std::fs::read_to_string(&dot)
+            && let Some(target) = text.trim().strip_prefix("gitdir:")
+        {
+            let target = dir.join(target.trim());
+            return target.is_dir().then_some(target);
+        }
+        if !dir.pop() {
+            return None;
+        }
+    }
+}
+
 impl Lock {
-    /// Inside the docs root, where a dotfile is never a page (spec §7.2).
+    /// In the git directory, where no `git status` shows it and nothing
+    /// loam reads from history can mistake it for a change; without git, in
+    /// the docs root, where a dotfile is never a page (spec §7.2).
     pub fn acquire(config: &Config) -> Result<Lock> {
-        let dir = config.abs(&config.docs);
-        std::fs::create_dir_all(&dir).with_context(|| format!("creating {}", dir.display()))?;
-        let path = dir.join(".loam.lock");
+        let path = match git_dir(&config.root) {
+            Some(dir) => dir.join("loam.lock"),
+            None => {
+                let dir = config.abs(&config.docs);
+                std::fs::create_dir_all(&dir)
+                    .with_context(|| format!("creating {}", dir.display()))?;
+                dir.join(".loam.lock")
+            }
+        };
         let deadline = Instant::now() + ACQUIRE_TIMEOUT;
         loop {
             match std::fs::OpenOptions::new()

@@ -5,19 +5,22 @@
 /// A page's `covers`, compiled.
 #[derive(Clone, Debug, Default)]
 pub struct Covers {
-    include: Vec<Vec<String>>,
-    exclude: Vec<Vec<String>>,
+    /// `None` for a pattern that reaches out of the repository with `..`:
+    /// it matches nothing, and `loam check` says so.
+    include: Vec<Option<Vec<String>>>,
+    exclude: Vec<Option<Vec<String>>>,
     /// The patterns as written, for messages.
     pub patterns: Vec<String>,
 }
 
-fn segments(pattern: &str) -> Vec<String> {
-    pattern
+fn segments(pattern: &str) -> Option<Vec<String>> {
+    let segs: Vec<String> = pattern
         .trim_start_matches('/')
         .split('/')
         .filter(|s| !s.is_empty() && *s != ".")
         .map(str::to_string)
-        .collect()
+        .collect();
+    (!segs.iter().any(|s| s == "..")).then_some(segs)
 }
 
 impl Covers {
@@ -39,7 +42,7 @@ impl Covers {
     /// directory whose contents it covers. Exclusions are left to `covers`.
     pub fn pathspecs(&self) -> Vec<String> {
         let mut out = Vec::new();
-        for seg in &self.include {
+        for seg in self.include.iter().flatten() {
             let glob = seg
                 .iter()
                 .map(|s| s.replace('\\', "\\\\").replace('[', "\\["))
@@ -57,8 +60,8 @@ impl Covers {
 
     pub fn covers(&self, path: &str) -> bool {
         let parts: Vec<&str> = path.split('/').collect();
-        self.include.iter().any(|p| matches(p, &parts))
-            && !self.exclude.iter().any(|p| matches(p, &parts))
+        self.include.iter().flatten().any(|p| matches(p, &parts))
+            && !self.exclude.iter().flatten().any(|p| matches(p, &parts))
     }
 
     /// The including pattern, as written, that covers `path`, if any.
@@ -70,7 +73,7 @@ impl Covers {
         let includes = self.patterns.iter().filter(|p| !p.starts_with('!'));
         includes
             .zip(&self.include)
-            .find(|(_, seg)| matches(seg, &parts))
+            .find(|(_, seg)| seg.as_ref().is_some_and(|seg| matches(seg, &parts)))
             .map(|(p, _)| p.as_str())
     }
 
@@ -80,9 +83,11 @@ impl Covers {
         includes
             .zip(&self.include)
             .filter(|(_, seg)| {
-                !paths
-                    .iter()
-                    .any(|f| matches(seg, &f.split('/').collect::<Vec<_>>()))
+                !seg.as_ref().is_some_and(|seg| {
+                    paths
+                        .iter()
+                        .any(|f| matches(seg, &f.split('/').collect::<Vec<_>>()))
+                })
             })
             .map(|(p, _)| p.as_str())
             .collect()

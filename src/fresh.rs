@@ -27,6 +27,7 @@ use crate::covers::Covers;
 use crate::git::{Commit, Git};
 use crate::tree::{Page, Tree};
 use anyhow::Result;
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -125,12 +126,11 @@ pub fn today() -> String {
     chrono::Local::now().format("%Y-%m-%d").to_string()
 }
 
-/// A page's body at a commit: the text after its frontmatter. Frontmatter is
-/// where loam itself writes — a review, a summary, an order — and a commit that
-/// changes only that has not changed what the page says.
-fn body_at(git: &Git, rev: &str, path: &str) -> Option<String> {
-    let bytes = git.show(rev, path)?;
-    let text = String::from_utf8_lossy(&bytes).replace("\r\n", "\n");
+/// A page's body: the text after its frontmatter. Frontmatter is where loam
+/// itself writes — a review, a summary, an order — and a commit that changes
+/// only that has not changed what the page says.
+fn body_of(bytes: &[u8]) -> String {
+    let text = String::from_utf8_lossy(bytes).replace("\r\n", "\n");
     let text = text.strip_prefix('\u{feff}').unwrap_or(&text).to_string();
     let body = match crate::tree::split(&text) {
         Ok((_, body, _)) => body,
@@ -138,23 +138,66 @@ fn body_at(git: &Git, rev: &str, path: &str) -> Option<String> {
     };
     // Adding frontmatter to a page that had none leaves a blank line where the
     // page began; that is not a change to what it says.
-    Some(
-        body.trim_matches(|c: char| c == '\n' || c == ' ' || c == '\t')
-            .to_string(),
-    )
+    body.trim_matches(|c: char| c == '\n' || c == ' ' || c == '\t')
+        .to_string()
 }
 
-/// Whether `commit` changed what the page says, not only its frontmatter.
-fn changed_body(git: &Git, commit: &str, path: &str) -> bool {
-    let parent = format!("{commit}^");
-    body_at(git, commit, path) != body_at(git, &parent, path)
+/// What the docs directory's history says about each page: every commit
+/// that touched it, followed back through moves, and whether each changed
+/// what the page says. Read with one `git log` and one `git cat-file`.
+struct PageHistory<'a> {
+    git: &'a Git,
+    changes: Vec<crate::git::Change>,
+    bodies: RefCell<HashMap<String, Option<String>>>,
 }
 
-/// The last commit at or before `at` that changed the page's body.
-fn last_body_change(git: &Git, path: &str, at: &str) -> Option<(String, String)> {
-    git.path_history(path, at)
-        .into_iter()
-        .find(|(sha, _)| changed_body(git, sha, path))
+/// One commit that touched a page, under the name it had there.
+struct Touch {
+    sha: String,
+    date: String,
+    old_blob: String,
+    new_blob: String,
+}
+
+impl PageHistory<'_> {
+    fn body(&self, blob: &str) -> Option<String> {
+        if let Some(b) = self.bodies.borrow().get(blob) {
+            return b.clone();
+        }
+        let body = self.git.blob(blob).map(|b| body_of(&b));
+        self.bodies
+            .borrow_mut()
+            .insert(blob.to_string(), body.clone());
+        body
+    }
+
+    /// The commits that touched `path`, newest first, following it back
+    /// through every move, and stopping where it was created.
+    fn touches(&self, path: &str) -> Vec<Touch> {
+        let mut name = path.to_string();
+        let mut out = Vec::new();
+        for change in &self.changes {
+            let Some(e) = change.entries.iter().find(|e| e.path == name) else {
+                continue;
+            };
+            out.push(Touch {
+                sha: change.sha.clone(),
+                date: change.date.clone(),
+                old_blob: e.old_blob.clone(),
+                new_blob: e.new_blob.clone(),
+            });
+            match e.status {
+                'A' | 'D' => break,
+                'R' => name = e.old_path.clone(),
+                _ => {}
+            }
+        }
+        out
+    }
+
+    fn changed_body(&self, t: &Touch) -> bool {
+        self.body(&t.old_blob) != self.body(&t.new_blob)
+    }
 }
 
 pub struct Options<'a> {
@@ -162,32 +205,57 @@ pub struct Options<'a> {
     pub at: Option<&'a str>,
     /// Today, for ages; the revision's date when replaying.
     pub today: Option<String>,
+    /// Judge only these pages; `None` is every page.
+    pub only: Option<&'a HashSet<String>>,
+}
+
+/// Every commit in the range `graph` holds that is `from` or an ancestor of
+/// it. Outside the range, everything is an ancestor of `from` already.
+fn ancestors(graph: &HashMap<String, Vec<String>>, from: &str) -> HashSet<String> {
+    let mut seen = HashSet::new();
+    let mut stack = vec![from.to_string()];
+    while let Some(sha) = stack.pop() {
+        if let Some(parents) = graph.get(&sha)
+            && seen.insert(sha)
+        {
+            stack.extend(parents.iter().cloned());
+        }
+    }
+    seen
 }
 
 pub fn assess(tree: &Tree, git: &Git, opts: &Options) -> Result<Report> {
+    let wanted = |path: &str| opts.only.is_none_or(|o| o.contains(path));
     let at = match opts.at {
         Some(rev) => git
             .resolve(rev)
             .ok_or_else(|| anyhow::anyhow!("no commit called {rev}"))?,
         None => match git.head() {
             Some(h) => h,
-            None => anyhow::bail!("the repository has no commits yet, so nothing can have changed"),
+            None => return Ok(unborn(tree, &wanted)),
         },
     };
     let today = opts.today.clone().unwrap_or_else(today);
-    let last = git.last_changes(&at, &tree.config.docs)?;
+    let history = PageHistory {
+        git,
+        changes: git.history(&at, &tree.config.docs)?,
+        bodies: RefCell::new(HashMap::new()),
+    };
     let dirty: HashSet<String> = if opts.at.is_none() {
         git.uncommitted()?.into_iter().collect()
     } else {
         HashSet::new()
     };
 
-    let mut ranges: HashMap<(Option<String>, String), Vec<Commit>> = HashMap::new();
-    let mut moved = 0;
-    let mut dated = 0;
+    let mut notes = Notes::default();
     let mut pages = Vec::new();
+    // Pages judged against the code: each with its covers and baseline.
+    let mut judged: Vec<(Freshness, Covers, Vec<Touch>)> = Vec::new();
 
     for (path, page) in &tree.pages {
+        if !wanted(path) {
+            continue;
+        }
         let covers = Covers::new(&page.covers);
         let limit = page
             .kind
@@ -217,7 +285,8 @@ pub fn assess(tree: &Tree, git: &Git, opts: &Options) -> Result<Report> {
             continue;
         }
 
-        let baseline = baseline(git, page, &at, &last, &mut moved, &mut dated);
+        let touches = history.touches(path);
+        let baseline = baseline(git, page, opts, &at, &touches, &history, &mut notes);
         f.age = baseline
             .date
             .as_deref()
@@ -227,25 +296,65 @@ pub fn assess(tree: &Tree, git: &Git, opts: &Options) -> Result<Report> {
         {
             f.aged = Some(limit);
         }
-
-        let mut updating = false;
-        if !covers.is_empty() && baseline.how != How::New {
-            let specs = covers.pathspecs();
-            let key = (baseline.commit.clone(), specs.join("\0"));
-            if !ranges.contains_key(&key) {
-                // The page itself too, to see whether it changed alongside.
-                let mut paths = specs.clone();
-                paths.push(format!(":(literal){path}"));
-                ranges.insert(
-                    key.clone(),
-                    git.commits(baseline.commit.as_deref(), &at, &paths)?,
-                );
+        let new = baseline.how == How::New;
+        f.baseline = Some(baseline);
+        if covers.is_empty() || new {
+            if f.aged.is_some() {
+                f.state = if dirty.contains(path) {
+                    State::Updating
+                } else {
+                    State::Stale
+                };
             }
-            let range = &ranges[&key];
+            pages.push(f);
+        } else {
+            judged.push((f, covers, touches));
+        }
+    }
+
+    // One log for every judged page, over everything any of them covers, from
+    // where all their baselines meet; each page then takes its own share.
+    if !judged.is_empty() {
+        let bases: Vec<String> = judged
+            .iter()
+            .filter_map(|(f, ..)| f.baseline.as_ref()?.commit.clone())
+            .collect();
+        let mut revs = vec![at.clone()];
+        if bases.len() == judged.len()
+            && let Some(base) = git.merge_base(&bases)
+        {
+            revs.push(format!("^{base}"));
+        }
+        let mut specs: Vec<String> = judged.iter().flat_map(|(_, c, _)| c.pathspecs()).collect();
+        specs.sort();
+        specs.dedup();
+        // No pathspec at all would be every file: a page whose every pattern
+        // leaves the repository covers nothing.
+        let commits = if specs.is_empty() {
+            Vec::new()
+        } else {
+            git.commits(&revs, &specs)?
+        };
+        let graph = git.parents(&revs)?;
+        let mut before: HashMap<Option<String>, HashSet<String>> = HashMap::new();
+
+        for (mut f, covers, touches) in judged {
+            let base = f.baseline.as_ref().and_then(|b| b.commit.clone());
+            let old = before.entry(base.clone()).or_insert_with(|| {
+                base.as_deref()
+                    .map_or_else(HashSet::new, |b| ancestors(&graph, b))
+            });
+            let in_range = |sha: &str| graph.contains_key(sha) && !old.contains(sha);
             // Newest first, so the first subject seen for a pattern is its latest.
-            for commit in range {
+            for commit in commits.iter().filter(|c| in_range(&c.sha)) {
                 let mut per: Vec<(String, u64, u64)> = Vec::new();
-                for fc in commit.files.iter().filter(|fc| covers.covers(&fc.path)) {
+                // A page that covers the directory it is in does not go
+                // stale by being written.
+                let files = commit
+                    .files
+                    .iter()
+                    .filter(|fc| fc.path != f.path && covers.covers(&fc.path));
+                for fc in files {
                     let pattern = covers.which(&fc.path).unwrap_or("").to_string();
                     match per.iter_mut().find(|(p, _, _)| *p == pattern) {
                         Some(e) => {
@@ -280,50 +389,39 @@ pub fn assess(tree: &Tree, git: &Git, opts: &Options) -> Result<Report> {
             }
             f.patterns
                 .sort_by_key(|p| std::cmp::Reverse(p.added + p.removed));
-            // The page changed after the first change to what it covers: its
-            // author is plausibly updating it. A commit that only records a
-            // review comes before that change, so it does not count.
-            if let Some(oldest) = f.commits.last() {
-                let upto = range.iter().position(|c| c.sha == oldest.sha).unwrap_or(0);
-                updating = range[..=upto].iter().any(|c| {
-                    c.files.iter().any(|fc| fc.path == *path) && changed_body(git, &c.sha, path)
-                });
+            // The page's author is plausibly updating it when what it says
+            // changed in or after the newest change to what it covers. An
+            // edit made before that change does not answer it.
+            let updating = f.commits.first().is_some_and(|newest| {
+                let earlier = ancestors(&graph, &newest.sha);
+                touches.iter().any(|t| {
+                    in_range(&t.sha)
+                        && (t.sha == newest.sha || !earlier.contains(&t.sha))
+                        && history.changed_body(t)
+                })
+            });
+            if !f.commits.is_empty() || f.aged.is_some() {
+                f.state = if updating || dirty.contains(&f.path) {
+                    State::Updating
+                } else {
+                    State::Stale
+                };
             }
+            pages.push(f);
         }
-
-        if !f.commits.is_empty() || f.aged.is_some() {
-            f.state = if updating || dirty.contains(path) {
-                State::Updating
-            } else {
-                State::Stale
-            };
-        }
-        f.baseline = Some(baseline);
-        pages.push(f);
     }
 
-    let mut notes = Vec::new();
     // A shallow clone — CI's default — has no history before its first
     // commit, so every page looks as if it was written there, and nothing can
     // be stale. Silence would be a claim.
+    let mut notes = notes.into_vec();
     if git.is_shallow() {
-        notes.push(
+        notes.insert(
+            0,
             "this is a shallow clone, so history stops short and pages read as fresher than they are; \
              fetch the whole history (in GitHub Actions, `fetch-depth: 0` on actions/checkout)"
                 .to_string(),
         );
-    }
-    if moved > 0 {
-        notes.push(format!(
-            "{moved} page(s) were reviewed at a commit that is not on this branch — squashed or rebased away — \
-             and were compared from the commit that brought the review here"
-        ));
-    }
-    if dated > 0 {
-        notes.push(format!(
-            "{dated} page(s) were reviewed at a commit this repository does not have, \
-             and were compared from the last commit on or before the review's date"
-        ));
     }
     pages.sort_by(|a, b| {
         b.lines()
@@ -334,51 +432,117 @@ pub fn assess(tree: &Tree, git: &Git, opts: &Options) -> Result<Report> {
     Ok(Report { pages, notes })
 }
 
+/// A repository with no commits: nothing has changed since anything.
+fn unborn(tree: &Tree, wanted: &dyn Fn(&str) -> bool) -> Report {
+    let pages = tree
+        .pages
+        .iter()
+        .filter(|(path, _)| wanted(path))
+        .map(|(path, page)| Freshness {
+            path: path.clone(),
+            state: if page.generated.is_some() {
+                State::Generated
+            } else if page.covers.is_empty() {
+                State::Unknown
+            } else {
+                State::Fresh
+            },
+            baseline: None,
+            commits: Vec::new(),
+            added: 0,
+            removed: 0,
+            patterns: Vec::new(),
+            age: None,
+            aged: None,
+        })
+        .collect();
+    Report {
+        pages,
+        notes: vec!["the repository has no commits yet, so nothing can have changed".into()],
+    }
+}
+
+/// How many pages were compared from somewhere other than their reviewed
+/// commit, said once per run rather than once per page.
+#[derive(Default)]
+struct Notes {
+    moved: usize,
+    dated: usize,
+    later: usize,
+}
+
+impl Notes {
+    fn into_vec(self) -> Vec<String> {
+        let mut notes = Vec::new();
+        if self.moved > 0 {
+            notes.push(format!(
+                "{} page(s) were reviewed at a commit that is not on this branch — squashed or rebased away — \
+                 and were compared from the commit that brought the review here",
+                self.moved
+            ));
+        }
+        if self.dated > 0 {
+            notes.push(format!(
+                "{} page(s) were reviewed at a commit this repository does not have, \
+                 and were compared from the last commit on or before the review's date",
+                self.dated
+            ));
+        }
+        if self.later > 0 {
+            notes.push(format!(
+                "{} page(s) were reviewed after the commit being judged, so the review was set aside",
+                self.later
+            ));
+        }
+        notes
+    }
+}
+
 fn baseline(
     git: &Git,
     page: &Page,
+    opts: &Options,
     at: &str,
-    last: &HashMap<String, (String, String)>,
-    moved: &mut usize,
-    dated: &mut usize,
+    touches: &[Touch],
+    history: &PageHistory,
+    notes: &mut Notes,
 ) -> Baseline {
     if let Some(r) = &page.reviewed {
-        if let Some(sha) = git.resolve(&r.commit)
-            && git.is_ancestor(&sha, at)
-        {
-            return Baseline {
-                how: How::Reviewed,
-                commit: Some(sha),
-                date: Some(r.date.clone()),
-            };
+        let sha = git.resolve(&r.commit);
+        match &sha {
+            Some(sha) if git.is_ancestor(sha, at) => {
+                return Baseline {
+                    how: How::Reviewed,
+                    commit: Some(sha.clone()),
+                    date: Some(r.date.clone()),
+                };
+            }
+            // Judging an earlier commit than the review: as of then, there
+            // was no review.
+            Some(sha) if opts.at.is_some() && git.is_ancestor(at, sha) => notes.later += 1,
+            _ => {
+                if let Some(sha) = git.introduced(&r.commit, &page.path, at) {
+                    notes.moved += 1;
+                    return Baseline {
+                        how: How::Introduced,
+                        commit: Some(sha),
+                        date: Some(r.date.clone()),
+                    };
+                }
+                notes.dated += 1;
+                return Baseline {
+                    how: How::Dated,
+                    commit: git.commit_on_or_before(&r.date, at),
+                    date: Some(r.date.clone()),
+                };
+            }
         }
-        if let Some(sha) = git.introduced(&r.commit, &page.path, at) {
-            *moved += 1;
-            return Baseline {
-                how: How::Introduced,
-                commit: Some(sha),
-                date: Some(r.date.clone()),
-            };
-        }
-        *dated += 1;
-        return Baseline {
-            how: How::Dated,
-            commit: git.commit_on_or_before(&r.date, at),
-            date: Some(r.date.clone()),
-        };
     }
-    if !last.contains_key(&page.path) {
-        return Baseline {
-            how: How::New,
-            commit: None,
-            date: None,
-        };
-    }
-    match last_body_change(git, &page.path, at) {
-        Some((sha, date)) => Baseline {
+    match touches.iter().find(|t| history.changed_body(t)) {
+        Some(t) => Baseline {
             how: How::LastEdit,
-            commit: Some(sha),
-            date: Some(date),
+            commit: Some(t.sha.clone()),
+            date: Some(t.date.clone()),
         },
         None => Baseline {
             how: How::New,
