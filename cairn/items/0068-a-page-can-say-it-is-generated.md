@@ -2,10 +2,12 @@
 id: 68
 title: A page can say it is generated
 type: spec
-status: backlog
+status: done
 milestone: v0.2
+assignee: Oddur Sigurdsson
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p2
 effort: s
 ---
@@ -33,5 +35,9 @@ Nothing until staleness exists. A new optional key (spec §9).
 
 ## Acceptance criteria
 
-- [ ] spec/README.md updated
-- [ ] A corpus case exercises it
+- [x] spec/README.md updated
+- [x] A corpus case exercises it
+
+## 2026-09-23
+
+Folded into the same spec change as covers and reviewed: generated is a string saying what writes the page, and anything reporting staleness should leave such a page out. hostile/covers-and-reviewed has a case of each shape.

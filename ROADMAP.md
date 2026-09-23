@@ -64,21 +64,21 @@ loam replaces the hand-kept table in a `docs/README.md` and catches the link tha
 
 ## v0.2 — Knows when it is wrong
 
-`··········` 0% · 0 of 9 done
+`##########` 100% · 9 of 9 done
 
 A page can say what code it describes, and loam can say when that code has moved on without it.
 
-### backlog
+### done
 
-- [ ] `0038` What should a page say it covers? <sup>question · p0 · s</sup>
-- [ ] `0039` covers and reviewed in the format <sup>spec · p0 · s</sup>
-- [ ] `0040` Say which pages the code has moved out from under <sup>feature · p0 · l</sup>
-- [ ] `0041` review records that a page was read against the code as it is now <sup>feature · p0 · s</sup>
-- [ ] `0042` A squash or rebase must not make every page stale <sup>feature · p1 · m</sup>
-- [ ] `0043` Research decays by age, not by diff <sup>feature · p2 · s</sup>
-- [ ] `0044` A page that covers nothing that exists is itself suspect <sup>feature · p2 · s</sup>
-- [ ] `0045` Staleness in CI without failing every build <sup>feature · p1 · s</sup>
-- [ ] `0068` A page can say it is generated <sup>spec · p2 · s</sup>
+- [x] `0038` What should a page say it covers? <sup>question · p0 · s</sup>
+- [x] `0039` covers and reviewed in the format <sup>spec · p0 · s</sup>
+- [x] `0040` Say which pages the code has moved out from under <sup>feature · p0 · l</sup>
+- [x] `0041` review records that a page was read against the code as it is now <sup>feature · p0 · s</sup>
+- [x] `0042` A squash or rebase must not make every page stale <sup>feature · p1 · m</sup>
+- [x] `0043` Research decays by age, not by diff <sup>feature · p2 · s</sup>
+- [x] `0044` A page that covers nothing that exists is itself suspect <sup>feature · p2 · s</sup>
+- [x] `0045` Staleness in CI without failing every build <sup>feature · p1 · s</sup>
+- [x] `0068` A page can say it is generated <sup>spec · p2 · s</sup>
 
 ## v0.3 — Agents write into it
 

@@ -2,12 +2,13 @@
 id: 45
 title: Staleness in CI without failing every build
 type: feature
-status: backlog
+status: done
 milestone: v0.2
 depends_on:
 - 40
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p1
 pillar:
 - freshness
@@ -29,5 +30,9 @@ reported — the author is plausibly updating it.
 
 ## Acceptance criteria
 
-- [ ] Warnings annotate in GitHub Actions
-- [ ] A diff touching both code and page does not warn about that page
+- [x] Warnings annotate in GitHub Actions
+- [x] A diff touching both code and page does not warn about that page
+
+## 2026-09-23
+
+check --stale reports stale pages as warnings, exit 0, and --strict is the gate. In GitHub Actions every finding is also printed as a workflow command, ::warning file=…,line=…,title=loam CODE::message, with GitHub's escaping; the test checks the exact line. A page is left out when it changed after the first change to its code, or is changed in the working tree: its author is plausibly updating it. loam's own make check now runs check --stale.
