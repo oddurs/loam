@@ -111,6 +111,39 @@ pub fn write_atomic(path: &Path, contents: &[u8]) -> Result<()> {
     Ok(())
 }
 
+/// Write a file that must not exist yet: never replaces one, even one another
+/// program created a moment ago. The data goes to a temporary file, which is
+/// then hard-linked into place — an operation that fails if the name is taken.
+pub fn write_new(path: &Path, contents: &[u8]) -> Result<()> {
+    use std::io::Write;
+    let parent = path.parent().unwrap_or(Path::new("."));
+    std::fs::create_dir_all(parent).with_context(|| format!("creating {}", parent.display()))?;
+    let name = path
+        .file_name()
+        .map_or_else(|| "loam".into(), |n| n.to_string_lossy().into_owned());
+    let temp = parent.join(format!(".{name}.{}.new", std::process::id()));
+    let result = (|| -> Result<()> {
+        let mut f =
+            std::fs::File::create(&temp).with_context(|| format!("creating {}", temp.display()))?;
+        f.write_all(contents)
+            .with_context(|| format!("writing {}", temp.display()))?;
+        f.sync_all()
+            .with_context(|| format!("flushing {}", temp.display()))?;
+        std::fs::hard_link(&temp, path).map_err(|e| {
+            if e.kind() == std::io::ErrorKind::AlreadyExists {
+                anyhow::anyhow!(
+                    "{} already exists; loam new never overwrites a page",
+                    path.display()
+                )
+            } else {
+                anyhow::Error::from(e).context(format!("creating {}", path.display()))
+            }
+        })
+    })();
+    let _ = std::fs::remove_file(&temp);
+    result
+}
+
 // ─── A file as lines, keeping what ends them ─────────────────────────────────
 
 /// A text file split so it can be put back exactly: a byte order mark, and
@@ -248,40 +281,111 @@ fn key_lines(key: &str, value: &Value) -> Vec<String> {
     }
 }
 
-/// The lines a top-level key occupies inside the frontmatter: its own, and
-/// every following line that belongs to its value — indented, a block
-/// sequence entry at the margin, or blank inside such a value.
-fn key_extent(lines: &Lines, open: usize, close: usize, key: &str) -> Option<(usize, usize)> {
-    let starts = |l: &str| {
-        l.strip_prefix(key).is_some_and(|rest| {
-            rest.starts_with(':') && (rest.len() == 1 || rest[1..].starts_with([' ', '\t']))
-        })
-    };
-    let start = (open + 1..close).find(|&i| starts(&lines.lines[i].0))?;
-    let mut end = start + 1;
-    while end < close {
-        let l = &lines.lines[end].0;
-        let continues = l.starts_with([' ', '\t']) || l.starts_with("- ") || l == "-";
-        if continues {
-            end += 1;
-        } else if l.trim().is_empty() {
-            // Blank: part of the value only if the value continues after it.
-            let next = (end..close).find(|&j| !lines.lines[j].0.trim().is_empty());
-            match next {
-                Some(j) if lines.lines[j].0.starts_with([' ', '\t']) => end = j,
-                _ => break,
+fn indent_of(l: &str) -> usize {
+    l.len() - l.trim_start_matches([' ', '\t']).len()
+}
+
+fn is_comment_or_blank(l: &str) -> bool {
+    let t = l.trim();
+    t.is_empty() || t.starts_with('#')
+}
+
+/// The indent of the frontmatter's top-level keys: usually none, but a mapping
+/// indented as a whole is still a mapping.
+fn base_indent(lines: &Lines, open: usize, close: usize) -> usize {
+    (open + 1..close)
+        .map(|i| lines.lines[i].0.as_str())
+        .find(|l| !is_comment_or_blank(l))
+        .map_or(0, indent_of)
+}
+
+/// Whether `line`, at the base indent, begins `key`: written plain, in either
+/// kind of quotes, and with or without space before its colon.
+fn begins_key(line: &str, base: usize, key: &str) -> bool {
+    if indent_of(line) != base {
+        return false;
+    }
+    let rest = &line[base..];
+    let after = [key.to_string(), format!("\"{key}\""), format!("'{key}'")]
+        .iter()
+        .find_map(|k| rest.strip_prefix(k.as_str()))
+        .map(|r| r.trim_start_matches([' ', '\t']));
+    after.is_some_and(|r| r.starts_with(':') && (r.len() == 1 || r[1..].starts_with([' ', '\t'])))
+}
+
+/// The lines each top-level occurrence of a key occupies: its own, and every
+/// following line belonging to its value — more indented, a sequence entry at
+/// the key's own indent, or a blank or comment line with more of the value
+/// after it. A key written twice is legal YAML, and the last one is the one
+/// read, so the last is the one an edit must change.
+fn key_extents(lines: &Lines, open: usize, close: usize, key: &str) -> Vec<(usize, usize)> {
+    extents_in(lines, open + 1, close, base_indent(lines, open, close), key)
+}
+
+/// As `key_extents`, for the keys at indent `base` among lines `from..close`:
+/// the fields of a nested mapping, as well as the top level.
+fn extents_in(
+    lines: &Lines,
+    from: usize,
+    close: usize,
+    base: usize,
+    key: &str,
+) -> Vec<(usize, usize)> {
+    let mut out = Vec::new();
+    let mut i = from;
+    while i < close {
+        if !begins_key(&lines.lines[i].0, base, key) {
+            i += 1;
+            continue;
+        }
+        let start = i;
+        let mut end = start + 1;
+        while end < close {
+            let l = &lines.lines[end].0;
+            let entry = indent_of(l) == base
+                && (l[base..].starts_with("- ") || l[base..].trim_end() == "-");
+            if !is_comment_or_blank(l) && (indent_of(l) > base || entry) {
+                end += 1;
+                continue;
             }
-        } else {
+            if is_comment_or_blank(l) {
+                // Part of the value only if the value goes on after it.
+                let next = (end..close).find(|&j| !is_comment_or_blank(&lines.lines[j].0));
+                match next {
+                    Some(j)
+                        if indent_of(&lines.lines[j].0) > base
+                            || (indent_of(&lines.lines[j].0) == base
+                                && lines.lines[j].0[base..].starts_with("- ")) =>
+                    {
+                        end = j;
+                        continue;
+                    }
+                    _ => break,
+                }
+            }
             break;
         }
+        out.push((start, end));
+        i = end;
     }
-    Some((start, end))
+    out
+}
+
+fn key_extent(lines: &Lines, open: usize, close: usize, key: &str) -> Option<(usize, usize)> {
+    key_extents(lines, open, close, key).pop()
 }
 
 /// Set a top-level frontmatter key, replacing its lines where it already is
 /// and appending it otherwise. A page without frontmatter gains some.
 pub fn set_key(lines: &mut Lines, key: &str, value: &Value) {
-    let new = key_lines(key, value);
+    let base = lines
+        .frontmatter()
+        .map_or(0, |(o, c)| base_indent(lines, o, c));
+    let pad = " ".repeat(base);
+    let new: Vec<String> = key_lines(key, value)
+        .into_iter()
+        .map(|l| format!("{pad}{l}"))
+        .collect();
     match lines.frontmatter() {
         Some((open, close)) => match key_extent(lines, open, close, key) {
             Some((start, end)) => {
@@ -318,36 +422,55 @@ pub fn set_key(lines: &mut Lines, key: &str, value: &Value) {
 /// other fields already in it (spec §4.5). A key that is absent, or written
 /// in some other shape, is replaced by a block of just these fields.
 pub fn set_mapping(lines: &mut Lines, key: &str, fields: &[(&str, String)]) {
+    // The key's last occurrence, when it is written as a block: nothing after
+    // its colon but perhaps a comment.
     let block = lines.frontmatter().and_then(|(open, close)| {
         let (start, end) = key_extent(lines, open, close, key)?;
-        (lines.lines[start].0.trim_end() == format!("{key}:")).then_some((start, end))
+        let line = &lines.lines[start].0;
+        let after = line[line.find(':')? + 1..].trim();
+        (after.is_empty() || after.starts_with('#')).then_some((
+            start,
+            end,
+            base_indent(lines, open, close),
+        ))
     });
-    let Some((start, mut end)) = block else {
-        let mut new = vec![format!("{key}:")];
-        new.extend(fields.iter().map(|(k, v)| format!("  {k}: {}", scalar(v))));
+    let Some((start, mut end, base)) = block else {
+        let pad = " ".repeat(
+            lines
+                .frontmatter()
+                .map_or(0, |(o, c)| base_indent(lines, o, c)),
+        );
+        let mut new = vec![format!("{pad}{key}:")];
+        new.extend(
+            fields
+                .iter()
+                .map(|(k, v)| format!("{pad}  {k}: {}", scalar(v))),
+        );
         remove_key(lines, key);
-        match lines.frontmatter() {
-            Some((_, close)) => lines.insert(close, &new),
-            None => {
-                set_key(lines, key, &Value::Str(String::new()));
-                remove_key(lines, key);
-                let close = lines.frontmatter().map_or(1, |(_, c)| c);
-                lines.insert(close, &new);
-            }
+        if lines.frontmatter().is_none() {
+            set_key(lines, key, &Value::Str(String::new()));
+            remove_key(lines, key);
         }
+        let close = lines.frontmatter().map_or(1, |(_, c)| c);
+        lines.insert(close, &new);
         return;
     };
-    let indent = lines.lines[start + 1..end]
-        .iter()
-        .find(|(l, _)| !l.trim().is_empty())
-        .map_or("  ".to_string(), |(l, _)| {
-            l[..l.len() - l.trim_start().len()].to_string()
-        });
+    // The fields' indent, from the first line that is one — not a comment.
+    let indent = (start + 1..end)
+        .map(|i| lines.lines[i].0.as_str())
+        .find(|l| !is_comment_or_blank(l))
+        .map_or(base + 2, indent_of);
+    let pad = " ".repeat(indent);
     for (field, value) in fields {
-        let line = format!("{indent}{field}: {}", scalar(value));
-        let prefix = format!("{indent}{field}:");
-        match (start + 1..end).find(|&i| lines.lines[i].0.starts_with(&prefix)) {
-            Some(i) => lines.lines[i].0 = line,
+        let line = format!("{pad}{field}: {}", scalar(value));
+        match extents_in(lines, start + 1, end, indent, field).pop() {
+            // The field and any lines its value runs on to: a folded scalar.
+            Some((f, t)) => {
+                let eol = lines.lines[f].1;
+                lines.lines.drain(f..t);
+                lines.lines.insert(f, (line, eol));
+                end -= t - f - 1;
+            }
             None => {
                 lines.insert(end, &[line]);
                 end += 1;
@@ -358,16 +481,53 @@ pub fn set_mapping(lines: &mut Lines, key: &str, fields: &[(&str, String)]) {
 
 /// Remove a top-level key, if the frontmatter has it.
 pub fn remove_key(lines: &mut Lines, key: &str) {
-    if let Some((open, close)) = lines.frontmatter()
-        && let Some((start, end)) = key_extent(lines, open, close, key)
-    {
-        lines.lines.drain(start..end);
+    if let Some((open, close)) = lines.frontmatter() {
+        // Every occurrence, last first so earlier indices stay true.
+        for (start, end) in key_extents(lines, open, close, key).into_iter().rev() {
+            lines.lines.drain(start..end);
+        }
     }
 }
 
 /// The index of the first line after the frontmatter, or 0 without one.
 pub fn body_start(lines: &Lines) -> usize {
     lines.frontmatter().map_or(0, |(_, close)| close + 1)
+}
+
+// ─── Markers ─────────────────────────────────────────────────────────────────
+
+/// The lines holding a pair of marker comments, each alone on its line and
+/// outside code: a fenced example of the markers, or a sentence mentioning
+/// them, is not where generated text goes.
+pub fn markers(lines: &Lines, begin: &str, end: &str) -> Option<(usize, usize)> {
+    let text: Vec<&str> = lines.lines.iter().map(|(l, _)| l.as_str()).collect();
+    let code: std::collections::HashSet<usize> = crate::scan::blocks(&text.join("\n"), 1)
+        .into_iter()
+        .filter_map(|b| match b {
+            crate::scan::Block::Code { line } => Some(line - 1),
+            _ => None,
+        })
+        .collect();
+    let find = |m: &str, from: usize| {
+        (from..text.len()).find(|&i| !code.contains(&i) && text[i].trim() == m)
+    };
+    let b = find(begin, 0)?;
+    let e = find(end, b + 1)?;
+    Some((b, e))
+}
+
+/// Replace the lines from `begin` to `end`, inclusive, with `new`, each ended
+/// as the file prefers; the last keeps whatever ended the old last line.
+pub fn replace_lines(lines: &mut Lines, begin: usize, end: usize, new: &[String]) {
+    let eol = lines.eol();
+    let last = lines.lines[end].1;
+    lines.lines.drain(begin..=end);
+    for (i, l) in new.iter().enumerate() {
+        lines.lines.insert(begin + i, (l.clone(), eol));
+    }
+    if !new.is_empty() {
+        lines.lines[begin + new.len() - 1].1 = last;
+    }
 }
 
 // ─── Paths ───────────────────────────────────────────────────────────────────
@@ -505,6 +665,97 @@ mod tests {
         assert_eq!(
             l.render(),
             "---\nreviewed:\n  date: 2026-09-23\n---\n\n# T\n"
+        );
+    }
+
+    fn reads(text: &str, key: &str) -> Option<Yaml> {
+        let l = Lines::parse(text);
+        let (open, close) = l.frontmatter()?;
+        let front: Vec<String> = l.lines[open + 1..close]
+            .iter()
+            .map(|(t, _)| t.clone())
+            .collect();
+        let map = yaml::parse_mapping(&front.join("\n")).ok()?;
+        map.into_iter().find(|(k, _)| k == key).map(|(_, v)| v)
+    }
+
+    #[test]
+    fn a_comment_at_the_margin_inside_a_value_stays_inside_it() {
+        let mut l =
+            Lines::parse("---\ncovers:\n# the core\n  - src/a.rs\n  - src/b.rs\ntitle: T\n---\n");
+        set_key(&mut l, "covers", &Value::List(vec!["src/c.rs".into()]));
+        assert_eq!(l.render(), "---\ncovers:\n  - src/c.rs\ntitle: T\n---\n");
+    }
+
+    #[test]
+    fn a_key_written_twice_is_edited_where_yaml_reads_it() {
+        let mut l = Lines::parse("---\nstatus: draft\ntitle: A\nstatus: current\n---\n");
+        set_key(&mut l, "status", &Value::Str("superseded".into()));
+        assert_eq!(
+            reads(&l.render(), "status"),
+            Some(Yaml::Str("superseded".into()))
+        );
+        remove_key(&mut l, "status");
+        assert_eq!(l.render(), "---\ntitle: A\n---\n", "every occurrence goes");
+    }
+
+    #[test]
+    fn keys_in_other_styles_are_found() {
+        for (text, want) in [
+            (
+                "---\n\"status\": draft\n---\n",
+                "---\nstatus: current\n---\n",
+            ),
+            ("---\n'status': draft\n---\n", "---\nstatus: current\n---\n"),
+            ("---\nstatus : draft\n---\n", "---\nstatus: current\n---\n"),
+            (
+                "---\n  title: A\n  status: draft\n---\n",
+                "---\n  title: A\n  status: current\n---\n",
+            ),
+        ] {
+            let mut l = Lines::parse(text);
+            set_key(&mut l, "status", &Value::Str("current".into()));
+            assert_eq!(l.render(), want, "{text:?}");
+            assert_eq!(
+                reads(&l.render(), "status"),
+                Some(Yaml::Str("current".into()))
+            );
+        }
+    }
+
+    #[test]
+    fn set_mapping_survives_comments_folded_values_and_trailing_comments() {
+        // A folded commit: the whole value is replaced, not its first line.
+        let mut l = Lines::parse(
+            "---\nreviewed:\n  commit: >-\n    0123456789abcdef\n  date: 2026-01-01\n---\n",
+        );
+        set_mapping(
+            &mut l,
+            "reviewed",
+            &[("commit", "abcdef1".into()), ("date", "2026-09-23".into())],
+        );
+        assert_eq!(
+            l.render(),
+            "---\nreviewed:\n  commit: abcdef1\n  date: 2026-09-23\n---\n"
+        );
+        // A comment indented differently does not set the fields' indent.
+        let mut l = Lines::parse("---\nreviewed:\n    # by hand\n  commit: abcdef1\n---\n");
+        set_mapping(
+            &mut l,
+            "reviewed",
+            &[("commit", "1234abc".into()), ("date", "2026-09-23".into())],
+        );
+        assert_eq!(
+            l.render(),
+            "---\nreviewed:\n    # by hand\n  commit: 1234abc\n  date: 2026-09-23\n---\n"
+        );
+        assert!(reads(&l.render(), "reviewed").is_some(), "still YAML");
+        // A comment after the key's colon: still a block, and `by` is kept.
+        let mut l = Lines::parse("---\nreviewed: # hand\n  by: me\n---\n");
+        set_mapping(&mut l, "reviewed", &[("commit", "abcdef1".into())]);
+        assert_eq!(
+            l.render(),
+            "---\nreviewed: # hand\n  by: me\n  commit: abcdef1\n---\n"
         );
     }
 

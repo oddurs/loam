@@ -4,7 +4,7 @@
 
 use super::Ctx;
 use crate::config::join;
-use crate::write::{Lock, write_atomic};
+use crate::write::Lock;
 use anyhow::{Result, bail};
 
 #[derive(clap::Args)]
@@ -105,6 +105,9 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         &join(&config.docs, &kind.dir),
         &format!("{}.md", slug(&args.title, 80)),
     );
+    // Checked and written under the lock: two `new`s at once must not both
+    // find the name free.
+    let lock = Lock::acquire(&config)?;
     let tree = crate::tree::Tree::read(config.clone())?;
     // Exactly, and also as the filesystem sees it: on a disk that ignores case,
     // `readme.md` would overwrite `README.md`.
@@ -186,8 +189,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         args.draft || (agent.is_some() && tree.config.agent_status.as_deref() == Some("draft"));
     let text = content(&args.title, kind.template.as_deref(), draft);
     {
-        let _lock = Lock::acquire(&config)?;
-        write_atomic(&config.abs(&path), text.as_bytes())?;
+        crate::write::write_new(&config.abs(&path), text.as_bytes())?;
     }
     println!("{path}");
     if draft && !args.draft {
@@ -196,6 +198,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             agent.as_deref().unwrap_or("an agent")
         );
     }
+    drop(lock);
     ctx.after_change(&config);
     Ok(0)
 }

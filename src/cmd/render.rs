@@ -4,7 +4,7 @@
 
 use super::Ctx;
 use crate::index::{self, Target};
-use crate::write::{Lock, write_atomic};
+use crate::write::write_atomic;
 use anyhow::Result;
 
 #[derive(clap::Args)]
@@ -27,7 +27,13 @@ pub fn is_current(tree: &crate::tree::Tree) -> Result<bool> {
 }
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
-    let tree = ctx.tree()?;
+    // `--check` only reads, and runs in CI: it takes no lock.
+    let (_lock, tree) = if args.check {
+        (None, ctx.tree()?)
+    } else {
+        let (l, t) = ctx.locked_tree()?;
+        (Some(l), t)
+    };
     let path = tree.config.index.clone();
     let target = index::render(&tree)?;
     if args.check {
@@ -52,7 +58,6 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         }
         Target::Existing { rendered, .. } => rendered,
     };
-    let _lock = Lock::acquire(&tree.config)?;
     write_atomic(&tree.config.abs(&path), text.as_bytes())?;
     if !args.quiet {
         println!("rendered {path}");

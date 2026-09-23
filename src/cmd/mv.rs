@@ -16,9 +16,7 @@
 use super::Ctx;
 use crate::config::{Config, join};
 use crate::tree::{Tree, read_page, resolve};
-use crate::write::{
-    Lines, Lock, Value, dir_of, encode_destination, relative, set_key, write_atomic,
-};
+use crate::write::{Lines, Value, dir_of, encode_destination, relative, set_key, write_atomic};
 use anyhow::{Context, Result, bail};
 
 #[derive(clap::Args)]
@@ -222,7 +220,7 @@ pub fn plan(tree: &Tree, old: &str, new: &str) -> Result<Plan> {
 }
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
-    let tree = ctx.tree()?;
+    let (lock, tree) = ctx.locked_tree()?;
     let config = &tree.config;
     let old = ctx.repo_path(config, &args.old)?;
     if old.is_empty() || !config.abs(&old).exists() {
@@ -235,6 +233,9 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     }
     // Moving the configuration would leave the repository unreadable; the
     // docs root is named in it, not found by where it is.
+    if old == ".git" || old.starts_with(".git/") {
+        bail!("{old} is git's own; loam moves pages and the files they link to");
+    }
     if old == crate::config::CONFIG_FILE {
         bail!(
             "{old} is loam's own configuration; move the docs with `loam mv`, and leave it where it is"
@@ -268,7 +269,6 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     }
 
     {
-        let _lock = Lock::acquire(config)?;
         for (path, text, _) in &plan.rewrites {
             write_atomic(&config.abs(path), text.as_bytes())?;
         }
@@ -288,6 +288,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             mapped(&old, &new, path)
         );
     }
+    drop(lock);
     ctx.after_change(config);
     Ok(0)
 }

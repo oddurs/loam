@@ -41,6 +41,16 @@ impl Ctx {
         Tree::read(self.config()?)
     }
 
+    /// The tree, read while holding the lock, for a command that will write:
+    /// reading first and locking after lets two writers each read the page as
+    /// it was, and the second write undo the first. Release it before running
+    /// a hook, which may be loam wanting the lock itself.
+    pub fn locked_tree(&self) -> Result<(crate::write::Lock, Tree)> {
+        let config = self.config()?;
+        let lock = crate::write::Lock::acquire(&config)?;
+        Ok((lock, Tree::read(config)?))
+    }
+
     /// A path the user typed, as a repository path. Tried as given from the
     /// working directory, then from the repository, then from the docs root.
     pub fn repo_path(&self, config: &Config, typed: &str) -> Result<String> {

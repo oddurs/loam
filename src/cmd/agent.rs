@@ -11,7 +11,7 @@
 use super::Ctx;
 use crate::config::{Config, join};
 use crate::write::write_atomic;
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -128,26 +128,45 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     } else {
         config.root.join(&path)
     };
-    let existing = std::fs::read_to_string(&full).unwrap_or_default();
-    // Replace the block where it is, so the file can be edited around it.
-    let updated = match (existing.find(BEGIN), existing.find(END)) {
-        (Some(a), Some(b)) if b > a => {
-            let end = b + END.len();
-            let rest = existing[end..]
-                .strip_prefix('\n')
-                .unwrap_or(&existing[end..]);
-            format!("{}{block}{rest}", &existing[..a])
+    // A file that cannot be read as text is not written over — it would be
+    // lost. A file that does not exist yet is simply empty.
+    let existing = match std::fs::read(&full) {
+        Ok(bytes) => match String::from_utf8(bytes) {
+            Ok(t) => t,
+            Err(_) => anyhow::bail!(
+                "{} is not UTF-8, so loam will not write into it",
+                path.display()
+            ),
+        },
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
+        Err(e) => return Err(e).with_context(|| format!("reading {}", path.display())),
+    };
+    let block_lines: Vec<String> = block
+        .trim_end_matches('\n')
+        .split('\n')
+        .map(str::to_string)
+        .collect();
+    let mut lines = crate::write::Lines::parse(&existing);
+    let updated = match crate::write::markers(&lines, BEGIN, END) {
+        // Replace the block where it is, so the file can be edited around it.
+        Some((b, e)) => {
+            crate::write::replace_lines(&mut lines, b, e, &block_lines);
+            lines.render()
         }
-        _ if existing.is_empty() => block.clone(),
-        _ => {
-            let sep = if existing.ends_with("\n\n") {
-                ""
-            } else if existing.ends_with('\n') {
-                "\n"
-            } else {
-                "\n\n"
-            };
-            format!("{existing}{sep}{block}")
+        None if existing.is_empty() => block.clone(),
+        // After the rest, a blank line between, in the file's own endings.
+        None => {
+            let eol = lines.eol();
+            let mut text = existing.clone();
+            if !text.ends_with('\n') {
+                text.push_str(eol);
+            }
+            if !text.ends_with(&format!("{eol}{eol}")) {
+                text.push_str(eol);
+            }
+            text.push_str(&block_lines.join(eol));
+            text.push_str(eol);
+            text
         }
     };
     if updated == existing {

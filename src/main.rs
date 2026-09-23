@@ -79,7 +79,11 @@ enum Command {
 fn main() -> ExitCode {
     let cli = Cli::parse();
     let ctx = cmd::Ctx {
-        cwd: cli.directory.clone().unwrap_or_else(|| PathBuf::from(".")),
+        // Absolute, so that looking upward for loam.toml has somewhere to go.
+        cwd: {
+            let dir = cli.directory.clone().unwrap_or_else(|| PathBuf::from("."));
+            dir.canonicalize().unwrap_or(dir)
+        },
         no_hooks: cli.no_hooks,
     };
     let result = match cli.command {

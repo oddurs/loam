@@ -283,25 +283,15 @@ pub fn render(tree: &Tree) -> Result<Target> {
     }
     let current = std::fs::read_to_string(&path)?;
     let mut lines = Lines::parse(&current);
-    let find = |marker: &str| lines.lines.iter().position(|(l, _)| l.trim() == marker);
-    let (Some(begin), Some(end)) = (find(BEGIN), find(END)) else {
+    let Some((begin, end)) = crate::write::markers(&lines, BEGIN, END) else {
         bail!(
             "{} has no place for the index\n\
              add these two lines where it belongs, then run `loam render`:\n\n    {BEGIN}\n    {END}\n\n\
-             everything outside them stays as you wrote it",
+             each alone on its line and outside code; everything outside them stays as you wrote it",
             tree.config.index
         );
     };
-    if end < begin {
-        bail!("{}: `{END}` comes before `{BEGIN}`", tree.config.index);
-    }
-    let eol = lines.eol();
-    let last = lines.lines[end].1;
-    lines.lines.drain(begin..=end);
-    for (i, l) in generated.iter().enumerate() {
-        lines.lines.insert(begin + i, (l.clone(), eol));
-    }
-    lines.lines[begin + generated.len() - 1].1 = last;
+    crate::write::replace_lines(&mut lines, begin, end, &generated);
     Ok(Target::Existing {
         rendered: lines.render(),
         current,

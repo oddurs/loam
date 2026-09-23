@@ -9,7 +9,7 @@
 
 use super::Ctx;
 use crate::tree::resolve;
-use crate::write::{Lines, Lock, Value, remove_key, scalar, set_key, write_atomic};
+use crate::write::{Lines, Value, remove_key, scalar, set_key, write_atomic};
 use crate::yaml::{self, Yaml};
 use anyhow::{Result, bail};
 
@@ -67,7 +67,7 @@ fn typed(value: &str) -> String {
 }
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
-    let tree = ctx.tree()?;
+    let (lock, tree) = ctx.locked_tree()?;
     let path = ctx.repo_path(&tree.config, &args.page)?;
     let Some(page) = tree.pages.get(&path) else {
         bail!("{path} is not a page")
@@ -80,22 +80,28 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     }
     let mut lines = Lines::parse(text);
     let mut lists: std::collections::HashMap<String, Vec<String>> = Default::default();
-    let current = |key: &str| -> Vec<String> {
+    // A list `+=` and `-=` can edit: absent, one string, or strings. Anything
+    // else — numbers, mappings, a mapping where a list was meant — would be
+    // rewritten into something it was not, so it is refused.
+    let current = |key: &str| -> Result<Vec<String>> {
         match page
             .frontmatter
             .as_ref()
             .and_then(|m| m.iter().find(|(k, _)| k == key))
             .map(|(_, v)| v)
         {
-            Some(Yaml::Str(s)) => vec![s.clone()],
-            Some(Yaml::Seq(items)) => items
+            None | Some(Yaml::Null) => Ok(Vec::new()),
+            Some(Yaml::Str(s)) => Ok(vec![s.clone()]),
+            Some(Yaml::Seq(items)) if items.iter().all(|i| matches!(i, Yaml::Str(_))) => Ok(items
                 .iter()
-                .map(|i| match i {
-                    Yaml::Str(s) => s.clone(),
-                    other => serde_json::to_string(&other.to_json()).unwrap_or_default(),
+                .filter_map(|i| match i {
+                    Yaml::Str(s) => Some(s.clone()),
+                    _ => None,
                 })
-                .collect(),
-            _ => Vec::new(),
+                .collect()),
+            Some(_) => bail!(
+                "`{key}` holds more than a list of strings; edit it by hand rather than with += or -="
+            ),
         }
     };
 
@@ -140,14 +146,20 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
                 bail!("`{key}` holds one value, not a list; use `{key}={v}`")
             }
             Op::Add(v) => {
-                let list = lists.entry(key.clone()).or_insert_with(|| current(&key));
+                if !lists.contains_key(&key) {
+                    lists.insert(key.clone(), current(&key)?);
+                }
+                let list = lists.get_mut(&key).expect("just inserted");
                 if !list.contains(&v) {
                     list.push(v);
                 }
                 set_key(&mut lines, &key, &Value::List(list.clone()));
             }
             Op::Take(v) => {
-                let list = lists.entry(key.clone()).or_insert_with(|| current(&key));
+                if !lists.contains_key(&key) {
+                    lists.insert(key.clone(), current(&key)?);
+                }
+                let list = lists.get_mut(&key).expect("just inserted");
                 // A page is taken out of a supersession however it was spelled.
                 let pages = key == "supersedes" || key == "superseded_by";
                 let target = resolve(&path, &v).0;
@@ -169,10 +181,10 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         return Ok(0);
     }
     {
-        let _lock = Lock::acquire(&tree.config)?;
         write_atomic(&tree.config.abs(&path), out.as_bytes())?;
     }
     println!("updated {path}");
+    drop(lock);
     ctx.after_change(&tree.config);
     Ok(0)
 }

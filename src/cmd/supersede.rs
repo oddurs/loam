@@ -10,7 +10,7 @@
 use super::Ctx;
 use crate::tree::{Page, Tree, resolve};
 use crate::write::{
-    Lines, Lock, Value, body_start, dir_of, encode_destination, relative, set_key, write_atomic,
+    Lines, Value, body_start, dir_of, encode_destination, relative, set_key, write_atomic,
 };
 use anyhow::{Result, bail};
 
@@ -117,7 +117,7 @@ pub fn plan(tree: &Tree, old: &str, new: &str) -> Result<Vec<(String, String)>> 
 }
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
-    let tree = ctx.tree()?;
+    let (lock, tree) = ctx.locked_tree()?;
     let old = ctx.repo_path(&tree.config, &args.old)?;
     let new = ctx.repo_path(&tree.config, &args.new)?;
     let writes = plan(&tree, &old, &new)?;
@@ -126,7 +126,6 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         return Ok(0);
     }
     {
-        let _lock = Lock::acquire(&tree.config)?;
         for (path, text) in &writes {
             write_atomic(&tree.config.abs(path), text.as_bytes())?;
         }
@@ -135,6 +134,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     for (path, _) in &writes {
         println!("  updated {path}");
     }
+    drop(lock);
     ctx.after_change(&tree.config);
     Ok(0)
 }
