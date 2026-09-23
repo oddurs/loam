@@ -239,8 +239,49 @@ def is_picture(lines):
 # ─── §6.3 Anchors ───────────────────────────────────────────────────────────
 
 
+def code_span_segments(text):
+    """Split text into (is_code, text) pieces; a code span's piece is its content."""
+    out, plain, i = [], [], 0
+    while i < len(text):
+        if text[i] == "\\" and i + 1 < len(text):
+            plain.append(text[i : i + 2])
+            i += 2
+            continue
+        if text[i] == "`":
+            j = i
+            while j < len(text) and text[j] == "`":
+                j += 1
+            run = text[i:j]
+            k = text.find(run, j)
+            while k != -1 and k + len(run) < len(text) and text[k + len(run)] == "`":
+                m = k
+                while m < len(text) and text[m] == "`":
+                    m += 1
+                k = text.find(run, m)
+            if k == -1:
+                plain.append(run)
+                i = j
+                continue
+            out.append((False, "".join(plain)))
+            plain = []
+            out.append((True, text[j:k]))
+            i = k + len(run)
+            continue
+        plain.append(text[i])
+        i += 1
+    out.append((False, "".join(plain)))
+    return out
+
+
 def heading_text(source):
-    """§6.3: the text of a heading as it renders, markup removed."""
+    """§6.3: the text of a heading as it renders, markup removed.
+
+    A code span is its content, untouched; the steps apply outside them.
+    """
+    return "".join(seg if code else heading_text_plain(seg) for code, seg in code_span_segments(source))
+
+
+def heading_text_plain(source):
     t = source
     t = re.sub(r"!\[(?:[^\]\\]|\\.)*\]\([^)]*\)", "", t)  # images vanish
     t = re.sub(r"!\[(?:[^\]\\]|\\.)*\]\[[^\]]*\]", "", t)

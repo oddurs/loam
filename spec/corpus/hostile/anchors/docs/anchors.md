@@ -35,6 +35,10 @@ Setext level two
 
 ### Über 日本語 ١٢٣ Ⓐ ²
 
+### `-f, --format <type>`
+
+### `a_b` and _c_ and `&amp;`
+
 ## <a name="old-name"></a>Renamed heading
 
 <a name="explicit"></a>
@@ -62,4 +66,4 @@ Links: [ok](#hello-world-2), [ok](#hello-world-1-1), [ok](#setext-level-one),
 [ok](#c--c), [ok](#100--done-), [ok](#closing-hashes), [ok](#html-tag),
 [ok](#e_scaped--chars), [ok](#über-日本語-١٢٣-ⓐ-), [ok](#explicit), [ok](#single), [broken: name on a div](#both), [ok](#upper),
 [broken](#Hello-World), [broken](#not-a-heading-in-a-fence), [broken](#not-an-anchor-either),
-[broken](#not-a-heading-in-a-quote), [ok](#over-two-lines), [ok](#old-name), [ok](#renamed-heading), [broken](#not-this), [broken](#in-a-code-span).
+[broken](#not-a-heading-in-a-quote), [ok](#over-two-lines), [ok](#-f---format-type), [ok](#a_b-and-c-and-amp), [ok](#old-name), [ok](#renamed-heading), [broken](#not-this), [broken](#in-a-code-span).

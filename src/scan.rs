@@ -237,8 +237,66 @@ static H_LINK: LazyLock<Regex> =
 static H_TAG: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<[^>\n]*>").unwrap());
 static ESCAPE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\\([!-/:-@\[-`{-~])").unwrap());
 
-/// The text of a heading as it renders, markup removed (spec §6.3, steps 1–6).
+/// The text of a heading as it renders, markup removed (spec §6.3). A code
+/// span is its content, untouched; steps 1–6 apply outside them.
 pub fn heading_text(source: &str) -> String {
+    let mut out = String::new();
+    let mut plain = String::new();
+    let b = source.as_bytes();
+    let mut i = 0;
+    while i < b.len() {
+        if b[i] == b'\\' && i + 1 < b.len() {
+            let next = source[i + 1..].chars().next().map_or(1, char::len_utf8);
+            plain.push_str(&source[i..i + 1 + next]);
+            i += 1 + next;
+            continue;
+        }
+        if b[i] == b'`' {
+            let mut j = i;
+            while j < b.len() && b[j] == b'`' {
+                j += 1;
+            }
+            let run = j - i;
+            // The next run of exactly the same length closes it.
+            let mut k = j;
+            let mut close = None;
+            while k < b.len() {
+                if b[k] == b'`' {
+                    let s = k;
+                    while k < b.len() && b[k] == b'`' {
+                        k += 1;
+                    }
+                    if k - s == run {
+                        close = Some(s);
+                        break;
+                    }
+                } else {
+                    k += 1;
+                }
+            }
+            match close {
+                Some(c) => {
+                    out.push_str(&heading_text_plain(&plain));
+                    plain.clear();
+                    out.push_str(&source[j..c]);
+                    i = c + run;
+                }
+                None => {
+                    plain.push_str(&source[i..j]);
+                    i = j;
+                }
+            }
+            continue;
+        }
+        let ch = source[i..].chars().next().expect("in bounds");
+        plain.push(ch);
+        i += ch.len_utf8();
+    }
+    out.push_str(&heading_text_plain(&plain));
+    out
+}
+
+fn heading_text_plain(source: &str) -> String {
     let t = H_IMAGE.replace_all(source, "");
     let t = H_LINK.replace_all(&t, "$1");
     let t = H_TAG.replace_all(&t, "");

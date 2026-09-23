@@ -514,12 +514,16 @@ The **anchors** of a Markdown file are:
    since that is the one element a browser follows a `name` to — preceded by
    whitespace or a line break, so `data-id` is not one; then optional
    whitespace, `=`, optional whitespace, and a value in double or single
-   quotes. Tag and attribute names are compared without regard to ASCII case. These are listed after the slugs, once each, and a value
-   already among the slugs is not listed again.
+   quotes. Tag and attribute names are compared without regard to ASCII
+   case. These are listed after the slugs, once each, and a value already
+   among the slugs is not listed again.
 
 A heading's slug is computed the way GitHub computes it, because that is the
 rule everybody already sees working. First the heading's **text**, meaning
-what it reads as once rendered, is taken from its source:
+what it reads as once rendered, is taken from its source. A code span (§6.1)
+reads as its content, exactly — the backticks gone, and nothing inside it
+touched by the steps below: `` `--format <type>` `` reads as `--format <type>`.
+Outside code spans:
 
 1. Every image is removed.
 2. Every inline link and every full reference link, `[text][label]`, is
@@ -531,7 +535,7 @@ what it reads as once rendered, is taken from its source:
    `snake_case` is unchanged.
 6. HTML character references — `&amp;`, `&#233;`, `&eacute;` — are decoded.
 
-Backticks and `*` need no rule of their own: step 7 removes them.
+`*` needs no rule of its own: step 7 removes it.
 
 Then the text is turned into a slug:
 

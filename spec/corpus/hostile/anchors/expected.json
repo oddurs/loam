@@ -22,6 +22,8 @@
         "html-tag",
         "e_scaped--chars",
         "über-日本語-١٢٣-ⓐ-",
+        "-f---format-type",
+        "a_b-and-c-and-amp",
         "renamed-heading",
         "old-name",
         "explicit",
@@ -39,42 +41,42 @@
         {
           "code": "broken-anchor",
           "detail": "#café-decomposed",
-          "line": 60
+          "line": 64
         },
         {
           "code": "broken-anchor",
           "detail": "#both",
-          "line": 63
+          "line": 67
         },
         {
           "code": "broken-anchor",
           "detail": "#Hello-World",
-          "line": 64
+          "line": 68
         },
         {
           "code": "broken-anchor",
           "detail": "#not-a-heading-in-a-fence",
-          "line": 64
+          "line": 68
         },
         {
           "code": "broken-anchor",
           "detail": "#not-an-anchor-either",
-          "line": 64
+          "line": 68
         },
         {
           "code": "broken-anchor",
           "detail": "#in-a-code-span",
-          "line": 65
+          "line": 69
         },
         {
           "code": "broken-anchor",
           "detail": "#not-a-heading-in-a-quote",
-          "line": 65
+          "line": 69
         },
         {
           "code": "broken-anchor",
           "detail": "#not-this",
-          "line": 65
+          "line": 69
         }
       ],
       "frontmatter": null,
@@ -100,210 +102,224 @@
           "class": "page",
           "destination": "#hello-world-2",
           "fragment": "hello-world-2",
-          "line": 58,
+          "line": 62,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#hello-world-1-1",
           "fragment": "hello-world-1-1",
-          "line": 58,
+          "line": 62,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#setext-level-one",
           "fragment": "setext-level-one",
-          "line": 58,
+          "line": 62,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#café-résumé",
           "fragment": "café-résumé",
-          "line": 59,
+          "line": 63,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#caf%C3%A9-r%C3%A9sum%C3%A9",
           "fragment": "café-résumé",
-          "line": 59,
+          "line": 63,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#café-decomposed",
           "fragment": "café-decomposed",
-          "line": 59,
+          "line": 63,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#café-decomposed",
           "fragment": "café-decomposed",
-          "line": 60,
+          "line": 64,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#þórs-hammer--and-code",
           "fragment": "þórs-hammer--and-code",
-          "line": 60,
+          "line": 64,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#emph-and-under-and-snake_case_name-and-init",
           "fragment": "emph-and-under-and-snake_case_name-and-init",
-          "line": 61,
+          "line": 65,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#a--b-é",
           "fragment": "a--b-é",
-          "line": 61,
+          "line": 65,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#link-text-and-",
           "fragment": "link-text-and-",
-          "line": 61,
+          "line": 65,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#c--c",
           "fragment": "c--c",
-          "line": 62,
+          "line": 66,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#100--done-",
           "fragment": "100--done-",
-          "line": 62,
+          "line": 66,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#closing-hashes",
           "fragment": "closing-hashes",
-          "line": 62,
+          "line": 66,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#html-tag",
           "fragment": "html-tag",
-          "line": 62,
+          "line": 66,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#e_scaped--chars",
           "fragment": "e_scaped--chars",
-          "line": 63,
+          "line": 67,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#über-日本語-١٢٣-ⓐ-",
           "fragment": "über-日本語-١٢٣-ⓐ-",
-          "line": 63,
+          "line": 67,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#explicit",
           "fragment": "explicit",
-          "line": 63,
+          "line": 67,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#single",
           "fragment": "single",
-          "line": 63,
+          "line": 67,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#both",
           "fragment": "both",
-          "line": 63,
+          "line": 67,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#upper",
           "fragment": "upper",
-          "line": 63,
+          "line": 67,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#Hello-World",
           "fragment": "Hello-World",
-          "line": 64,
+          "line": 68,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#not-a-heading-in-a-fence",
           "fragment": "not-a-heading-in-a-fence",
-          "line": 64,
+          "line": 68,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#not-an-anchor-either",
           "fragment": "not-an-anchor-either",
-          "line": 64,
+          "line": 68,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#not-a-heading-in-a-quote",
           "fragment": "not-a-heading-in-a-quote",
-          "line": 65,
+          "line": 69,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#over-two-lines",
           "fragment": "over-two-lines",
-          "line": 65,
+          "line": 69,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#-f---format-type",
+          "fragment": "-f---format-type",
+          "line": 69,
+          "target": "docs/anchors.md"
+        },
+        {
+          "class": "page",
+          "destination": "#a_b-and-c-and-amp",
+          "fragment": "a_b-and-c-and-amp",
+          "line": 69,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#old-name",
           "fragment": "old-name",
-          "line": 65,
+          "line": 69,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#renamed-heading",
           "fragment": "renamed-heading",
-          "line": 65,
+          "line": 69,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#not-this",
           "fragment": "not-this",
-          "line": 65,
+          "line": 69,
           "target": "docs/anchors.md"
         },
         {
           "class": "page",
           "destination": "#in-a-code-span",
           "fragment": "in-a-code-span",
-          "line": 65,
+          "line": 69,
           "target": "docs/anchors.md"
         }
       ],
