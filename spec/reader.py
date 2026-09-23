@@ -279,8 +279,11 @@ def anchors(block_list):
             continue
         lines = [data[1]] if kind == "heading" else data
         text = "\n".join(strip_code_spans(line) for line in lines)
-        for tag in re.finditer(r"<[A-Za-z][^>]*>", text):
-            for m in re.finditer(r"""[ \t\n](?:id|name)[ \t]*=[ \t]*(?:"([^"]*)"|'([^']*)')""", tag.group()):
+        for tag in re.finditer(r"<([A-Za-z][A-Za-z0-9-]*)[^>]*>", text):
+            # A browser follows a fragment to an `id` on anything, and to a
+            # `name` only on an `a`.
+            names = "id|name" if tag.group(1).lower() == "a" else "id"
+            for m in re.finditer(rf"""[ \t\n](?:{names})[ \t]*=[ \t]*(?:"([^"]*)"|'([^']*)')""", tag.group(), re.I):
                 value = m.group(1) if m.group(1) is not None else m.group(2)
                 if value not in result:
                     result.append(value)

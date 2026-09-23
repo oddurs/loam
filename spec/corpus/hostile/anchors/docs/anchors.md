@@ -40,7 +40,9 @@ Setext level two
 <a name="explicit"></a>
 <div id='single' class="x" name="both"></div>
 <span data-id="not-this"
-  id="over-two-lines"></span> and `<a id="in-a-code-span">`
+  id="over-two-lines"></span>
+
+In a code span, `<a id="in-a-code-span">` is text. <A ID="upper">Tag names</A> ignore case.
 
 ```
 ## Not a heading, in a fence
@@ -58,6 +60,6 @@ Links: [ok](#hello-world-2), [ok](#hello-world-1-1), [ok](#setext-level-one),
 [precomposed broken](#café-decomposed), [ok](#þórs-hammer--and-code),
 [ok](#emph-and-under-and-snake_case_name-and-init), [ok](#a--b-é), [ok](#link-text-and-),
 [ok](#c--c), [ok](#100--done-), [ok](#closing-hashes), [ok](#html-tag),
-[ok](#e_scaped--chars), [ok](#über-日本語-١٢٣-ⓐ-), [ok](#explicit), [ok](#single), [ok](#both),
+[ok](#e_scaped--chars), [ok](#über-日本語-١٢٣-ⓐ-), [ok](#explicit), [ok](#single), [broken: name on a div](#both), [ok](#upper),
 [broken](#Hello-World), [broken](#not-a-heading-in-a-fence), [broken](#not-an-anchor-either),
 [broken](#not-a-heading-in-a-quote), [ok](#over-two-lines), [ok](#old-name), [ok](#renamed-heading), [broken](#not-this), [broken](#in-a-code-span).

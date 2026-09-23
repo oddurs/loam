@@ -324,11 +324,17 @@ A heading, a code line and a break each end the paragraph being gathered.
 
 The rules are applied in the order written. The scan does not recognise HTML
 blocks, tables, or the structure inside lists and quotes; their lines are
-paragraph lines, and a reader **must not** treat them otherwise. Two
-consequences are worth knowing: a heading inside a quote (`> # Title`) is not a
-heading, and a paragraph nested four spaces deep inside a list item, after a
-blank line, is indented code. Both are divergences from GitHub a page is
-unlikely to meet, and the price of two readers agreeing.
+paragraph lines, and a reader **must not** treat them otherwise. Three
+consequences are worth knowing, all divergences from GitHub a page is unlikely
+to meet, and the price of two readers agreeing:
+
+- A heading inside a quote (`> # Title`) is not a heading. GitHub gives it an
+  anchor; a reader of this format does not, and reports a link to it as broken.
+- A paragraph nested four spaces deep inside a list item, after a blank line,
+  is indented code, and its links are not found.
+- A paragraph that begins with an HTML tag is, on GitHub, raw HTML, in which a
+  backtick is an ordinary character. Here it is a paragraph like any other, and
+  its code spans are code spans.
 
 ### 5.2 Title
 
@@ -457,9 +463,11 @@ The **anchors** of a Markdown file are:
    a paragraph of its body (§5.1), code spans excepted (§6.1) — so
    `## <a name="install"></a>Installing` gives the anchor `install` as well as
    its slug. A tag is `<`, a letter, and everything to the next `>`, and may
-   run over several lines of one paragraph. An attribute is the name `id` or `name`, preceded by whitespace
-   or a line break — so `data-id` is not one — then optional whitespace, `=`,
-   optional whitespace, and a value in double or single quotes. These are listed after the slugs, once each, and a value
+   run over several lines of one paragraph. An attribute is the name `id` — or `name`, on an `a` tag only,
+   since that is the one element a browser follows a `name` to — preceded by
+   whitespace or a line break, so `data-id` is not one; then optional
+   whitespace, `=`, optional whitespace, and a value in double or single
+   quotes. Tag and attribute names are compared without regard to ASCII case. These are listed after the slugs, once each, and a value
    already among the slugs is not listed again.
 
 A heading's slug is computed the way GitHub computes it, because that is the
