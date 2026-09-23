@@ -222,7 +222,8 @@ pub fn read_page(config: &Config, path: &str, bytes: Vec<u8>) -> Page {
                 body = b;
                 body_line = first;
                 if let Some(front) = front {
-                    match yaml::parse_mapping(&front) {
+                    // Each line of it ends in a line break (spec §3.1).
+                    match yaml::parse_mapping(&format!("{front}\n")) {
                         Ok(map) => frontmatter = Some(map),
                         Err(problem) => findings.push(finding(
                             1,
@@ -694,6 +695,8 @@ impl Tree {
     }
 }
 
+/// The number a file name begins with, if it has one and it fits in 64 bits
+/// (spec §6.4).
 pub fn leading_number(name: &str) -> Option<u64> {
     let digits: String = name.chars().take_while(char::is_ascii_digit).collect();
     if digits.is_empty() {

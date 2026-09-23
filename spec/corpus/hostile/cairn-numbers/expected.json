@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/a.md": {
+      "anchors": [
+        "a"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "broken-link",
+          "detail": "../cairn/items/123456789012345678901234-x.md",
+          "line": 3
+        },
+        {
+          "code": "broken-link",
+          "detail": "../cairn/items/١٢-x.md",
+          "line": 3
+        },
+        {
+          "code": "stale-cairn-link",
+          "detail": "../cairn/items/1-y.md",
+          "line": 3
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "file",
+          "destination": "../cairn/items/123456789012345678901234-x.md",
+          "fragment": null,
+          "line": 3,
+          "target": "cairn/items/123456789012345678901234-x.md"
+        },
+        {
+          "class": "file",
+          "destination": "../cairn/items/١٢-x.md",
+          "fragment": null,
+          "line": 3,
+          "target": "cairn/items/١٢-x.md"
+        },
+        {
+          "class": "cairn",
+          "current": "cairn/items/0001-x.md",
+          "destination": "../cairn/items/1-y.md",
+          "fragment": null,
+          "item": 1,
+          "line": 3,
+          "target": "cairn/items/1-y.md"
+        }
+      ],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": "[huge](../cairn/items/123456789012345678901234-x.md) and [arabic](../cairn/items/١٢-x.md) and [one](../cairn/items/1-y.md).",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A",
+      "title_from": "heading"
+    }
+  }
+}

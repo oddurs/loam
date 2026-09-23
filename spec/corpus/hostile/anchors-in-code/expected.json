@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/code.md": {
+      "anchors": [
+        "code-spans",
+        "y"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "broken-anchor",
+          "detail": "#x",
+          "line": 6
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "#x",
+          "fragment": "x",
+          "line": 6,
+          "target": "docs/code.md"
+        },
+        {
+          "class": "page",
+          "destination": "#y",
+          "fragment": "y",
+          "line": 6,
+          "target": "docs/code.md"
+        }
+      ],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": "Use `<a id=\"x\"> tags like this` sparingly, and <a id=\"y\"></a> this.",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Code spans",
+      "title_from": "heading"
+    }
+  }
+}

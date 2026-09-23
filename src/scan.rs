@@ -22,6 +22,9 @@ pub enum Block {
     },
     Heading {
         line: usize,
+        /// How many lines of source it takes, underline apart: a setext
+        /// heading's text can run over several.
+        lines: usize,
         level: usize,
         text: String,
     },
@@ -43,8 +46,11 @@ static CLOSING_HASHES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?:^|[ \t
 static SETEXT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^ {0,3}(=+|-+)[ \t]*$").unwrap());
 static LIST: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^ {0,3}(?:[-*+]|[0-9]{1,9}[.)])(?:[ \t]|$)").unwrap());
-static REFDEF: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^ {0,3}\[(?:[^\]\\]|\\.)+\]:[ \t]*(<[^>\n]*>|[^ \t]+)").unwrap());
+/// A link reference definition. A label beginning `^` is a footnote, not a
+/// link; a destination is the angle form only when its `>` is on the line.
+static REFDEF: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^ {0,3}\[(?:[^\]\\^]|\\.)(?:[^\]\\]|\\.)*\]:[ \t]*(<[^>\n]*>|[^ \t]+)").unwrap()
+});
 
 fn is_break(line: &str) -> bool {
     // Up to three spaces, then three or more of one of `-`, `*`, `_`, with only
@@ -141,9 +147,14 @@ pub fn blocks(body: &str, first_line: usize) -> Vec<Block> {
                 .map(|(_, t)| t.trim_matches(WS))
                 .collect::<Vec<_>>()
                 .join(" ");
-            let line = para[0].0;
+            let (line, lines) = (para[0].0, para.len());
             para.clear();
-            out.push(Block::Heading { line, level, text });
+            out.push(Block::Heading {
+                line,
+                lines,
+                level,
+                text,
+            });
             continue;
         }
         if let Some(m) = ATX.captures(line) {
@@ -155,6 +166,7 @@ pub fn blocks(body: &str, first_line: usize) -> Vec<Block> {
                 .to_string();
             out.push(Block::Heading {
                 line: n,
+                lines: 1,
                 level: m[1].len(),
                 text,
             });
@@ -229,11 +241,16 @@ pub fn summary(blocks: &[Block]) -> Option<String> {
 
 // ─── §6.3 Anchors ────────────────────────────────────────────────────────────
 
-static H_IMAGE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"!\[(?:[^\]\\]|\\.)*\]\([^)]*\)|!\[(?:[^\]\\]|\\.)*\]\[[^\]]*\]").unwrap()
-});
+// Inline forms are taken before reference forms, in separate passes: in
+// `[a][b](c.md)`, `[b](c.md)` is the link, as GitHub reads it.
+static H_IMAGE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"!\[(?:[^\]\\]|\\.)*\]\([^)]*\)").unwrap());
+static H_IMAGE_REF: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"!\[(?:[^\]\\]|\\.)*\]\[[^\]]*\]").unwrap());
 static H_LINK: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\[((?:[^\]\\]|\\.)*)\](?:\([^)]*\)|\[[^\]]*\])").unwrap());
+    LazyLock::new(|| Regex::new(r"\[((?:[^\]\\]|\\.)*)\]\([^)]*\)").unwrap());
+static H_LINK_REF: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\[((?:[^\]\\]|\\.)*)\]\[[^\]]*\]").unwrap());
 static H_TAG: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<[^>\n]*>").unwrap());
 static ESCAPE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\\([!-/:-@\[-`{-~])").unwrap());
 
@@ -298,7 +315,9 @@ pub fn heading_text(source: &str) -> String {
 
 fn heading_text_plain(source: &str) -> String {
     let t = H_IMAGE.replace_all(source, "");
+    let t = H_IMAGE_REF.replace_all(&t, "");
     let t = H_LINK.replace_all(&t, "$1");
+    let t = H_LINK_REF.replace_all(&t, "$1");
     let t = H_TAG.replace_all(&t, "");
     let t = ESCAPE.replace_all(&t, "$1");
     let t = strip_emphasis_underscores(&t);
@@ -398,11 +417,8 @@ pub fn anchors(blocks: &[Block]) -> Vec<String> {
             Block::Paragraph { lines } => lines.iter().map(|(_, l)| l.clone()).collect(),
             _ => continue,
         };
-        let text = lines
-            .iter()
-            .map(|l| mask_code_spans(l))
-            .collect::<Vec<_>>()
-            .join("\n");
+        // Masked as a whole, since a code span can run over a line break.
+        let text = mask_code_spans(&lines.join("\n"));
         for tag in TAG.captures_iter(&text) {
             let attrs = if tag[1].eq_ignore_ascii_case("a") {
                 &*ID_OR_NAME_ATTR
@@ -588,57 +604,63 @@ fn inline_links(text: &str, lines: &[(usize, usize)], out: &mut Vec<RawLink>) {
 }
 
 /// Spec §6.1: every link in the blocks that are not code.
-pub fn links(blocks: &[Block], heading_lines: &dyn Fn(usize) -> Option<String>) -> Vec<RawLink> {
+pub fn links(blocks: &[Block], source: &dyn Fn(usize) -> Option<String>) -> Vec<RawLink> {
     let mut out = Vec::new();
     for block in blocks {
         match block {
-            Block::Heading { line, .. } => {
-                // Found in the heading's source line, so offsets are offsets
-                // into the file. A setext heading's first line stands for it.
-                if let Some(source) = heading_lines(*line) {
-                    inline_links(&mask_code_spans(&source), &[(*line, 0)], &mut out);
-                }
+            // Found in the heading's source lines, so offsets are offsets into
+            // the file, and a setext heading's links keep their own lines.
+            Block::Heading { line, lines, .. } => {
+                let lines: Vec<(usize, String)> = (*line..line + lines)
+                    .filter_map(|n| source(n).map(|s| (n, s)))
+                    .collect();
+                out.extend(paragraph_links(&lines, false));
             }
-            Block::Paragraph { lines } => {
-                let mut joined = String::new();
-                let mut starts = Vec::new();
-                let mut found = Vec::new();
-                for (n, line) in lines {
-                    if !joined.is_empty() {
-                        joined.push('\n');
-                    }
-                    starts.push((*n, joined.len()));
-                    if let Some(m) = REFDEF.captures(line) {
-                        let g = m.get(1).expect("the destination group always matches");
-                        let (start, end, angle) = if g.as_str().starts_with('<') {
-                            (g.start() + 1, g.end() - 1, true)
-                        } else {
-                            (g.start(), g.end(), false)
-                        };
-                        if end > start {
-                            found.push(RawLink {
-                                line: *n,
-                                destination: line[start..end].to_string(),
-                                start,
-                                end,
-                                angle,
-                            });
-                        }
-                        // A definition is not searched for inline links.
-                        joined.push_str(&" ".repeat(line.len()));
-                    } else {
-                        joined.push_str(line);
-                    }
-                }
-                inline_links(&mask_code_spans(&joined), &starts, &mut found);
-                // In the order they appear: by line, then left to right.
-                found.sort_by_key(|l| (l.line, l.start));
-                out.extend(found);
-            }
+            Block::Paragraph { lines } => out.extend(paragraph_links(lines, true)),
             _ => {}
         }
     }
     out
+}
+
+/// The links in consecutive lines: definitions line by line, where they are
+/// allowed, and inline links across the lines, as wrapped text runs.
+fn paragraph_links(lines: &[(usize, String)], definitions: bool) -> Vec<RawLink> {
+    let mut joined = String::new();
+    let mut starts = Vec::new();
+    let mut found = Vec::new();
+    for (n, line) in lines {
+        if !joined.is_empty() {
+            joined.push('\n');
+        }
+        starts.push((*n, joined.len()));
+        if let Some(m) = REFDEF.captures(line).filter(|_| definitions) {
+            let g = m.get(1).expect("the destination group always matches");
+            let angle = g.as_str().starts_with('<') && g.as_str().ends_with('>') && g.len() > 1;
+            let (start, end) = if angle {
+                (g.start() + 1, g.end() - 1)
+            } else {
+                (g.start(), g.end())
+            };
+            if end > start {
+                found.push(RawLink {
+                    line: *n,
+                    destination: line[start..end].to_string(),
+                    start,
+                    end,
+                    angle,
+                });
+            }
+            // A definition is not searched for inline links.
+            joined.push_str(&" ".repeat(line.len()));
+        } else {
+            joined.push_str(line);
+        }
+    }
+    inline_links(&mask_code_spans(&joined), &starts, &mut found);
+    // In the order they appear: by line, then left to right.
+    found.sort_by_key(|l| (l.line, l.start));
+    found
 }
 
 /// A backslash before ASCII punctuation is removed before a destination is

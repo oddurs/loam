@@ -1,0 +1,141 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/bool-yes.md": {
+      "anchors": [
+        "yes-is-no-boolean-even-tagged"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "yes is no boolean, even tagged",
+      "title_from": "heading"
+    },
+    "docs/float-underscore.md": {
+      "anchors": [
+        "nor-1_000-a-float"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Nor 1_000 a float",
+      "title_from": "heading"
+    },
+    "docs/int-float.md": {
+      "anchors": [
+        "nor-is-30-an-integer"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Nor is 3.0 an integer",
+      "title_from": "heading"
+    },
+    "docs/int-word.md": {
+      "anchors": [
+        "nor-abc"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "malformed-frontmatter",
+          "detail": "not YAML",
+          "line": 1
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Nor abc",
+      "title_from": "heading"
+    },
+    "docs/verbatim.md": {
+      "anchors": [
+        "a-core-tag-written-out-in-full"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": {
+        "title": "2026"
+      },
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "2026",
+      "title_from": "frontmatter"
+    }
+  }
+}

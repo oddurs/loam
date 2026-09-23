@@ -1,0 +1,6 @@
+---
+summary: >-
+  Stripped.
+---
+
+# Stripped

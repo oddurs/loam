@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/a.md": {
+      "anchors": [
+        "a"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A",
+      "title_from": "heading"
+    },
+    "docs/setext.md": {
+      "anchors": [
+        "t",
+        "see-a-first-and-b-here",
+        "wrapped-link-text-in-a-heading",
+        "not-a-definition-nowheremd-is-a-heading"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "broken-link",
+          "detail": "b.md",
+          "line": 4
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "page",
+          "destination": "a.md",
+          "fragment": null,
+          "line": 3,
+          "target": "docs/a.md"
+        },
+        {
+          "class": "file",
+          "destination": "b.md",
+          "fragment": null,
+          "line": 4,
+          "target": "docs/b.md"
+        },
+        {
+          "class": "page",
+          "destination": "a.md",
+          "fragment": null,
+          "line": 8,
+          "target": "docs/a.md"
+        }
+      ],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "T",
+      "title_from": "heading"
+    }
+  }
+}

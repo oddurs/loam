@@ -1,0 +1,14 @@
+format = 1
+
+[docs]
+root = "./docs/"
+
+[links]
+cairn = "./cairn/./items"
+
+[[kind]]
+name = "guide"
+dir = "./guide"
+
+[[kind]]
+name = "page"

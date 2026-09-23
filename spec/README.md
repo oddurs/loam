@@ -110,6 +110,10 @@ and **must** then read the page as though it had no frontmatter, taking the
 body from after the closing delimiter as usual. Empty frontmatter, or
 frontmatter that is only comments, is an empty mapping.
 
+The YAML is parsed as the lines between the delimiters, each ending in a line
+break, so a block scalar written last keeps the final line break its chomping
+indicator gives it, as it would anywhere else: `summary: >` ends in `\n`.
+
 <!-- shared with the cairn item format, §3: begin -->
 Lines are separated by either LF or CRLF. A reader **must** accept both. A
 writer **must** reproduce whichever the file used, and **should** use LF for a
@@ -160,8 +164,22 @@ The 1.2 core schema has no dates, so `2026-09-22` unquoted is the string
 Nor has it a merge key: `<<` is an ordinary key, and nothing is merged. An
 explicit tag is honoured if it names a type of the core schema — `!!str`,
 `!!int`, `!!float`, `!!bool`, `!!null`, `!!seq`, `!!map` — so `title: !!str 2026`
-is the string `2026`. Any other tag, `!!timestamp` or `!!set` or a local
-`!custom`, makes the frontmatter malformed, as YAML that does not parse does.
+is the string `2026`, and so is the same tag written out in full,
+`!<tag:yaml.org,2002:str>`. A value tagged `!!int`, `!!float` or `!!bool` must be
+one the core schema would resolve to that type (`!!bool yes` is not). Any other
+tag, `!!timestamp` or `!!set` or a local `!custom`, makes the frontmatter
+malformed, as YAML that does not parse does.
+
+Three limits keep every reader's answer the same, and keep a small page from
+costing a large amount of memory. Frontmatter is malformed, as YAML that does
+not parse is, when:
+
+- an integer is outside the signed 64-bit range, −2⁶³ to 2⁶³ − 1, where
+  languages stop agreeing on its value;
+- collections nest more than 100 deep; or
+- it holds more than 10,000 values, counting each scalar, sequence and mapping
+  that is a value (keys are not counted), and counting an alias as every value
+  it stands for.
 
 ### Example
 
@@ -450,17 +468,20 @@ headings included:
   do; the destination, and the title and `)` after it, are on one line.
 - **Link reference definitions**: a line, not inside a heading, of up to three
   spaces, then `[label]:`, then optional spaces or tabs, then the destination.
-  The definition is a link whether or not anything uses the label.
+  The definition is a link whether or not anything uses the label. A label
+  beginning with `^` is a footnote, as GitHub renders `[^1]: …`, and not a
+  definition.
 
-A destination is either everything between `<` and the next `>`, or a run of
+A destination is either everything between `<` and the next `>` on the same
+line, or, when there is no such `>`, a run of
 characters containing no space or tab in which parentheses are balanced and a
 character preceded by a backslash is taken literally. A backslash before an
 ASCII punctuation character is removed from the destination before it is
 resolved. An empty destination is not a link.
 
 Code spans are not searched. A code span is a run of one or more backticks, the
-text after it, and the next run of exactly the same number of backticks on the
-same line; a backtick run with no partner is literal text. Autolinks
+text after it, and the next run of exactly the same number of backticks in the
+same paragraph or heading; a backtick run with no partner is literal text. Autolinks
 (`<https://…>`), bare URLs, and links in raw HTML are not links for this
 format: the first two are absolute (§6.2) and would never be checked anyway.
 
@@ -525,9 +546,11 @@ reads as its content, exactly — the backticks gone, and nothing inside it
 touched by the steps below: `` `--format <type>` `` reads as `--format <type>`.
 Outside code spans:
 
-1. Every image is removed.
-2. Every inline link and every full reference link, `[text][label]`, is
-   replaced by its text.
+1. Every inline image is removed, and then every full reference image,
+   `![text][label]`.
+2. Every inline link is replaced by its text, and then every full reference
+   link, `[text][label]`. The order matters where they overlap: in
+   `[a][b](c.md)`, the link is `[b](c.md)`.
 3. Every HTML tag, `<` through the next `>`, is removed.
 4. A backslash before an ASCII punctuation character is removed.
 5. A run of `_` is removed when it has a letter or digit (general category L or
@@ -588,8 +611,9 @@ The format is versioned from the first release ([0025](../cairn/items/0025-versi
 
 A project names the directory its cairn items are kept in (§7.1). A link whose
 target is a file directly in that directory, whose name begins with one or
-more digits and ends in `.md`, is a **cairn reference** to the item with that number; leading
-zeros are not significant. It is resolved against the Markdown files directly
+more ASCII digits and ends in `.md`, is a **cairn reference** to the item with
+that number; leading zeros are not significant. A number above 2⁶⁴ − 1 is not
+an item number, and a link to such a file is an ordinary link. It is resolved against the Markdown files directly
 in that directory whose names begin with the same number:
 
 - If the target is one of them, the reference resolves.
@@ -663,6 +687,9 @@ these, and a reader **must** honour them:
 | `kind` | array of tables | The project's kinds, in the order it wants them presented. |
 | `kind.name` | string | Required, and unique among the kinds. |
 | `kind.dir` | string | The directory the kind claims, relative to the docs root. Default `.`, the docs root itself. At most one kind may claim a directory. |
+
+In each of these paths, empty segments and `.` are ignored: `./docs/`, `docs/.`
+and `docs` all name `docs`, and `.` names the directory the path is relative to.
 
 ```toml
 format = 1

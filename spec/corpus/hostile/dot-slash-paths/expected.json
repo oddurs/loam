@@ -1,0 +1,103 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/guide/a.md": {
+      "anchors": [
+        "a"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "stale-cairn-link",
+          "detail": "../../cairn/items/0001-old-name.md",
+          "line": 7
+        }
+      ],
+      "frontmatter": {
+        "supersedes": "b.md"
+      },
+      "generated": null,
+      "kind": "guide",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "cairn",
+          "current": "cairn/items/0001-new-name.md",
+          "destination": "../../cairn/items/0001-old-name.md",
+          "fragment": null,
+          "item": 1,
+          "line": 7,
+          "target": "cairn/items/0001-old-name.md"
+        },
+        {
+          "class": "page",
+          "destination": "../page.md",
+          "fragment": null,
+          "line": 7,
+          "target": "docs/page.md"
+        }
+      ],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": "See [the item](../../cairn/items/0001-old-name.md) and [page](../page.md).",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [
+        "b.md"
+      ],
+      "title": "A",
+      "title_from": "heading"
+    },
+    "docs/guide/b.md": {
+      "anchors": [
+        "b"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": {
+        "status": "superseded",
+        "superseded_by": "a.md"
+      },
+      "generated": null,
+      "kind": "guide",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "superseded",
+      "status_from": "frontmatter",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [
+        "a.md"
+      ],
+      "supersedes": [],
+      "title": "B",
+      "title_from": "heading"
+    },
+    "docs/page.md": {
+      "anchors": [
+        "page"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Page",
+      "title_from": "heading"
+    }
+  }
+}

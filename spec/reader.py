@@ -58,6 +58,42 @@ class Core(yaml.SafeLoader):
     `2026-09-22` stays a string, which is what a page means by it.
     """
 
+    def scan_plain_spaces(self, indent, start_mark):
+        """PyYAML forbids a tab inside a plain scalar ("Do not use tabs in
+        YAML!"); YAML 1.2 allows one, as whitespace, so `title: A<tab>B` is
+        the string it looks like. This is PyYAML's own method with a tab
+        counted wherever it counts a space."""
+        chunks = []
+        length = 0
+        while self.peek(length) in " \t":
+            length += 1
+        whitespaces = self.prefix(length)
+        self.forward(length)
+        ch = self.peek()
+        if ch in "\r\n\x85\u2028\u2029":
+            line_break = self.scan_line_break()
+            self.allow_simple_key = True
+            prefix = self.prefix(3)
+            if (prefix == "---" or prefix == "...") and self.peek(3) in "\0 \t\r\n\x85\u2028\u2029":
+                return
+            breaks = []
+            while self.peek() in " \t\r\n\x85\u2028\u2029":
+                if self.peek() in " \t":
+                    self.forward()
+                else:
+                    breaks.append(self.scan_line_break())
+                    prefix = self.prefix(3)
+                    if (prefix == "---" or prefix == "...") and self.peek(3) in "\0 \t\r\n\x85\u2028\u2029":
+                        return
+            if line_break != "\n":
+                chunks.append(line_break)
+            elif not breaks:
+                chunks.append(" ")
+            chunks.extend(breaks)
+        elif whitespaces:
+            chunks.append(whitespaces)
+        return chunks
+
 
 Core.yaml_implicit_resolvers = {}
 for _tag, _pattern, _first in [
@@ -77,14 +113,58 @@ for _tag, _pattern, _first in [
 # no merge key: `<<` resolves as an ordinary string, so nothing is merged. A tag
 # outside the core schema is left with no constructor, PyYAML raises, and §3.2
 # makes that malformed frontmatter.
-def _construct_int(loader, node):
-    """1.2 core integers. PyYAML's own is 1.1's, under which `012` is octal ten."""
-    value = loader.construct_scalar(node)
+INT = re.compile(r"^(?:[-+]?[0-9]+|0o[0-7]+|0x[0-9a-fA-F]+)$")
+FLOAT = re.compile(
+    r"^(?:[-+]?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)(?:[eE][-+]?[0-9]+)?"
+    r"|[-+]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN))$"
+)
+
+
+def _not_core(node, what):
+    return yaml.constructor.ConstructorError(None, None, f"not a 1.2 core {what}", node.start_mark)
+
+
+def _int_of(value):
     if value.startswith("0o"):
         return int(value[2:], 8)
     if value.startswith("0x"):
         return int(value[2:], 16)
     return int(value, 10)
+
+
+def _construct_int(loader, node):
+    """1.2 core integers. PyYAML's own is 1.1's, under which `012` is octal ten.
+
+    §3.2: an integer outside 64 bits makes the frontmatter malformed.
+    """
+    value = loader.construct_scalar(node)
+    if not INT.match(value):
+        raise _not_core(node, "integer")
+    n = _int_of(value)
+    if not -(2**63) <= n < 2**63:
+        raise _not_core(node, "64-bit integer")
+    return n
+
+
+def _construct_float(loader, node):
+    """1.2 core floats: PyYAML's own accepts `1_000` and sexagesimal."""
+    value = loader.construct_scalar(node)
+    if INT.match(value):
+        return float(_int_of(value))
+    if not FLOAT.match(value):
+        raise _not_core(node, "float")
+    return float(value.replace(".inf", "inf").replace(".Inf", "inf").replace(".INF", "inf")
+                 .replace(".nan", "nan").replace(".NaN", "nan").replace(".NAN", "nan"))
+
+
+def _construct_bool(loader, node):
+    """1.2 core booleans: PyYAML's own takes `yes`, `on` and the rest."""
+    value = loader.construct_scalar(node)
+    if value in ("true", "True", "TRUE"):
+        return True
+    if value in ("false", "False", "FALSE"):
+        return False
+    raise _not_core(node, "boolean")
 
 
 Core.yaml_constructors = {
@@ -93,6 +173,29 @@ Core.yaml_constructors = {
     if tag is None or tag.rsplit(":", 1)[-1] in ("null", "bool", "int", "float", "str", "seq", "map")
 }
 Core.add_constructor("tag:yaml.org,2002:int", _construct_int)
+Core.add_constructor("tag:yaml.org,2002:float", _construct_float)
+Core.add_constructor("tag:yaml.org,2002:bool", _construct_bool)
+
+MAX_DEPTH = 100
+MAX_VALUES = 10_000
+
+
+def within_limits(value):
+    """§3.2: nesting at most 100 deep, and at most 10,000 values once aliases
+    are expanded. PyYAML shares an aliased value rather than copying it, so the
+    count is taken by walking, and stops as soon as it is over."""
+    count = 0
+    stack = [(value, 1)]
+    while stack:
+        v, depth = stack.pop()
+        count += 1
+        if count > MAX_VALUES:
+            return False
+        if isinstance(v, (list, dict)):
+            if depth > MAX_DEPTH:
+                return False
+            stack.extend((c, depth + 1) for c in (v.values() if isinstance(v, dict) else v))
+    return True
 
 
 # ─── §7.1 Configuration ───────────────────────────────────────────────────
@@ -103,22 +206,23 @@ def read_config(root):
     with open(path, "rb") as f:
         config = tomllib.load(f)
     fmt = config.get("format")
-    if fmt != FORMAT:
+    if type(fmt) is not int or fmt != FORMAT:  # `true` and `1.0` equal 1 in Python
         # §9: refuse, naming both versions. Never read on a best-effort basis.
         found = "no format" if fmt is None else f"format {fmt}"
         raise Refused(f"{path}: {found}; this reader understands format {FORMAT}")
-    docs = config.get("docs", {}).get("root", "docs")
-    kinds = []
-    for kind in config.get("kind", []):
-        d = kind.get("dir", ".").strip("/")
-        kinds.append((kind["name"], "" if d in ("", ".") else d))
+    kinds = [(kind["name"], clean(kind.get("dir", "."))) for kind in config.get("kind", [])]
     cairn = config.get("links", {}).get("cairn")
-    docs = docs.strip("/")
     return {
-        "docs": "" if docs == "." else docs,
+        "docs": clean(config.get("docs", {}).get("root", "docs")),
         "kinds": kinds,
-        "cairn": cairn.strip("/") if cairn else None,
+        "cairn": clean(cairn) if cairn else None,
     }
+
+
+def clean(path):
+    """§7.1: a path relative to the repository, however it is written:
+    `./docs/`, `docs` and `docs/.` are all `docs`, and `.` is the top."""
+    return "/".join(seg for seg in path.split("/") if seg not in ("", "."))
 
 
 # ─── §3 Structure of a page ─────────────────────────────────────────────────
@@ -143,7 +247,8 @@ ATX = re.compile(r"^ {0,3}(#{1,6})(?:[ \t]+(.*?))?[ \t]*$")
 SETEXT = re.compile(r"^ {0,3}(=+|-+)[ \t]*$")
 BREAK = re.compile(r"^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$")
 LIST = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:[ \t]|$)")
-REFDEF = re.compile(r"^ {0,3}\[((?:[^\]\\]|\\.)+)\]:[ \t]*(<[^>\n]*>|[^ \t]+)")  # §2: whitespace is space and tab
+# §6.1: a label beginning `^` is a footnote, not a definition.
+REFDEF = re.compile(r"^ {0,3}\[((?:[^\]\\^]|\\.)(?:[^\]\\]|\\.)*)\]:[ \t]*(<[^>\n]*>|[^ \t]+)")  # §2: whitespace is space and tab
 
 
 def blocks(body, first_line):
@@ -197,15 +302,16 @@ def blocks(body, first_line):
             level = 1 if m.group(1)[0] == "=" else 2
             text = " ".join(t.strip(WS) for _, t in para)
             number = para[0][0]
+            source = [t for _, t in para]
             para.clear()
-            out.append(("heading", number, (level, text)))
+            out.append(("heading", number, (level, text, source)))
             continue
         m = ATX.match(line)
         if m:
             flush()
             text = m.group(2) or ""
             text = re.sub(r"(?:^|[ \t]+)#+$", "", text).strip(WS)  # closing sequence
-            out.append(("heading", n, (len(m.group(1)), text)))
+            out.append(("heading", n, (len(m.group(1)), text, [text])))
             continue
         if BREAK.match(line):
             flush()
@@ -289,8 +395,16 @@ def heading_text_plain(source):
     t = re.sub(r"\[((?:[^\]\\]|\\.)*)\]\[[^\]]*\]", r"\1", t)
     t = re.sub(r"<[^>\n]*>", "", t)  # inline HTML tags
     t = re.sub(r"\\([!-/:-@\[-`{-~])", r"\1", t)  # backslash escapes
-    t = re.sub(r"(?<![^\W_])_+(?=[^\W_])|(?<=[^\W_])_+(?![^\W_])", "", t)  # _emphasis_, not snake_case
+    t = re.sub(r"_+", lambda m: emphasis_or_name(m, t), t)
     return html.unescape(t)
+
+
+def emphasis_or_name(m, t):
+    """§6.3 step 5: a run of `_` with a letter or digit on one side only is
+    emphasis, and goes; with one on both sides or neither, it stays."""
+    def alnum(i):
+        return 0 <= i < len(t) and unicodedata.category(t[i])[0] in "LN"
+    return "" if alnum(m.start() - 1) != alnum(m.end()) else m.group()
 
 
 # Alphabetic characters outside the letter categories: circled and squared
@@ -330,7 +444,7 @@ def anchors(block_list):
         if kind not in ("paragraph", "heading"):
             continue
         lines = [data[1]] if kind == "heading" else data
-        text = "\n".join(strip_code_spans(line) for line in lines)
+        text = strip_code_spans("\n".join(lines))  # a code span can run over a line break
         for tag in re.finditer(r"<([A-Za-z][A-Za-z0-9-]*)[^>]*>", text):
             # A browser follows a fragment to an `id` on anything, and to a
             # `name` only on an `a`.
@@ -448,18 +562,18 @@ def links(block_list):
     for kind, number, data in block_list:
         if kind == "code":
             continue
-        if kind == "heading":
-            result.extend((number, dest) for _, dest in inline_destinations(strip_code_spans(data[1])))
-            continue
-        # A paragraph: definitions line by line, inline links across lines.
+        # A paragraph, or a heading's source lines: definitions line by line,
+        # outside headings, and inline links across lines.
+        heading = kind == "heading"
         found, joined, starts = [], [], []
         offset = 0
-        for i, line in enumerate(data):
+        for i, line in enumerate(data[2] if heading else data):
             starts.append(offset)
-            m = REFDEF.match(line)
+            m = None if heading else REFDEF.match(line)
             if m:
                 dest = m.group(2)
-                found.append((number + i, 0, dest[1:-1] if dest.startswith("<") else dest))
+                angle = len(dest) > 1 and dest.startswith("<") and dest.endswith(">")
+                found.append((number + i, 0, dest[1:-1] if angle else dest))
                 line = " " * len(line)
             joined.append(line)
             offset += len(line) + 1
@@ -554,8 +668,8 @@ def cairn_id(project, target):
     if not items or not target.startswith(items + "/"):
         return None
     name = target[len(items) + 1 :]
-    m = re.match(r"(\d+)", name)
-    if not m or "/" in name or not name.endswith(".md"):
+    m = re.match(r"([0-9]+)", name)  # ASCII digits: `\d` would take any script's
+    if not m or "/" in name or not name.endswith(".md") or int(m.group(1)) >= 2**64:
         return None
     return int(m.group(1))
 
@@ -577,13 +691,16 @@ def read_page(project, path):
         findings.append({"line": 1, "code": "malformed-frontmatter", "detail": problem})
     elif front_text is not None:
         try:
-            meta = yaml.load(front_text, Loader=Core) if front_text.strip() else {}
+            # §3.1: each line of it ends in a line break.
+            meta = yaml.load(front_text + "\n", Loader=Core) if front_text.strip() else {}
             if meta is None:
                 meta = {}
+            if not within_limits(meta):
+                raise yaml.YAMLError("over the limits of §3.2")
             if not isinstance(meta, dict):
                 findings.append({"line": 1, "code": "malformed-frontmatter", "detail": "not a mapping"})
                 meta = None
-        except yaml.YAMLError:
+        except (yaml.YAMLError, RecursionError):  # nesting so deep PyYAML recurses out
             findings.append({"line": 1, "code": "malformed-frontmatter", "detail": "not YAML"})
             meta = None
 

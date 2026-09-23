@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/folded.md": {
+      "anchors": [
+        "a-folded-summary-written-last"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": {
+        "summary": "Folded text.\n"
+      },
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": "Folded text.\n",
+      "summary_from": "frontmatter",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "A folded summary, written last",
+      "title_from": "heading"
+    },
+    "docs/literal.md": {
+      "anchors": [
+        "ignored"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": {
+        "title": "Literal\n"
+      },
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Literal\n",
+      "title_from": "frontmatter"
+    },
+    "docs/stripped.md": {
+      "anchors": [
+        "stripped"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": {
+        "summary": "Stripped."
+      },
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": "Stripped.",
+      "summary_from": "frontmatter",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Stripped",
+      "title_from": "heading"
+    }
+  }
+}

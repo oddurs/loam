@@ -86,6 +86,22 @@ struct Builder {
     root: Option<Yaml>,
     failed: bool,
     documents: usize,
+    /// Values so far, an alias counting as all it stands for (spec §3.2).
+    values: usize,
+}
+
+/// Spec §3.2's limits: how deep collections nest, and how many values there
+/// are once aliases are expanded.
+const MAX_DEPTH: usize = 100;
+const MAX_VALUES: usize = 10_000;
+
+/// How many values `value` is: itself, and every value inside it.
+fn size(value: &Yaml) -> usize {
+    1 + match value {
+        Yaml::Seq(items) => items.iter().map(size).sum(),
+        Yaml::Map(entries) => entries.iter().map(|(_, v)| size(v)).sum(),
+        _ => 0,
+    }
 }
 
 const CORE: &str = "tag:yaml.org,2002:";
@@ -93,17 +109,29 @@ const CORE: &str = "tag:yaml.org,2002:";
 /// The core-schema type a tag names, or `Err` for any other tag (spec §3.2).
 fn core_tag(tag: &Option<Tag>) -> Result<Option<&str>, ()> {
     let Some(tag) = tag else { return Ok(None) };
-    if tag.handle != "!!" && tag.handle != CORE {
-        return Err(());
-    }
-    match tag.suffix.as_str() {
+    let name = match tag.handle.as_str() {
+        "!!" | CORE => tag.suffix.as_str(),
+        // `!<tag:yaml.org,2002:str>`, written out in full.
+        "" => tag.suffix.strip_prefix(CORE).ok_or(())?,
+        _ => return Err(()),
+    };
+    match name {
         s @ ("null" | "bool" | "int" | "float" | "str" | "seq" | "map") => Ok(Some(s)),
         _ => Err(()),
     }
 }
 
 impl Builder {
-    fn push_value(&mut self, value: Yaml) {
+    /// Add a value, which is `weight` values once aliases are expanded.
+    fn push_value(&mut self, value: Yaml, weight: usize) {
+        let is_key = matches!(self.stack.last(), Some(Frame::Map(_, None, _)));
+        if !is_key {
+            self.values += weight;
+            if self.values > MAX_VALUES {
+                self.failed = true;
+                return;
+            }
+        }
         match self.stack.last_mut() {
             None => self.root = Some(value),
             Some(Frame::Seq(items, _)) => items.push(value),
@@ -165,18 +193,38 @@ impl MarkedEventReceiver for Builder {
                             return;
                         }
                     },
-                    Ok(None) if style == TScalarStyle::Plain => resolve(&text),
+                    Ok(None) if style == TScalarStyle::Plain => {
+                        // An integer too large for 64 bits (spec §3.2).
+                        if parse_int(&text).is_none() && INT.is_match(&text) {
+                            self.failed = true;
+                            return;
+                        }
+                        resolve(&text)
+                    }
                     Ok(None) => Yaml::Str(text),
                 };
                 if anchor > 0 {
                     self.anchors.insert(anchor, value.clone());
                 }
-                self.push_value(value);
+                self.push_value(value, 1);
             }
-            Event::Alias(id) => match self.anchors.get(&id).cloned() {
-                Some(v) => self.push_value(v),
+            Event::Alias(id) => match self.anchors.get(&id) {
+                // Counted before it is copied, so an alias of an alias of an
+                // alias cannot fill memory first.
+                Some(v) => {
+                    let weight = size(v);
+                    if self.values + weight > MAX_VALUES {
+                        self.failed = true;
+                    } else {
+                        let v = v.clone();
+                        self.push_value(v, weight);
+                    }
+                }
                 None => self.failed = true,
             },
+            Event::SequenceStart(..) | Event::MappingStart(..) if self.stack.len() >= MAX_DEPTH => {
+                self.failed = true
+            }
             Event::SequenceStart(anchor, tag) => match core_tag(&tag) {
                 Ok(None | Some("seq")) => self.stack.push(Frame::Seq(Vec::new(), anchor)),
                 _ => self.failed = true,
@@ -191,7 +239,7 @@ impl MarkedEventReceiver for Builder {
                     if anchor > 0 {
                         self.anchors.insert(anchor, v.clone());
                     }
-                    self.push_value(v);
+                    self.push_value(v, 1);
                 }
             }
             Event::MappingEnd => {
@@ -200,7 +248,7 @@ impl MarkedEventReceiver for Builder {
                     if anchor > 0 {
                         self.anchors.insert(anchor, v.clone());
                     }
-                    self.push_value(v);
+                    self.push_value(v, 1);
                 }
             }
             _ => {}
@@ -225,14 +273,18 @@ pub fn resolve(text: &str) -> Yaml {
     Yaml::Str(text.to_string())
 }
 
+/// The core schema's integer forms, whatever their size.
+static INT: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
+    regex::Regex::new(r"^(?:[-+]?[0-9]+|0o[0-7]+|0x[0-9a-fA-F]+)$").unwrap()
+});
+
 /// A scalar with an explicit core tag.
 fn construct(tag: &str, text: &str) -> Option<Yaml> {
     Some(match tag {
         "str" => Yaml::Str(text.to_string()),
         "null" => Yaml::Null,
-        "bool" => match text.to_ascii_lowercase().as_str() {
-            "true" => Yaml::Bool(true),
-            "false" => Yaml::Bool(false),
+        "bool" => match resolve(text) {
+            b @ Yaml::Bool(_) => b,
             _ => return None,
         },
         "int" => Yaml::Int(parse_int(text)?),
@@ -336,5 +388,59 @@ mod tests {
         assert_eq!(parse_mapping("just text"), Err(Problem::NotAMapping));
         assert_eq!(parse_mapping("# only a comment\n"), Ok(vec![]));
         assert_eq!(parse_mapping("title: [never closed"), Err(Problem::NotYaml));
+    }
+
+    #[test]
+    fn verbatim_tags_and_tagged_values() {
+        let m = parse_mapping("t: !<tag:yaml.org,2002:str> 2026\n").unwrap();
+        assert_eq!(m[0].1, Yaml::Str("2026".into()));
+        assert_eq!(
+            parse_mapping("t: !<tag:example.com,2000:x> 1\n"),
+            Err(Problem::NotYaml)
+        );
+        for bad in [
+            "b: !!bool yes",
+            "b: !!bool tRuE",
+            "i: !!int 3.0",
+            "f: !!float 1_000",
+        ] {
+            assert_eq!(parse_mapping(bad), Err(Problem::NotYaml), "{bad}");
+        }
+    }
+
+    #[test]
+    fn the_three_limits() {
+        // An integer beyond 64 bits, in any of its forms, but not as a float.
+        for big in [
+            "99999999999999999999",
+            "-9223372036854775809",
+            "0xFFFFFFFFFFFFFFFFFF",
+        ] {
+            assert_eq!(
+                parse_mapping(&format!("n: {big}")),
+                Err(Problem::NotYaml),
+                "{big}"
+            );
+        }
+        assert_eq!(
+            parse_mapping("n: 9223372036854775807").unwrap()[0].1,
+            Yaml::Int(i64::MAX)
+        );
+        assert_eq!(
+            parse_mapping("n: !!float 99999999999999999999").unwrap()[0].1,
+            Yaml::Float(1e20)
+        );
+        // Nesting: the mapping itself and 99 more are allowed, 100 more are not.
+        let nest = |n: usize| format!("x: {}{}", "[".repeat(n), "]".repeat(n));
+        assert!(parse_mapping(&nest(99)).is_ok());
+        assert_eq!(parse_mapping(&nest(100)), Err(Problem::NotYaml));
+        // Aliases, counted as what they stand for.
+        let mut laughs = String::from("a: &a [x, x, x, x, x, x, x, x, x]\n");
+        for (i, c) in ('b'..='h').enumerate() {
+            let prev = (b'a' + i as u8) as char;
+            laughs += &format!("{c}: &{c} [{}]\n", vec![format!("*{prev}"); 9].join(", "));
+        }
+        assert_eq!(parse_mapping(&laughs), Err(Problem::NotYaml));
+        assert!(parse_mapping("a: &a [1, 2]\nb: [*a, *a]\n").is_ok());
     }
 }

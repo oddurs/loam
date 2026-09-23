@@ -1,0 +1,89 @@
+{
+  "format": 1,
+  "pages": {
+    "docs/notes.md": {
+      "anchors": [
+        "footnotes"
+      ],
+      "covers": [],
+      "findings": [
+        {
+          "code": "broken-link",
+          "detail": "<other.md",
+          "line": 8
+        },
+        {
+          "code": "broken-link",
+          "detail": "<é",
+          "line": 11
+        }
+      ],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [
+        {
+          "class": "file",
+          "destination": "<other.md",
+          "fragment": null,
+          "line": 8,
+          "target": "docs/<other.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md",
+          "fragment": null,
+          "line": 9,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "page",
+          "destination": "other.md",
+          "fragment": null,
+          "line": 10,
+          "target": "docs/other.md"
+        },
+        {
+          "class": "file",
+          "destination": "<é",
+          "fragment": null,
+          "line": 11,
+          "target": "docs/<é"
+        }
+      ],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": "A claim.[^1] Another.[^note]",
+      "summary_from": "paragraph",
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Footnotes",
+      "title_from": "heading"
+    },
+    "docs/other.md": {
+      "anchors": [
+        "other"
+      ],
+      "covers": [],
+      "findings": [],
+      "frontmatter": null,
+      "generated": null,
+      "kind": "page",
+      "kind_from": "directory",
+      "links": [],
+      "order": null,
+      "reviewed": null,
+      "status": "current",
+      "status_from": "default",
+      "summary": null,
+      "summary_from": null,
+      "superseded_by": [],
+      "supersedes": [],
+      "title": "Other",
+      "title_from": "heading"
+    }
+  }
+}

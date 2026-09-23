@@ -58,13 +58,13 @@ pub struct Config {
     pub warnings: Vec<String>,
 }
 
+/// A path relative to the repository, however it was written (spec §7.1):
+/// `./docs/`, `docs` and `docs/.` are all `docs`, and `.` is the top.
 fn clean(dir: &str) -> String {
-    let d = dir.trim_matches('/');
-    if d == "." {
-        String::new()
-    } else {
-        d.to_string()
-    }
+    dir.split('/')
+        .filter(|seg| !seg.is_empty() && *seg != ".")
+        .collect::<Vec<_>>()
+        .join("/")
 }
 
 impl Config {
