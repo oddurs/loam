@@ -261,6 +261,23 @@ fn the_contract_is_generated_from_the_config() {
     assert!(block.contains("loam search"));
     assert!(block.contains("loam supersede"));
     assert!(block.contains("loam stale --working-tree"));
+    // A description written over several lines stays one list item.
+    repo.write(
+        "loam.toml",
+        &CONFIG.replace(
+            "description = \"What did we find out? Evidence, with its sources.\"",
+            "description = \"\"\"\nWhat did we find out?\nEvidence.\n\"\"\"",
+        ),
+    );
+    let wrapped = String::from_utf8(repo.loam(&["agent"]).stdout).unwrap();
+    assert!(
+        wrapped.contains("in `docs/research/` — What did we find out? Evidence.\n"),
+        "{wrapped}"
+    );
+    assert!(
+        wrapped.contains("sources:\n     - title:"),
+        "the shape of sources is given"
+    );
     // Changing a kind changes the block.
     repo.write(
         "loam.toml",

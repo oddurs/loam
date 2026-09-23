@@ -71,7 +71,15 @@ This project keeps its written context — research, design, reference, guides �
 1. `loam search <WORDS>` for what is already written, and `loam context <PATH>` for the pages about a file you are about to change. Read them.
 2. To add a page: `loam new <KIND> "<Title>"` — never a path you made up. It refuses when a page like it exists: update that page instead, or pass `--anyway` if yours is really about something else.
 3. A page you create starts as `status: draft`. A person makes it `current`; do not do that yourself. loam recognises Claude Code; any other agent identifies itself with `LOAM_AGENT=<name>` in the environment, or `--agent <name>`.
-4. Write the page: its title as the `# heading`, then a first paragraph saying what the page is for — that paragraph is its summary in the index. Say which files it describes, so loam can tell when they change: `loam set <PAGE> covers+=<PATH>`. Research gives its `sources`, each with the date it was read.
+4. Write the page: its title as the `# heading`, then a first paragraph saying what the page is for — that paragraph is its summary in the index. Say which files it describes, so loam can tell when they change: `loam set <PAGE> covers+=<PATH>`. A page drawn from outside sources lists them in its frontmatter, each with the day it was read:
+
+   ```yaml
+   sources:
+     - title: <what it is>
+       url: <where it is>
+       read: <YYYY-MM-DD>
+   ```
+
 5. A page that replaces another: `loam supersede <OLD> <NEW>` — never a `-v2.md` beside the old one. Renaming: `loam mv <OLD> <NEW>`, which rewrites every link.
 6. After changing code, `loam stale --working-tree` names the pages covering what you changed. Update each, or if it is still true, `loam review <PAGE>`.
 7. `loam check` must pass before you finish.

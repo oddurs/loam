@@ -49,7 +49,7 @@ pub fn block(config: &Config) -> String {
         let what = k
             .description
             .as_deref()
-            .map(str::trim)
+            .map(|d| d.split_whitespace().collect::<Vec<_>>().join(" "))
             .filter(|d| !d.is_empty())
             .map_or(String::new(), |d| format!(" — {d}"));
         let age = k.stale_after.as_deref().map_or(String::new(), |a| {
@@ -67,7 +67,7 @@ pub fn block(config: &Config) -> String {
     } else {
         b.push_str("3. Identify yourself with `LOAM_AGENT=<name>` in the environment, or `--agent <name>`. loam recognises Claude Code without it.\n");
     }
-    b.push_str("4. Write the page: its title as the `# heading`, then a first paragraph saying what the page is for — that paragraph is its summary in the index. Say which files it describes, so loam can tell when they change: `loam set <PAGE> covers+=<PATH>`. Research gives its `sources`, each with the date it was read.\n");
+    b.push_str("4. Write the page: its title as the `# heading`, then a first paragraph saying what the page is for — that paragraph is its summary in the index. Say which files it describes, so loam can tell when they change: `loam set <PAGE> covers+=<PATH>`. A page drawn from outside sources lists them in its frontmatter, each with the day it was read:\n\n   ```yaml\n   sources:\n     - title: <what it is>\n       url: <where it is>\n       read: <YYYY-MM-DD>\n   ```\n\n");
     b.push_str("5. A page that replaces another: `loam supersede <OLD> <NEW>` — never a `-v2.md` beside the old one. Renaming: `loam mv <OLD> <NEW>`, which rewrites every link.\n");
     b.push_str("6. After changing code, `loam stale --working-tree` names the pages covering what you changed. Update each, or if it is still true, `loam review <PAGE>`.\n");
     b.push_str("7. `loam check` must pass before you finish.\n\n");
