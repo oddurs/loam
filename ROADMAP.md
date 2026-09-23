@@ -97,7 +97,7 @@ An agent told to research something finds what is already written before writing
 
 ## v0.4 — Feeds a site
 
-`··········` 0% · 0 of 7 done
+`##········` 14% · 1 of 7 done
 
 The docs folder is an indexable source: a site, a search box or another program can be built from it without reading loam's code or parsing its pages twice.
 
@@ -110,9 +110,9 @@ The docs folder is an indexable source: a site, a search box or another program 
 - [ ] `0055` A recipe: a site built from the manifest <sup>docs · p2 · m</sup>
 - [ ] `0056` harrow shows stale pages under Needs you <sup>feature · p2 · s</sup>
 
-### in progress
+### done
 
-- [ ] `0069` Three agents try to break loam, and what they found is fixed <sup>bug · p2</sup>
+- [x] `0069` Three agents try to break loam, and what they found is fixed <sup>bug · p2</sup>
 
 ## later — Someday
 

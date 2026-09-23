@@ -2,10 +2,11 @@
 id: 69
 title: Three agents try to break loam, and what they found is fixed
 type: bug
-status: doing
+status: done
 milestone: v0.4
 created: 2026-09-23
 updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p2
 ---
 
@@ -34,7 +35,7 @@ at fault, the spec says what is right and both readers agree on a corpus case.
 - [x] Every write-path finding has a test in tests/writes.rs or write.rs, and passes
 - [x] Every reader finding has a corpus case both readers agree on
 - [x] Every freshness finding is fixed or recorded as its own item
-- [ ] The stress corpus and the fuzzer show no disagreement on well-formed input
+- [x] The stress corpus and the fuzzer show no disagreement on well-formed input
 
 ## 2026-09-23
 
@@ -55,3 +56,7 @@ Left as designed: 'context docs/q.md' does not list q.md itself. The caller has 
 ## 2026-09-23
 
 Found while testing the fixes: the write lock sat in the docs root, so review (which asks git for uncommitted files while holding it) saw .loam.lock as an uncommitted change, and a user's git status could show it mid-command. It now lives in the git directory, falling back to the docs root only without git.
+
+## 2026-09-23
+
+After both rounds: the 7,357-page stress corpus reads identically in both readers; CI green on ubuntu and macOS at d32af3a.
