@@ -39,16 +39,13 @@ Nothing is built until the format is specified and the decisions that shape it a
 
 ## v0.1 — Useful to me
 
-`##########` 94% · 15 of 16 done
+`##########` 100% · 16 of 16 done
 
 loam replaces the hand-kept table in a `docs/README.md` and catches the link that broke last week — in three real repositories, not a demo.
 
-### backlog
-
-- [ ] `0027` Scaffold the crate the way cairn and harrow are scaffolded <sup>chore · p1 · s</sup>
-
 ### done
 
+- [x] `0027` Scaffold the crate the way cairn and harrow are scaffolded <sup>chore · p1 · s</sup>
 - [x] `0028` Read a folder of pages into one model <sup>feature · p0 · m</sup>
 - [x] `0029` init adopts a docs folder that already exists <sup>feature · p0 · m</sup>
 - [x] `0030` Generate the docs index instead of keeping it by hand <sup>feature · p0 · m</sup>
