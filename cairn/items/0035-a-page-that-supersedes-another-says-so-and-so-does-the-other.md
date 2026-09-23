@@ -2,13 +2,14 @@
 id: 35
 title: A page that supersedes another says so, and so does the other
 type: feature
-status: backlog
+status: done
 milestone: v0.1
 depends_on:
 - 18
 - 28
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p2
 pillar:
 - cli
@@ -30,5 +31,9 @@ section. `check` warns about links that still point at the old page.
 
 ## Acceptance criteria
 
-- [ ] Both pages updated in one write
-- [ ] The notice is added once, not again on a second run
+- [x] Both pages updated in one write
+- [x] The notice is added once, not again on a second run
+
+## 2026-09-22
+
+Both pages are written under one lock, each atomically; a filesystem offers no atomic write of two files, so 'one write' means one command under one lock. The notice goes above the title, not below it, so the old page's title and summary still read as they did.

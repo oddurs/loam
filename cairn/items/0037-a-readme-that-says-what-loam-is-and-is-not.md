@@ -2,13 +2,15 @@
 id: 37
 title: A README that says what loam is and is not
 type: docs
-status: backlog
+status: done
 milestone: v0.1
+assignee: Oddur Sigurdsson
 depends_on:
 - 14
 - 19
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p2
 effort: s
 ---
@@ -22,5 +24,9 @@ anybody who knows cairn will ask.
 
 ## Acceptance criteria
 
-- [ ] States the tense rule and the boundary
-- [ ] The quickstart is run for real, not written from memory
+- [x] States the tense rule and the boundary
+- [x] The quickstart is run for real, not written from memory
+
+## 2026-09-22
+
+README.md states the tense rule and the boundary, and fits loam beside cairn and harrow in its first screen. Its quickstart, and the longer one in docs/guide/adopting-a-docs-folder.md, are output from a real run on a fresh copy of poptop; the run found the summary-link bug fixed under 0030.

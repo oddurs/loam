@@ -39,30 +39,35 @@ Nothing is built until the format is specified and the decisions that shape it a
 
 ## v0.1 — Useful to me
 
-`··········` 0% · 0 of 14 done
+`##########` 94% · 15 of 16 done
 
 loam replaces the hand-kept table in a `docs/README.md` and catches the link that broke last week — in three real repositories, not a demo.
 
 ### backlog
 
 - [ ] `0027` Scaffold the crate the way cairn and harrow are scaffolded <sup>chore · p1 · s</sup>
-- [ ] `0028` Read a folder of pages into one model <sup>feature · p0 · m</sup>
-- [ ] `0029` init adopts a docs folder that already exists <sup>feature · p0 · m</sup>
-- [ ] `0030` Generate the docs index instead of keeping it by hand <sup>feature · p0 · m</sup>
-- [ ] `0031` check finds broken links, unclaimed pages and malformed frontmatter <sup>feature · p0 · m</sup>
-- [ ] `0032` new puts a page where its kind lives, seeded from its template <sup>feature · p1 · s</sup>
-- [ ] `0033` list, show and search <sup>feature · p1 · m</sup>
-- [ ] `0034` Renaming a page rewrites every link to it <sup>feature · p1 · m</sup>
-- [ ] `0035` A page that supersedes another says so, and so does the other <sup>feature · p2 · s</sup>
-- [ ] `0036` Adopt code-as-color, poptop and measure-of-the-world <sup>chore · p0 · m</sup>
-- [ ] `0037` A README that says what loam is and is not <sup>docs · p2 · s</sup>
-- [ ] `0060` Generated files in a docs folder <sup>question · p2 · s</sup>
-- [ ] `0061` Move code-as-color's five ADRs into its cairn backlog <sup>chore · p2 · s</sup>
-- [ ] `0062` Round-trip cases for every must the spec puts on a writer <sup>chore · p2 · s</sup>
+
+### done
+
+- [x] `0028` Read a folder of pages into one model <sup>feature · p0 · m</sup>
+- [x] `0029` init adopts a docs folder that already exists <sup>feature · p0 · m</sup>
+- [x] `0030` Generate the docs index instead of keeping it by hand <sup>feature · p0 · m</sup>
+- [x] `0031` check finds broken links, unclaimed pages and malformed frontmatter <sup>feature · p0 · m</sup>
+- [x] `0032` new puts a page where its kind lives, seeded from its template <sup>feature · p1 · s</sup>
+- [x] `0033` list, show and search <sup>feature · p1 · m</sup>
+- [x] `0034` Renaming a page rewrites every link to it <sup>feature · p1 · m</sup>
+- [x] `0035` A page that supersedes another says so, and so does the other <sup>feature · p2 · s</sup>
+- [x] `0036` Adopt code-as-color, poptop and measure-of-the-world <sup>chore · p0 · m</sup>
+- [x] `0037` A README that says what loam is and is not <sup>docs · p2 · s</sup>
+- [x] `0060` Generated files in a docs folder <sup>question · p2 · s</sup>
+- [x] `0061` Move code-as-color's five ADRs into its cairn backlog <sup>chore · p2 · s</sup>
+- [x] `0062` Round-trip cases for every must the spec puts on a writer <sup>chore · p2 · s</sup>
+- [x] `0063` A link's text may wrap over lines <sup>spec · p2</sup>
+- [x] `0064` order: a page's place among its kind <sup>spec · p2</sup>
 
 ## v0.2 — Knows when it is wrong
 
-`··········` 0% · 0 of 8 done
+`··········` 0% · 0 of 9 done
 
 A page can say what code it describes, and loam can say when that code has moved on without it.
 
@@ -76,10 +81,11 @@ A page can say what code it describes, and loam can say when that code has moved
 - [ ] `0043` Research decays by age, not by diff <sup>feature · p2 · s</sup>
 - [ ] `0044` A page that covers nothing that exists is itself suspect <sup>feature · p2 · s</sup>
 - [ ] `0045` Staleness in CI without failing every build <sup>feature · p1 · s</sup>
+- [ ] `0068` A page can say it is generated <sup>spec · p2 · s</sup>
 
 ## v0.3 — Agents write into it
 
-`··········` 0% · 0 of 5 done
+`··········` 0% · 0 of 6 done
 
 An agent told to research something finds what is already written before writing it again, and writes what it finds where it belongs.
 
@@ -90,6 +96,7 @@ An agent told to research something finds what is already written before writing
 - [ ] `0048` Warn before writing a page that already exists under another name <sup>feature · p1 · m</sup>
 - [ ] `0049` context: the pages that matter for a path, within a budget <sup>feature · p0 · m</sup>
 - [ ] `0050` After code changes, say which pages to reread <sup>feature · p1 · s</sup>
+- [ ] `0067` set a frontmatter key from the command line <sup>feature · p2 · s</sup>
 
 ## v0.4 — Feeds a site
 
@@ -108,7 +115,7 @@ The docs folder is an indexable source: a site, a search box or another program 
 
 ## later — Someday
 
-`··········` 0% · 0 of 2 done
+`··········` 0% · 0 of 4 done
 
 Filed so it is not forgotten, and not scheduled so it is not pretended to.
 
@@ -116,4 +123,6 @@ Filed so it is not forgotten, and not scheduled so it is not pretended to.
 
 - [ ] `0057` Is an MCP server worth it when the command line is this small? <sup>question · p3 · s</sup>
 - [ ] `0058` Where do images and figures beside a page live? <sup>question · p3 · s</sup>
+- [ ] `0065` A label shorter than the title, for listings <sup>feature · p2 · s</sup>
+- [ ] `0066` Long first paragraphs make a long index <sup>feature · p2 · s</sup>
 

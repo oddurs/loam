@@ -2,12 +2,14 @@
 id: 61
 title: Move code-as-color's five ADRs into its cairn backlog
 type: chore
-status: backlog
+status: done
 milestone: v0.1
+assignee: Oddur Sigurdsson
 depends_on:
 - 15
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p2
 pillar:
 - links
@@ -32,6 +34,10 @@ In code-as-color, as part of adopting it (0036):
 
 ## Acceptance criteria
 
-- [ ] Five closed decision items in code-as-color's backlog, one per ADR
-- [ ] Every link that named a file in `docs/decisions/` resolves after the move
-- [ ] `loam check` in code-as-color reports nothing that the move caused
+- [x] Five closed decision items in code-as-color's backlog, one per ADR
+- [x] Every link that named a file in `docs/decisions/` resolves after the move
+- [x] `loam check` in code-as-color reports nothing that the move caused
+
+## 2026-09-22
+
+Done on code-as-color's loam branch (df0dde4): a decision type added to its cairn.toml, the five ADRs as closed items 0071 to 0075, design.md and architecture.md linking them under 'Decided', docs/decisions/ removed. The only link into it was the hand-kept index row, which the generated index replaced.

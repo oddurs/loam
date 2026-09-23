@@ -2,10 +2,12 @@
 id: 63
 title: A link's text may wrap over lines
 type: spec
-status: backlog
+status: done
 milestone: v0.1
+assignee: Oddur Sigurdsson
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p2
 ---
 
@@ -36,5 +38,9 @@ wrapped paragraph.
 
 ## Acceptance criteria
 
-- [ ] spec/README.md updated
-- [ ] A corpus case exercises it
+- [x] spec/README.md updated
+- [x] A corpus case exercises it
+
+## 2026-09-22
+
+spec §6.1 updated; hostile/wrapped-links pins it, with a code span that wraps and a destination that does not.

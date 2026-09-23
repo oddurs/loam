@@ -15,9 +15,10 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  # cairn checks this repository's backlog; pinned, so a cairn release cannot
-  # fail a build that changed nothing.
-  CAIRN_VERSION: v0.2.1
+  # cairn checks this repository's backlog. Pinned to a commit rather than a
+  # release, because the items use `closed_at`, which no release has yet; and
+  # pinned at all, so a change to cairn cannot fail a build that changed nothing.
+  CAIRN_REV: 3d67f0c7ea5799d1da59f39513737567d769e331
 
 jobs:
   check:
@@ -42,8 +43,5 @@ jobs:
           python-version: "3.13"
       - run: python3 -m pip install pyyaml
       - name: Install cairn
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/oddurs/cairn/main/install.sh \
-            | CAIRN_BINDIR="$HOME/.local/bin" sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+        run: cargo install --locked --git https://github.com/oddurs/cairn --rev "$CAIRN_REV" cairn-md
       - run: make check

@@ -2,13 +2,14 @@
 id: 31
 title: check finds broken links, unclaimed pages and malformed frontmatter
 type: feature
-status: backlog
+status: done
 milestone: v0.1
 depends_on:
 - 24
 - 28
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p0
 pillar:
 - cli
@@ -35,6 +36,10 @@ format is cairn's, so an editor's problem matcher for one works for the other.
 
 ## Acceptance criteria
 
-- [ ] Each finding above has a corpus case
-- [ ] Exit codes documented and tested
-- [ ] Clean on the three adopted folders, or every finding is a real defect
+- [x] Each finding above has a corpus case
+- [x] Exit codes documented and tested
+- [x] Clean on the three adopted folders, or every finding is a real defect
+
+## 2026-09-22
+
+Every format finding has a corpus case (spec/corpus/hostile); loam's own judgements — superseded-without-successor, successor-without-superseded, link-to-superseded, stale-index — are tested in tests/cli.rs, since the format corpus holds only the format's. Exit codes are 0/1/2, documented in docs/reference/commands.md and tested in check_exit_codes. All three adopted folders check clean with --strict; measure-of-the-world's seven broken links were real, six of them STYLEGUIDE.md and BUILD.md where the files are lowercase, so check now says when a broken link differs from a real file only in case.

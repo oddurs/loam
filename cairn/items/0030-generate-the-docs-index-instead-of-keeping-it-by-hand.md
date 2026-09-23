@@ -2,12 +2,13 @@
 id: 30
 title: Generate the docs index instead of keeping it by hand
 type: feature
-status: backlog
+status: done
 milestone: v0.1
 depends_on:
 - 28
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p0
 pillar:
 - index
@@ -39,6 +40,10 @@ them, but work.
 
 ## Acceptance criteria
 
-- [ ] poptop's rendered index carries everything its hand-kept one does
-- [ ] `render --check` fails on drift and passes after rendering
-- [ ] Rendering twice changes nothing
+- [x] poptop's rendered index carries everything its hand-kept one does
+- [x] `render --check` fails on drift and passes after rendering
+- [x] Rendering twice changes nothing
+
+## 2026-09-22
+
+The index is generated between two marker lines in docs/README.md rather than from separate header and footer files: an index is a page people also write in, and poptop's opens and closes with hand-written prose. Rendering poptop carries every page, every note (moved into the page as summary), the order (as order, 0064) and the Design prose (as the kind's description). Two rows now show the page's full title where the hand-kept table used a shorter label; filed as 0065. The quickstart found that an inferred summary's relative links broke when copied into the index; render now rewrites them for the index's location, with a test.

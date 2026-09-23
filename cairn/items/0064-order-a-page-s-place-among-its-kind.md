@@ -2,10 +2,12 @@
 id: 64
 title: 'order: a page''s place among its kind'
 type: spec
-status: backlog
+status: done
 milestone: v0.1
+assignee: Oddur Sigurdsson
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p2
 ---
 
@@ -31,5 +33,9 @@ page it belongs to, rather than in a list in loam.toml that a rename would break
 
 ## Acceptance criteria
 
-- [ ] spec/README.md updated
-- [ ] A corpus case exercises it
+- [x] spec/README.md updated
+- [x] A corpus case exercises it
+
+## 2026-09-22
+
+spec §4 updated; hostile/order pins integers, negatives, and a string and a boolean as malformed-key.

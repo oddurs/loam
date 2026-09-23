@@ -2,12 +2,13 @@
 id: 29
 title: init adopts a docs folder that already exists
 type: feature
-status: backlog
+status: done
 milestone: v0.1
 depends_on:
 - 28
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p0
 pillar:
 - cli
@@ -40,5 +41,9 @@ guesses rather than hiding them, and the config is one file to correct.
 
 ## Acceptance criteria
 
-- [ ] Run on the three real folders: no page changed, config plausible, every guess shown
-- [ ] Refuses to overwrite an existing config without `--force`
+- [x] Run on the three real folders: no page changed, config plausible, every guess shown
+- [x] Refuses to overwrite an existing config without `--force`
+
+## 2026-09-22
+
+Run on all three real folders (0036): no page changed, every guess printed. Two frictions fixed on the way: inferred kinds were alphabetical, putting Design before Guide, and now the kinds a reader recognises come first in the presets' order; and the root catch-all's description, 'has not found its kind yet', read as a complaint once it headed an index section, so the root kind gets title 'Pages' or 'Other pages' and no description.
