@@ -5,6 +5,9 @@ covers:
   - src/cmd/supersede.rs
   - src/write.rs
 order: 2
+reviewed:
+  commit: 0dfdfc2d47308c0bb8935a2281e3bed9b95da1c3
+  date: 2026-09-23
 ---
 
 # Writing, moving and replacing pages
@@ -95,3 +98,7 @@ It never reformats frontmatter. A key loam does not know is never parsed and
 written back, so it cannot be reordered or requoted; a key loam sets is quoted
 only when it would otherwise read back as something else. Line endings, a byte
 order mark and every line loam was not asked to change are kept byte for byte.
+
+## Review log
+
+- 2026-09-23, at 0dfdfc2: write.rs gained set_mapping for review; it keeps other fields under a key, so what the page promises about frontmatter still holds
