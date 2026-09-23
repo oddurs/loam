@@ -2,6 +2,7 @@
 //
 // Copyright (c) 2026 Oddur Sigurdsson. MIT licensed; see LICENSE.
 
+mod agent;
 mod cmd;
 mod config;
 mod covers;
@@ -58,8 +59,14 @@ enum Command {
     Search(cmd::search::Args),
     /// Move a page or a directory and rewrite every link to it
     Mv(cmd::mv::Args),
+    /// Set, change or remove a page's frontmatter keys
+    Set(cmd::set::Args),
     /// Record that one page replaces another, on both pages
     Supersede(cmd::supersede::Args),
+    /// The pages that matter for files you are about to change, within a budget
+    Context(cmd::context::Args),
+    /// Print the instructions an agent needs, generated from loam.toml
+    Agent(cmd::agent::Args),
     /// Pages whose covered code changed since they were last reviewed
     Stale(cmd::stale::Args),
     /// Record that pages were read against the code as it is now
@@ -84,8 +91,11 @@ fn main() -> ExitCode {
         Command::Show(a) => cmd::show::run(&ctx, a),
         Command::Search(a) => cmd::search::run(&ctx, a),
         Command::Mv(a) => cmd::mv::run(&ctx, a),
+        Command::Set(a) => cmd::set::run(&ctx, a),
         Command::Supersede(a) => cmd::supersede::run(&ctx, a),
         Command::Stale(a) => cmd::stale::run(&ctx, a),
+        Command::Context(a) => cmd::context::run(&ctx, a),
+        Command::Agent(a) => cmd::agent::run(&ctx, a),
         Command::Review(a) => cmd::review::run(&ctx, a),
         Command::Reading { path } => {
             // Exit 1 on refusal, as spec/conformance.py expects of any reader.

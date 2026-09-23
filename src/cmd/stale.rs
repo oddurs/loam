@@ -25,6 +25,86 @@ pub struct Args {
     /// Also list the fresh and unknown pages by name
     #[arg(short, long)]
     pub all: bool,
+    /// Instead: the pages covering files with uncommitted changes — what to
+    /// reread before stopping
+    #[arg(long, conflicts_with = "at")]
+    pub working_tree: bool,
+    /// Instead: the pages covering files changed since REV
+    #[arg(long, value_name = "REV", conflicts_with = "at")]
+    pub since: Option<String>,
+}
+
+/// `--working-tree` and `--since`: not what history says, but what a change
+/// just made — for an agent's stop hook, before it says it is done.
+fn touched(ctx: &Ctx, args: &Args) -> Result<u8> {
+    let tree = ctx.tree()?;
+    let git = Git::open(&tree.config.root)?;
+    let changed = match &args.since {
+        Some(rev) => {
+            if git.resolve(rev).is_none() {
+                anyhow::bail!("no commit called {rev}");
+            }
+            let mut c = git.changed_since(rev)?;
+            if args.working_tree {
+                c.extend(git.uncommitted()?);
+            }
+            c
+        }
+        None => git.uncommitted()?,
+    };
+    let pages = fresh::touched(&tree, &changed);
+    let reread: Vec<_> = pages.iter().filter(|t| !t.page_changed).collect();
+    if args.json {
+        let v = json!({
+            "changed": changed,
+            "pages": pages.iter().map(|t| json!({
+                "path": t.path,
+                "state": if t.page_changed { "updating" } else { "reread" },
+                "patterns": t.patterns.iter().map(|(p, files)| json!({"pattern": p, "files": files})).collect::<Vec<_>>(),
+            })).collect::<Vec<_>>(),
+        });
+        println!("{}", serde_json::to_string_pretty(&v)?);
+        return Ok(u8::from(!reread.is_empty()));
+    }
+    let what = if args.since.is_some() {
+        "since then"
+    } else {
+        "and not yet committed"
+    };
+    if pages.is_empty() {
+        println!("no page covers what changed {what}");
+        return Ok(0);
+    }
+    for t in &pages {
+        let files: Vec<String> = t.patterns.iter().flat_map(|(_, f)| f.clone()).collect();
+        let shown = if files.len() > 3 {
+            format!("{} and {} more", files[..3].join(", "), files.len() - 3)
+        } else {
+            files.join(", ")
+        };
+        if t.page_changed {
+            println!(
+                "{}   covers {shown}, and changed with it",
+                crate::style::dim(&t.path)
+            );
+        } else {
+            println!(
+                "{}   covers {shown}, changed {what}",
+                crate::style::bold(&t.path)
+            );
+            println!(
+                "  update it, or if it is still true: loam review {}",
+                t.path
+            );
+        }
+    }
+    println!();
+    println!(
+        "{} page(s) to reread, {} changed alongside",
+        reread.len(),
+        pages.len() - reread.len()
+    );
+    Ok(u8::from(!reread.is_empty()))
 }
 
 fn ago(days: Option<i64>) -> String {
@@ -100,6 +180,9 @@ pub fn freshness_json(f: &Freshness) -> Value {
 }
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
+    if args.working_tree || args.since.is_some() {
+        return touched(ctx, &args);
+    }
     let tree = ctx.tree()?;
     let git = Git::open(&tree.config.root)?;
     let today = match &args.at {

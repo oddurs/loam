@@ -49,6 +49,11 @@ impl Repo {
             .args(args)
             .current_dir(self.dir.path())
             .env("NO_COLOR", "1")
+            // A person, unless a test says otherwise: these tests run inside agents.
+            .env_remove("LOAM_AGENT")
+            .env_remove("CAIRN_AGENT")
+            .env_remove("AI_AGENT")
+            .env_remove("CLAUDECODE")
             .output()
             .unwrap()
     }

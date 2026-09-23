@@ -231,11 +231,14 @@ pub fn scalar(s: &str) -> String {
 pub enum Value {
     Str(String),
     List(Vec<String>),
+    /// Written exactly as given: a number, a boolean, already a scalar.
+    Raw(String),
 }
 
 fn key_lines(key: &str, value: &Value) -> Vec<String> {
     match value {
         Value::Str(s) => vec![format!("{key}: {}", scalar(s))],
+        Value::Raw(s) => vec![format!("{key}: {s}")],
         Value::List(items) if items.is_empty() => vec![format!("{key}: []")],
         Value::List(items) => {
             let mut out = vec![format!("{key}:")];

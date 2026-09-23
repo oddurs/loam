@@ -51,6 +51,8 @@ pub struct Config {
     pub index: String,
     /// Shell command run after a command changes pages.
     pub after_change: Option<String>,
+    /// `[agents] status`: what a page an agent writes starts as.
+    pub agent_status: Option<String>,
     /// `[check.severity]`: a finding's code, and `error`, `warning` or `ignore`.
     pub severity: std::collections::HashMap<String, String>,
     pub warnings: Vec<String>,
@@ -123,8 +125,10 @@ impl Config {
         };
 
         for key in doc.keys() {
-            if !["format", "docs", "links", "index", "hooks", "check", "kind"]
-                .contains(&key.as_str())
+            if ![
+                "format", "docs", "links", "index", "hooks", "check", "agents", "kind",
+            ]
+            .contains(&key.as_str())
             {
                 unknown("", key);
             }
@@ -135,6 +139,7 @@ impl Config {
             ("index", &["path"][..]),
             ("hooks", &["after-change"][..]),
             ("check", &["severity"][..]),
+            ("agents", &["status"][..]),
         ] {
             if let Some(t) = table(section) {
                 for key in t.keys() {
@@ -150,6 +155,13 @@ impl Config {
         let index_rel = string(table("index"), "path").unwrap_or_else(|| "README.md".into());
         let index = join(&docs, index_rel.trim_matches('/'));
         let after_change = string(table("hooks"), "after-change");
+        let agent_status = string(table("agents"), "status");
+        if let Some(s) = &agent_status
+            && s != "draft"
+            && s != "current"
+        {
+            bail!("{CONFIG_FILE}: agents.status must be \"draft\" or \"current\", not \"{s}\"");
+        }
         let mut severity = std::collections::HashMap::new();
         if let Some(t) = table("check")
             .and_then(|c| c.get("severity"))
@@ -240,6 +252,7 @@ impl Config {
         }
 
         Ok(Config {
+            agent_status,
             severity,
             root: root.to_path_buf(),
             docs,

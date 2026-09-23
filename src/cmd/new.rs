@@ -16,6 +16,12 @@ pub struct Args {
     /// Mark the page a draft: written, not yet to be trusted
     #[arg(long)]
     pub draft: bool,
+    /// Write as this agent; also read from LOAM_AGENT (see `loam agent`)
+    #[arg(long, value_name = "NAME")]
+    pub agent: Option<String>,
+    /// Write it even though a page of the same kind looks like it
+    #[arg(long)]
+    pub anyway: bool,
 }
 
 /// A file name from a title, by cairn's rule: lowercase letters and digits,
@@ -111,12 +117,85 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             .map_or_else(String::new, |t| format!(" (\"{t}\")"));
         bail!("{path} already exists{there}; loam new never overwrites a page");
     }
-    let text = content(&args.title, kind.template.as_deref(), args.draft);
+    // Before writing a second page on the same thing (0048).
+    if !args.anyway {
+        let same_kind: Vec<(String, String)> = tree
+            .pages
+            .iter()
+            .filter(|(p, page)| {
+                page.kind.as_deref() == Some(kind.name.as_str()) && **p != tree.config.index
+            })
+            .map(|(_, page)| {
+                (
+                    page.title.clone().unwrap_or_default(),
+                    page.summary.clone().unwrap_or_default(),
+                )
+            })
+            .collect();
+        let common = crate::agent::common(&same_kind);
+        let alike: Vec<(&String, &crate::tree::Page, Vec<String>)> = tree
+            .pages
+            .iter()
+            .filter(|(p, page)| {
+                page.kind.as_deref() == Some(kind.name.as_str()) && **p != tree.config.index
+            })
+            .filter_map(|(p, page)| {
+                let shared = crate::agent::likeness(
+                    &args.title,
+                    page.title.as_deref().unwrap_or(""),
+                    page.summary.as_deref().unwrap_or(""),
+                    &common,
+                )?;
+                Some((p, page, shared))
+            })
+            .collect();
+        if !alike.is_empty() {
+            eprintln!("{} already has {} page(s) like it:", kind.name, alike.len());
+            for (p, page, shared) in &alike {
+                eprintln!(
+                    "  {p}  \"{}\"  (shares: {})",
+                    page.title.as_deref().unwrap_or(""),
+                    shared.join(", ")
+                );
+            }
+            let agent = crate::agent::acting(args.agent.as_deref());
+            use std::io::IsTerminal;
+            let ask = agent.is_none()
+                && std::io::stdin().is_terminal()
+                && std::io::stderr().is_terminal();
+            let yes = ask && {
+                eprint!(
+                    "update one of those instead, or write a new page anyway? [y = write it / N] "
+                );
+                let mut answer = String::new();
+                std::io::stdin().read_line(&mut answer).is_ok()
+                    && matches!(answer.trim(), "y" | "Y" | "yes")
+            };
+            if !yes {
+                eprintln!(
+                    "nothing written. Update the page above, or `loam new … --anyway` if this is different."
+                );
+                return Ok(1);
+            }
+        }
+    }
+    let agent = crate::agent::acting(args.agent.as_deref());
+    // A page an agent writes starts as a draft, when the project says so
+    // (0047): a guard rail, not a boundary.
+    let draft =
+        args.draft || (agent.is_some() && tree.config.agent_status.as_deref() == Some("draft"));
+    let text = content(&args.title, kind.template.as_deref(), draft);
     {
         let _lock = Lock::acquire(&config)?;
         write_atomic(&config.abs(&path), text.as_bytes())?;
     }
     println!("{path}");
+    if draft && !args.draft {
+        eprintln!(
+            "a draft, because {} wrote it; a person makes it current with `loam set {path} status=current`",
+            agent.as_deref().unwrap_or("an agent")
+        );
+    }
     ctx.after_change(&config);
     Ok(0)
 }

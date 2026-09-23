@@ -187,6 +187,9 @@ pub fn config_text(
     } else {
         t.push_str("# after-change = \"loam render --quiet\"   # once the index has its markers\n");
     }
+    t.push_str("\n# A page an agent writes with `loam new` starts as a draft, until a person\n");
+    t.push_str("# makes it current. A guard rail, not a boundary: see `loam agent`.\n");
+    t.push_str("[agents]\nstatus = \"draft\"\n");
     t.push_str("\n# Kinds, in the order the index presents them. A page's kind is the one whose\n");
     t.push_str("# directory holds it; a kind at \".\" takes whatever no other kind claims.\n");
     let only = kinds.len() == 1;

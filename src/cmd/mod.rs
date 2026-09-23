@@ -2,7 +2,9 @@
 //
 // Copyright (c) 2026 Oddur Sigurdsson. MIT licensed; see LICENSE.
 
+pub mod agent;
 pub mod check;
+pub mod context;
 pub mod init;
 pub mod list;
 pub mod mv;
@@ -10,6 +12,7 @@ pub mod new;
 pub mod render;
 pub mod review;
 pub mod search;
+pub mod set;
 pub mod show;
 pub mod stale;
 pub mod supersede;

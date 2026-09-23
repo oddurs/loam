@@ -264,6 +264,17 @@ impl Git {
             .is_ok_and(|s| s.trim() == "true")
     }
 
+    /// Files changed between `rev` and HEAD.
+    pub fn changed_since(&self, rev: &str) -> Result<Vec<String>> {
+        let range = format!("{rev}..HEAD");
+        let text = self.run(&["diff", "--name-only", "--no-renames", &range])?;
+        Ok(text
+            .lines()
+            .filter(|l| !l.is_empty())
+            .map(str::to_string)
+            .collect())
+    }
+
     pub fn head(&self) -> Option<String> {
         self.resolve("HEAD")
     }

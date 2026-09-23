@@ -79,7 +79,12 @@ impl Repo {
         c.args(args)
             .current_dir(self.dir.path())
             .env("NO_COLOR", "1")
-            .env_remove("GITHUB_ACTIONS");
+            .env_remove("GITHUB_ACTIONS")
+            // A person, unless a test says otherwise: these tests run inside agents.
+            .env_remove("LOAM_AGENT")
+            .env_remove("CAIRN_AGENT")
+            .env_remove("AI_AGENT")
+            .env_remove("CLAUDECODE");
         for (k, v) in env {
             c.env(k, v);
         }

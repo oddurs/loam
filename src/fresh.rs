@@ -388,6 +388,44 @@ fn baseline(
     }
 }
 
+/// A page whose covered files are among a set just changed (0050).
+pub struct Touched {
+    pub path: String,
+    /// Each covering pattern, and the changed files under it.
+    pub patterns: Vec<(String, Vec<String>)>,
+    /// The page itself changed too: plausibly already being updated.
+    pub page_changed: bool,
+}
+
+/// Which pages cover any of `changed`: what an agent should reread before it
+/// stops, having just changed those files.
+pub fn touched(tree: &Tree, changed: &[String]) -> Vec<Touched> {
+    let mut out = Vec::new();
+    for (path, page) in &tree.pages {
+        if page.generated.is_some() || page.covers.is_empty() {
+            continue;
+        }
+        let covers = Covers::new(&page.covers);
+        let mut patterns: Vec<(String, Vec<String>)> = Vec::new();
+        for f in changed {
+            if let Some(p) = covers.which(f) {
+                match patterns.iter_mut().find(|(q, _)| q == p) {
+                    Some((_, files)) => files.push(f.clone()),
+                    None => patterns.push((p.to_string(), vec![f.clone()])),
+                }
+            }
+        }
+        if !patterns.is_empty() {
+            out.push(Touched {
+                path: path.clone(),
+                patterns,
+                page_changed: changed.contains(path),
+            });
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
