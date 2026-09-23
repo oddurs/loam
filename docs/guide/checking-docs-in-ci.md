@@ -6,7 +6,7 @@ covers:
 order: 4
 summary: One command that fails a build when a link breaks, a page cannot be read, or the index has drifted.
 reviewed:
-  commit: c4481a37a7dbd5329ab14d815ae064eb0b706180
+  commit: 94f9e51559c2c49eab556c5924f5727389f7ca2c
   date: 2026-09-23
 ---
 
