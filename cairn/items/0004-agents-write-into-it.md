@@ -3,11 +3,12 @@ id: 4
 key: v0.3
 title: Agents write into it
 type: milestone
-status: backlog
+status: done
 depends_on:
 - 3
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p1
 ---
 
@@ -25,5 +26,9 @@ to change.
 
 ## Acceptance criteria
 
-- [ ] An agent given only `loam agent` output files research in the right place, with the right frontmatter, in a real session
-- [ ] `loam context PATH` returns the relevant pages within a stated budget
+- [x] An agent given only `loam agent` output files research in the right place, with the right frontmatter, in a real session
+- [x] `loam context PATH` returns the relevant pages within a stated budget
+
+## 2026-09-23
+
+Closed 2026-09-23. Criterion 1: two real sessions, given only the loam block in AGENTS.md, filed research in docs/research/ as a draft with sources and covers, and the second updated the first's page instead of writing another (see 0046). Criterion 2: loam context returns covering pages first and never exceeds its budget, tested in tests/agents.rs, and loam's own AGENTS.md now carries the block.

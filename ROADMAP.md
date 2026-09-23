@@ -82,16 +82,13 @@ A page can say what code it describes, and loam can say when that code has moved
 
 ## v0.3 — Agents write into it
 
-`#########·` 83% · 5 of 6 done
+`##########` 100% · 6 of 6 done
 
 An agent told to research something finds what is already written before writing it again, and writes what it finds where it belongs.
 
-### backlog
-
-- [ ] `0046` agent prints a contract generated from the live schema <sup>feature · p0 · m</sup>
-
 ### done
 
+- [x] `0046` agent prints a contract generated from the live schema <sup>feature · p0 · m</sup>
 - [x] `0047` Pages an agent writes start as drafts <sup>feature · p1 · s</sup>
 - [x] `0048` Warn before writing a page that already exists under another name <sup>feature · p1 · m</sup>
 - [x] `0049` context: the pages that matter for a path, within a budget <sup>feature · p0 · m</sup>

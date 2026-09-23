@@ -127,12 +127,14 @@ it knows as files and JSON. Nothing else. It will not:
 
 ## Status
 
-v0.2: loam knows when a page is wrong. The format is specified, loam is useful
-on the three folders it was designed against, and it can say which pages the
-code has moved out from under — tested by replaying two repositories' whole
-histories ([0038](cairn/items/0038-what-should-a-page-say-it-covers.md)). Next
-is v0.3: agents that find what is written before writing it again. The plan is
-in [`ROADMAP.md`](ROADMAP.md).
+v0.3: agents write into it. The format is specified; loam keeps an index,
+checks links, and says which pages the code has moved out from under
+([0038](cairn/items/0038-what-should-a-page-say-it-covers.md)). An agent
+gets its instructions from `loam agent`, the pages about the file in front of
+it from `loam context`, and is refused a second page on the same thing
+([Working with agents](docs/guide/working-with-agents.md)). Next is v0.4: the
+docs folder as a source a site can be built from. The plan is in
+[`ROADMAP.md`](ROADMAP.md).
 
 ```sh
 cairn list --view decide    # decisions and questions still open
