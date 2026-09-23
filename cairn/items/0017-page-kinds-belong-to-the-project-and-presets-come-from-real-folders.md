@@ -2,12 +2,13 @@
 id: 17
 title: Page kinds belong to the project, and presets come from real folders
 type: decision
-status: backlog
+status: done
 milestone: v0.0
 depends_on:
 - 13
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p1
 pillar:
 - format
@@ -46,8 +47,22 @@ directory, a template, a one-line description of the question it answers, and
   or reported, depending on the frontmatter question.
 - The index groups by kind in declared order, so the order is the project's.
 
+## What it rules out
+
+- A fixed set of kinds in the format. The format knows kinds only as names a
+  project declares, each claiming a directory (spec §5.4, §7.1).
+- Behaviour keyed to a kind's name. A kind called `research` gets no special
+  treatment for being called that; what it does differently is configuration.
+- Kinds that claim files by pattern, or several directories each, in version 1.
+  One directory per kind, longest claim wins, and a kind at the docs root
+  catches the rest; frontmatter `kind:` covers every exception found so far.
+
 ## Acceptance criteria
 
-- [ ] The decision is stated in one sentence under Recommendation
-- [ ] What it rules out is written down
-- [ ] Each of the three real folders is expressible without renaming a file
+- [x] The decision is stated in one sentence under Recommendation
+- [x] What it rules out is written down
+- [x] Each of the three real folders is expressible without renaming a file
+
+## 2026-09-22
+
+Decided as recommended. Criterion 3 is shown by spec/corpus/real: code-as-color is 'decision' claiming decisions/ plus a root kind; poptop is guide, reference, design and roadmap by directory plus a root kind for its README; measure-of-the-world is 'plan' claiming plan/ plus a root kind. No file renamed. A kind whose dir is the docs root is the 'minimal' preset and the catch-all in the others.

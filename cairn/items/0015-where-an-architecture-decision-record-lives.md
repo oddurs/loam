@@ -2,12 +2,14 @@
 id: 15
 title: Where an architecture decision record lives
 type: decision
-status: backlog
+status: done
 milestone: v0.0
+assignee: Oddur Sigurdsson
 depends_on:
 - 14
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p0
 pillar:
 - format
@@ -52,8 +54,19 @@ fact: that belongs in `design.md`, which cites `0002` for the argument.
 Option 2 is defensible and the author of both programs should pick. The
 recommendation is the one that keeps each program's model clean.
 
+## What it rules out
+
+- A `decision` page kind as the home of a decision record.
+- Keeping a decision in both places, with the page restating the argument.
+- Status lines such as `**Status:** accepted` in a page body. A page's status
+  is draft, current or superseded (0018), and a decision's is its item's.
+
 ## Acceptance criteria
 
-- [ ] The decision is stated in one sentence under Recommendation
-- [ ] What it rules out is written down
-- [ ] If option 1 or 3: an item filed to move code-as-color's ADRs
+- [x] The decision is stated in one sentence under Recommendation
+- [x] What it rules out is written down
+- [x] If option 1 or 3: an item filed to move code-as-color's ADRs
+
+## 2026-09-22
+
+Decided: option 3. The decision record is a cairn item; the design page states its result in the present tense and links the item. The recommendation was flagged as a preference for the author of both programs; it is taken because it is the only option under which the tense rule (0014) needs no exception, and loam's v0.4 cairn resolution (0054) can still list decisions from the docs index. The move is filed as 0061.

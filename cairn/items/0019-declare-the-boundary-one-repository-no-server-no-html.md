@@ -2,12 +2,14 @@
 id: 19
 title: 'Declare the boundary: one repository, no server, no HTML'
 type: decision
-status: backlog
+status: done
 milestone: v0.0
+assignee: Oddur Sigurdsson
 depends_on:
 - 13
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p1
 pillar:
 - format
@@ -37,6 +39,9 @@ It will not:
   not ship one to keep in step.
 - **look across repositories.** A repository cannot see another one.
 - **edit prose.** `$EDITOR` does that.
+- **use the network**, not even to check that an external link still answers.
+  A check that passes or fails with the weather is not a check, and the spec
+  (§6) says a reader must not.
 
 ## Consequences
 
@@ -46,6 +51,10 @@ It will not:
 
 ## Acceptance criteria
 
-- [ ] The decision is stated in one sentence under Recommendation
-- [ ] What it rules out is written down
-- [ ] Stated in the README
+- [x] The decision is stated in one sentence under Recommendation
+- [x] What it rules out is written down
+- [x] Stated in the README
+
+## 2026-09-22
+
+Decided as recommended, and 'no network' added to the list: 0024 already assumed it ('absolute URLs: never resolved, never checked (no network, per the boundary)') and the boundary did not yet say so. Stated in README.md under 'What loam is not', and in spec §6 and §8.

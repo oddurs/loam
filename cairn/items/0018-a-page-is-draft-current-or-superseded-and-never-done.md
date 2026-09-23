@@ -2,12 +2,13 @@
 id: 18
 title: A page is draft, current or superseded, and never done
 type: decision
-status: backlog
+status: done
 milestone: v0.0
 depends_on:
 - 13
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p1
 pillar:
 - format
@@ -43,7 +44,19 @@ and a link to it should land somewhere that says what replaced it.
 - Staleness (v0.2) is not a status. A current page can be stale; that is a
   derived fact about it, not something written into it.
 
+## What it rules out
+
+- Project-declared page statuses, and status categories for pages.
+- `done`, `archived`, `deprecated`, `stale` as statuses. `unknown-status` is
+  reported for any of them (spec §4.1).
+- Staleness as something written into a page.
+- Deleting a superseded page as the way to supersede it.
+
 ## Acceptance criteria
 
-- [ ] The decision is stated in one sentence under Recommendation
-- [ ] What it rules out is written down
+- [x] The decision is stated in one sentence under Recommendation
+- [x] What it rules out is written down
+
+## 2026-09-22
+
+Decided as recommended, with one addition in spec §5.5: when status is absent and superseded_by names a page, the status is superseded rather than current, so recording the successor is enough.

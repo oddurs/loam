@@ -2,12 +2,13 @@
 id: 16
 title: A page is addressed by its path, not by a number
 type: decision
-status: backlog
+status: done
 milestone: v0.0
 depends_on:
 - 13
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p0
 pillar:
 - format
@@ -43,7 +44,19 @@ protect. That is a v0.4 concern and should be decided then, not guessed now.
   cannot know where the page went.
 - The manifest keys pages by path.
 
+## What it rules out
+
+- An `id`, number or slug key in a page's frontmatter as its identity.
+- Numbering pages in their file names as a requirement. A project may still
+  name `0001-pdf-not-web.md` that way; the digits mean nothing to loam.
+- `aliases:` in version 1 of the format. It is reserved (spec §4.3), not
+  defined, so adding it later costs no format number.
+
 ## Acceptance criteria
 
-- [ ] The decision is stated in one sentence under Recommendation
-- [ ] What it rules out is written down
+- [x] The decision is stated in one sentence under Recommendation
+- [x] What it rules out is written down
+
+## 2026-09-22
+
+Decided as recommended. Spec §2 makes paths exact and case-sensitive, because measure-of-the-world's docs link STYLEGUIDE.md and BUILD.md to files named styleguide.md and build.md: they work on a case-insensitive Mac and are broken on GitHub. A path identity has to be compared the way GitHub compares it.

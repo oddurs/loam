@@ -2,10 +2,12 @@
 id: 13
 title: A separate program that reads cairn, rather than a type inside it
 type: decision
-status: backlog
+status: done
 milestone: v0.0
+assignee: Oddur Sigurdsson
 created: 2026-09-22
 updated: 2026-09-22
+closed_at: 2026-09-22
 priority: p0
 pillar:
 - format
@@ -55,7 +57,19 @@ sentence was true.
 - Where the two meet (links, harrow) is specified as file formats and `--json`
   outputs, never as function calls.
 
+## What it rules out
+
+- Declaring page types in a project's `cairn.toml` as the way to keep docs.
+- A `cairn doc` family of subcommands, or any other single binary holding both
+  models.
+- A crate shared between cairn and loam. Where loam needs what cairn knows, it
+  reads cairn's files or runs `cairn … --json`.
+
 ## Acceptance criteria
 
-- [ ] The decision is stated in one sentence under Recommendation
-- [ ] What it rules out is written down
+- [x] The decision is stated in one sentence under Recommendation
+- [x] What it rules out is written down
+
+## 2026-09-22
+
+Decided as recommended. The spec written for v0.0 bears it out: nothing in it needed cairn's code, only cairn's file conventions (shared §3 text, checked by spec/shared.py) and the file names in its items directory (spec §6.4).
