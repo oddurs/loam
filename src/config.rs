@@ -24,6 +24,8 @@ pub struct Kind {
     pub template: Option<String>,
     /// Whether the index lists the kind's pages.
     pub index: bool,
+    /// How long a page of this kind stays true without a review: `180d`.
+    pub stale_after: Option<String>,
 }
 
 impl Kind {
@@ -178,8 +180,16 @@ impl Config {
                     bail!("{CONFIG_FILE}: kind {} has no `name`", i + 1)
                 };
                 for key in t.keys() {
-                    if !["name", "dir", "title", "description", "template", "index"]
-                        .contains(&key.as_str())
+                    if ![
+                        "name",
+                        "dir",
+                        "title",
+                        "description",
+                        "template",
+                        "index",
+                        "stale_after",
+                    ]
+                    .contains(&key.as_str())
                     {
                         unknown("kind.", key);
                     }
@@ -218,6 +228,13 @@ impl Config {
                         .get("index")
                         .and_then(toml::Value::as_bool)
                         .unwrap_or(true),
+                    stale_after: match t.get("stale_after") {
+                        None => None,
+                        Some(v) => match v.as_str().filter(|a| crate::fresh::parse_age(a).is_some()) {
+                            Some(a) => Some(a.to_string()),
+                            None => bail!("{CONFIG_FILE}: kind `{name}`: stale_after must be a number of days, weeks, months or years, as \"180d\", \"26w\", \"6m\" or \"1y\""),
+                        },
+                    },
                 });
             }
         }

@@ -25,6 +25,11 @@ pub struct Args {
     #[arg(long)]
     pub render: bool,
 
+    /// Also report pages whose covered code changed since they were reviewed.
+    /// Warnings, so a stale page fails a build only with --strict
+    #[arg(long)]
+    pub stale: bool,
+
     /// Print the findings as JSON on standard output
     #[arg(long)]
     pub json: bool,
@@ -118,16 +123,155 @@ pub fn message(f: &Finding) -> String {
             format!("link to `{d}`, which is superseded; link to what replaced it")
         }
         "stale-index" => "the index is not what `loam render` would write; run it".into(),
+        "covers-nothing" => format!("covers `{d}`, which matches no file in the repository"),
+        "stale" => format!("stale: {d}"),
         _ => f.message(),
     }
 }
 
-pub fn collect(tree: &Tree, render: bool) -> Result<Vec<Reported>> {
+/// Every file in the repository, as git sees it or, without git, as it is.
+fn repo_files(tree: &Tree) -> Vec<String> {
+    if let Ok(git) = crate::git::Git::open(&tree.config.root)
+        && let Ok(files) = git.files()
+    {
+        return files
+            .into_iter()
+            .filter(|f| tree.config.abs(f).exists())
+            .collect();
+    }
+    let mut out = Vec::new();
+    let mut stack = vec![String::new()];
+    while let Some(dir) = stack.pop() {
+        let Ok(entries) = std::fs::read_dir(tree.config.abs(&dir)) else {
+            continue;
+        };
+        for e in entries.filter_map(|e| e.ok()) {
+            let name = e.file_name().to_string_lossy().into_owned();
+            if name == ".git" {
+                continue;
+            }
+            let path = crate::config::join(&dir, &name);
+            if e.file_type().is_ok_and(|t| t.is_dir()) {
+                stack.push(path);
+            } else {
+                out.push(path);
+            }
+        }
+    }
+    out
+}
+
+/// The line a finding about `key` in a page's frontmatter belongs on: where
+/// the key is written, so an editor lands on it.
+fn key_line(tree: &Tree, path: &str, key: &str) -> usize {
+    let Some(text) = tree.pages.get(path).and_then(|p| p.text.as_deref()) else {
+        return 1;
+    };
+    let prefix = format!("{key}:");
+    text.lines()
+        .take_while(|_| true)
+        .position(|l| l.starts_with(&prefix))
+        .map_or(1, |i| i + 1)
+}
+
+/// A pattern in `covers` that matches nothing: the code it named was moved or
+/// deleted, so the page reads as fresh — the most wrong it can be (0044).
+fn covers_nothing(tree: &Tree) -> Vec<(String, Finding)> {
+    let with: Vec<_> = tree
+        .pages
+        .iter()
+        .filter(|(_, p)| !p.covers.is_empty())
+        .collect();
+    if with.is_empty() {
+        return Vec::new();
+    }
+    let files = repo_files(tree);
+    let mut out = Vec::new();
+    for (path, page) in with {
+        let covers = crate::covers::Covers::new(&page.covers);
+        for pattern in covers.unmatched(&files) {
+            out.push((
+                path.clone(),
+                Finding {
+                    line: key_line(tree, path, "covers"),
+                    code: "covers-nothing",
+                    detail: Some(pattern.to_string()),
+                },
+            ));
+        }
+    }
+    out
+}
+
+/// Stale pages, as findings (0045). A page changed alongside its code is left
+/// out: its author is plausibly updating it.
+/// Findings, each with the page it is on.
+type Located = Vec<(String, Finding)>;
+
+fn stale(tree: &Tree) -> Result<(Located, Vec<String>)> {
+    let git = crate::git::Git::open(&tree.config.root)?;
+    let report = crate::fresh::assess(
+        tree,
+        &git,
+        &crate::fresh::Options {
+            at: None,
+            today: None,
+        },
+    )?;
+    let mut out = Vec::new();
+    for f in report
+        .pages
+        .iter()
+        .filter(|f| f.state == crate::fresh::State::Stale)
+    {
+        let mut parts: Vec<String> = f
+            .patterns
+            .iter()
+            .map(|p| {
+                format!(
+                    "{} changed in {} commit(s), +{} −{}",
+                    p.pattern, p.commits, p.added, p.removed
+                )
+            })
+            .collect();
+        if let Some(limit) = f.aged {
+            parts.push(format!("older than its kind's {limit} days"));
+        }
+        let detail = format!("{}; {}", parts.join("; "), super::stale::describe(f));
+        let key = if f.patterns.is_empty() {
+            "reviewed"
+        } else {
+            "covers"
+        };
+        out.push((
+            f.path.clone(),
+            Finding {
+                line: key_line(tree, &f.path, key),
+                code: "stale",
+                detail: Some(detail),
+            },
+        ));
+    }
+    Ok((out, report.notes))
+}
+
+pub fn collect(
+    tree: &Tree,
+    render: bool,
+    with_stale: bool,
+) -> Result<(Vec<Reported>, Vec<String>)> {
     let mut all: Vec<(String, Finding)> = Vec::new();
     for (path, page) in &tree.pages {
         all.extend(page.findings.iter().map(|f| (path.clone(), f.clone())));
     }
     all.extend(judgements(tree));
+    all.extend(covers_nothing(tree));
+    let mut notes = Vec::new();
+    if with_stale {
+        let (found, n) = stale(tree)?;
+        all.extend(found);
+        notes = n;
+    }
     if render && !super::render::is_current(tree)? {
         all.push((
             tree.config.index.clone(),
@@ -139,7 +283,7 @@ pub fn collect(tree: &Tree, render: bool) -> Result<Vec<Reported>> {
         ));
     }
     all.sort_by(|a, b| (&a.0, &a.1).cmp(&(&b.0, &b.1)));
-    Ok(all
+    let reported = all
         .into_iter()
         .filter_map(|(path, finding)| {
             let severity = tree
@@ -161,7 +305,8 @@ pub fn collect(tree: &Tree, render: bool) -> Result<Vec<Reported>> {
                 severity,
             })
         })
-        .collect())
+        .collect();
+    Ok((reported, notes))
 }
 
 /// For a link broken only by the case of its letters, the file it meant:
@@ -182,7 +327,11 @@ fn case_hint(tree: &Tree, path: &str, f: &Finding) -> Option<String> {
 
 pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     let tree = ctx.tree()?;
-    let found = collect(&tree, args.render)?;
+    let (found, notes) = collect(&tree, args.render, args.stale)?;
+    for note in &notes {
+        eprintln!("{} {note}", crate::style::yellow("note:"));
+    }
+    let actions = std::env::var("GITHUB_ACTIONS").is_ok_and(|v| v == "true");
     let errors = found.iter().filter(|r| r.severity == "error").count();
     let warnings = found.len() - errors;
     let failed = errors > 0 || (args.strict && warnings > 0);
@@ -213,13 +362,27 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         } else {
             crate::style::yellow("loam")
         };
+        let text = message(&r.finding) + &case_hint(&tree, &r.path, &r.finding).unwrap_or_default();
         eprintln!(
-            "{label}: {}:{}: {} [{}]",
-            r.path,
-            r.finding.line,
-            message(&r.finding) + &case_hint(&tree, &r.path, &r.finding).unwrap_or_default(),
-            r.finding.code
+            "{label}: {}:{}: {text} [{}]",
+            r.path, r.finding.line, r.finding.code
         );
+        // In GitHub Actions, also as a workflow command, so the finding is an
+        // annotation on the line of the pull request it concerns.
+        if actions {
+            let level = if r.severity == "error" {
+                "error"
+            } else {
+                "warning"
+            };
+            println!(
+                "::{level} file={},line={},title={}::{}",
+                annotation_property(&r.path),
+                r.finding.line,
+                annotation_property(&format!("loam {}", r.finding.code)),
+                annotation_data(&text)
+            );
+        }
     }
     let pages = tree.pages.len();
     if failed {
@@ -235,4 +398,16 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         );
     }
     Ok(u8::from(failed))
+}
+
+/// GitHub's escaping for a workflow command's message.
+fn annotation_data(s: &str) -> String {
+    s.replace('%', "%25")
+        .replace('\r', "%0D")
+        .replace('\n', "%0A")
+}
+
+/// And for a property, where `:` and `,` are separators.
+fn annotation_property(s: &str) -> String {
+    annotation_data(s).replace(':', "%3A").replace(',', "%2C")
 }

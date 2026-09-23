@@ -23,10 +23,28 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             tree.config.docs
         );
     };
+    // Whether it is still true, when there is a history to ask.
+    let freshness = crate::git::Git::open(&tree.config.root)
+        .ok()
+        .and_then(|git| {
+            let report = crate::fresh::assess(
+                &tree,
+                &git,
+                &crate::fresh::Options {
+                    at: None,
+                    today: None,
+                },
+            )
+            .ok()?;
+            report.pages.into_iter().find(|f| f.path == path)
+        });
     if args.json {
         let mut v = crate::reading::page_json(page);
         v["path"] = serde_json::json!(page.path);
         v["body"] = serde_json::json!(page.body);
+        v["freshness"] = freshness
+            .as_ref()
+            .map_or(serde_json::Value::Null, super::stale::freshness_json);
         println!("{}", serde_json::to_string_pretty(&v)?);
         return Ok(0);
     }
@@ -52,6 +70,70 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
     ] {
         if !list.is_empty() {
             println!("{label:>9}  {}", list.join(", "));
+        }
+    }
+    if let Some(f) = &freshness {
+        use crate::fresh::State;
+        let state = match f.state {
+            State::Generated => "generated, so kept true by its generator".to_string(),
+            State::Unknown => "unknown: the page says nothing about what it covers".to_string(),
+            State::Fresh => format!("fresh; {}", super::stale::describe(f)),
+            State::Stale | State::Updating => {
+                let n = f.commits.len();
+                let what = if f.aged.is_some() && n == 0 {
+                    format!("older than its kind's {} days", f.aged.unwrap_or(0))
+                } else {
+                    format!(
+                        "{n} commit(s) changed what it covers, +{} −{}",
+                        f.added, f.removed
+                    )
+                };
+                let prefix = if f.state == State::Stale {
+                    "stale"
+                } else {
+                    "being updated"
+                };
+                format!("{prefix}: {what}; {}", super::stale::describe(f))
+            }
+        };
+        println!("    fresh  {state}");
+    }
+    if !page.covers.is_empty() {
+        println!("   covers  {}", page.covers.join(", "));
+    }
+    // A research page's sources, and when each was read (0043): a loam
+    // convention, not a key of the format.
+    if let Some(sources) = page
+        .frontmatter
+        .as_ref()
+        .and_then(|m| m.iter().find(|(k, _)| k == "sources"))
+        .map(|(_, v)| v)
+    {
+        let list = match sources {
+            crate::yaml::Yaml::Seq(items) => items.clone(),
+            other => vec![other.clone()],
+        };
+        for (i, source) in list.iter().enumerate() {
+            let label = if i == 0 { "  sources" } else { "         " };
+            let text = match source {
+                crate::yaml::Yaml::Str(s) => s.clone(),
+                crate::yaml::Yaml::Map(m) => {
+                    let get = |k: &str| m.iter().find(|(key, _)| key == k).map(|(_, v)| v);
+                    let s = |v: Option<&crate::yaml::Yaml>| match v {
+                        Some(crate::yaml::Yaml::Str(s)) => Some(s.clone()),
+                        _ => None,
+                    };
+                    let name = s(get("title"))
+                        .or(s(get("url")))
+                        .unwrap_or_else(|| "(a source)".into());
+                    match s(get("read")) {
+                        Some(read) => format!("{name}, read {read}"),
+                        None => name,
+                    }
+                }
+                _ => continue,
+            };
+            println!("{label}  {text}");
         }
     }
     let broken = page

@@ -4,6 +4,9 @@
 
 mod cmd;
 mod config;
+mod covers;
+mod fresh;
+mod git;
 mod index;
 mod reading;
 mod scan;
@@ -57,6 +60,10 @@ enum Command {
     Mv(cmd::mv::Args),
     /// Record that one page replaces another, on both pages
     Supersede(cmd::supersede::Args),
+    /// Pages whose covered code changed since they were last reviewed
+    Stale(cmd::stale::Args),
+    /// Record that pages were read against the code as it is now
+    Review(cmd::review::Args),
     /// Print the reading of a repository as spec/corpus/README.md shapes it
     #[command(hide = true)]
     Reading { path: Option<PathBuf> },
@@ -78,6 +85,8 @@ fn main() -> ExitCode {
         Command::Search(a) => cmd::search::run(&ctx, a),
         Command::Mv(a) => cmd::mv::run(&ctx, a),
         Command::Supersede(a) => cmd::supersede::run(&ctx, a),
+        Command::Stale(a) => cmd::stale::run(&ctx, a),
+        Command::Review(a) => cmd::review::run(&ctx, a),
         Command::Reading { path } => {
             // Exit 1 on refusal, as spec/conformance.py expects of any reader.
             let dir = path.unwrap_or(ctx.cwd.clone());

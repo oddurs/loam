@@ -52,6 +52,12 @@ pub struct Link {
     pub current: Option<String>,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct Reviewed {
+    pub commit: String,
+    pub date: String,
+}
+
 #[derive(Clone, Debug)]
 pub struct Page {
     pub path: String,
@@ -75,6 +81,12 @@ pub struct Page {
     pub superseded_by: Vec<String>,
     /// The program's own key: a page's place among its kind in the index.
     pub order: Option<i64>,
+    /// §4.3: the patterns of the files the page describes.
+    pub covers: Vec<String>,
+    /// §4.3: the commit and the day it was last read against them.
+    pub reviewed: Option<Reviewed>,
+    /// §4.3: what generates it, when a program does.
+    pub generated: Option<String>,
     pub anchors: Vec<String>,
     pub links: Vec<Link>,
     pub findings: Vec<Finding>,
@@ -276,6 +288,43 @@ pub fn read_page(config: &Config, path: &str, bytes: Vec<u8>) -> Page {
         }
     };
 
+    let covers = path_list("covers", &mut findings);
+    let reviewed = match get("reviewed") {
+        None | Some(Yaml::Null) => None,
+        Some(Yaml::Map(m)) => {
+            let field = |k: &str| match m.iter().find(|(key, _)| key == k) {
+                Some((_, Yaml::Str(s))) => Some(s.clone()),
+                _ => None,
+            };
+            let hex = |s: &String| {
+                (7..=64).contains(&s.len()) && s.bytes().all(|b| b.is_ascii_hexdigit())
+            };
+            let day = |s: &String| {
+                let b = s.as_bytes();
+                b.len() == 10
+                    && b[4] == b'-'
+                    && b[7] == b'-'
+                    && b.iter()
+                        .enumerate()
+                        .all(|(i, c)| i == 4 || i == 7 || c.is_ascii_digit())
+            };
+            match (field("commit"), field("date")) {
+                (Some(commit), Some(date)) if hex(&commit) && day(&date) => {
+                    Some(Reviewed { commit, date })
+                }
+                _ => {
+                    findings.push(finding(1, "malformed-key", Some("reviewed")));
+                    None
+                }
+            }
+        }
+        Some(_) => {
+            findings.push(finding(1, "malformed-key", Some("reviewed")));
+            None
+        }
+    };
+    let generated = string_key("generated", &mut findings);
+
     // §5.2
     let title_index = blocks
         .iter()
@@ -365,6 +414,9 @@ pub fn read_page(config: &Config, path: &str, bytes: Vec<u8>) -> Page {
         supersedes,
         superseded_by,
         order,
+        covers,
+        reviewed,
+        generated,
         anchors,
         links,
         findings,

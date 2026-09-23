@@ -6,7 +6,7 @@
 // The spec puts four musts on a writer (cairn item 0062): reproduce the line
 // endings a file used (§3.1), quote a value that would otherwise read back as
 // something else (§3.2), keep every frontmatter key it did not change, in
-// order (§4.4), and never reorder the kinds (§7.1 — no command here rewrites
+// order (§4.5), and never reorder the kinds (§7.1 — no command here rewrites
 // loam.toml). Editing the frontmatter as text, one key at a time, is what makes
 // the third cheap to keep: a key loam does not know is never parsed and
 // re-emitted, so it cannot be reformatted.
@@ -311,6 +311,57 @@ pub fn set_key(lines: &mut Lines, key: &str, value: &Value) {
     }
 }
 
+/// Set fields of a top-level mapping key, written as a block, keeping any
+/// other fields already in it (spec §4.5). A key that is absent, or written
+/// in some other shape, is replaced by a block of just these fields.
+pub fn set_mapping(lines: &mut Lines, key: &str, fields: &[(&str, String)]) {
+    let block = lines.frontmatter().and_then(|(open, close)| {
+        let (start, end) = key_extent(lines, open, close, key)?;
+        (lines.lines[start].0.trim_end() == format!("{key}:")).then_some((start, end))
+    });
+    let Some((start, mut end)) = block else {
+        let mut new = vec![format!("{key}:")];
+        new.extend(fields.iter().map(|(k, v)| format!("  {k}: {}", scalar(v))));
+        remove_key(lines, key);
+        match lines.frontmatter() {
+            Some((_, close)) => lines.insert(close, &new),
+            None => {
+                set_key(lines, key, &Value::Str(String::new()));
+                remove_key(lines, key);
+                let close = lines.frontmatter().map_or(1, |(_, c)| c);
+                lines.insert(close, &new);
+            }
+        }
+        return;
+    };
+    let indent = lines.lines[start + 1..end]
+        .iter()
+        .find(|(l, _)| !l.trim().is_empty())
+        .map_or("  ".to_string(), |(l, _)| {
+            l[..l.len() - l.trim_start().len()].to_string()
+        });
+    for (field, value) in fields {
+        let line = format!("{indent}{field}: {}", scalar(value));
+        let prefix = format!("{indent}{field}:");
+        match (start + 1..end).find(|&i| lines.lines[i].0.starts_with(&prefix)) {
+            Some(i) => lines.lines[i].0 = line,
+            None => {
+                lines.insert(end, &[line]);
+                end += 1;
+            }
+        }
+    }
+}
+
+/// Remove a top-level key, if the frontmatter has it.
+pub fn remove_key(lines: &mut Lines, key: &str) {
+    if let Some((open, close)) = lines.frontmatter()
+        && let Some((start, end)) = key_extent(lines, open, close, key)
+    {
+        lines.lines.drain(start..end);
+    }
+}
+
 /// The index of the first line after the frontmatter, or 0 without one.
 pub fn body_start(lines: &Lines) -> usize {
     lines.frontmatter().map_or(0, |(_, close)| close + 1)
@@ -426,6 +477,32 @@ mod tests {
         let mut l = Lines::parse("# Title\n\nText.\n");
         set_key(&mut l, "status", &Value::Str("draft".into()));
         assert_eq!(l.render(), "---\nstatus: draft\n---\n\n# Title\n\nText.\n");
+    }
+
+    #[test]
+    fn set_mapping_keeps_other_fields_and_replaces_other_shapes() {
+        let mut l = Lines::parse("---\nreviewed:\n    by: me\n    commit: old\n---\n# T\n");
+        set_mapping(
+            &mut l,
+            "reviewed",
+            &[("commit", "abc1234".into()), ("date", "2026-09-23".into())],
+        );
+        assert_eq!(
+            l.render(),
+            "---\nreviewed:\n    by: me\n    commit: abc1234\n    date: 2026-09-23\n---\n# T\n"
+        );
+        let mut l = Lines::parse("---\nreviewed: {commit: x}\ntitle: T\n---\n");
+        set_mapping(&mut l, "reviewed", &[("commit", "1234567".into())]);
+        assert_eq!(
+            l.render(),
+            "---\ntitle: T\nreviewed:\n  commit: \"1234567\"\n---\n"
+        );
+        let mut l = Lines::parse("# T\n");
+        set_mapping(&mut l, "reviewed", &[("date", "2026-09-23".into())]);
+        assert_eq!(
+            l.render(),
+            "---\nreviewed:\n  date: 2026-09-23\n---\n\n# T\n"
+        );
     }
 
     #[test]

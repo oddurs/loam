@@ -8,8 +8,10 @@ pub mod list;
 pub mod mv;
 pub mod new;
 pub mod render;
+pub mod review;
 pub mod search;
 pub mod show;
+pub mod stale;
 pub mod supersede;
 
 use crate::config::Config;
