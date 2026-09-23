@@ -92,9 +92,9 @@ reviewed:
   date: 2026-09-23
 ```
 
-Commit it, and the page is fresh until its code changes again. `--note` keeps a
-line in a `## Review log` at the end of the page, for when *why* it is still
-true is worth keeping. If a covered file has changes not yet committed, `review`
+Commit it, and the page is fresh until its code changes again. `--note` adds a
+line to the page's `## Review log` — starting one at the end of the page if it
+has none — for when *why* it is still true is worth keeping. If a covered file has changes not yet committed, `review`
 says so: the review would be against code no commit holds.
 
 A review made on a branch that is later squashed or rebased still counts. loam

@@ -143,7 +143,9 @@ without refusing, when a covered file has uncommitted changes.
 ## `set PAGE KEY=VALUE…`
 
 Change a page's frontmatter: `key=value` sets, `key=` removes, `key+=value` and
-`key-=value` add to and take from a list. No other byte of the page changes.
+`key-=value` add to and take from a list of strings — a list holding anything
+else is refused rather than rewritten. No other byte of the page changes, and
+a key written twice is changed where YAML reads it, the last time.
 The format's own keys are held to their types — a `status` of draft, current or
 superseded, an `order` that is a whole number, a declared `kind` — and
 `reviewed` is left to `review`. Any other key is written as typed: `weight=3` is
@@ -169,7 +171,7 @@ loop of search, new, set, supersede, stale and review — generated from
 
 | Option | |
 | --- | --- |
-| `-w`, `--write FILE` | Insert the block in `FILE`, as `AGENTS.md`, or replace it where it already is, leaving the rest of the file alone. |
+| `-w`, `--write FILE` | Insert the block in `FILE`, as `AGENTS.md`, or replace it where it already is, leaving the rest of the file alone. The markers count only alone on their lines and outside code; a file that is not UTF-8 is refused, not written over. |
 
 ## `supersede OLD NEW`
 

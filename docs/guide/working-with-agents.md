@@ -23,7 +23,9 @@ loam agent --write AGENTS.md
 ```
 
 puts a block between `<!-- loam:begin -->` and `<!-- loam:end -->` in
-`AGENTS.md` (or `CLAUDE.md`), leaving the rest of the file alone. Run it again
+`AGENTS.md` (or `CLAUDE.md`), leaving the rest of the file alone — it uses
+only marker lines outside code, and will not write into a file it cannot read
+as text. Run it again
 whenever `loam.toml` changes; it replaces the block in place, and changes
 nothing when nothing changed. `loam agent` alone prints it.
 
@@ -117,6 +119,7 @@ loam set docs/research/markdown-crates.md covers+=src/render.rs summary="Which c
 ```
 
 `key=value` sets, `key=` removes, `key+=` and `key-=` add to and take from a
-list. The one key changes, and no other byte of the page. The format's own keys
+list of strings — a list holding anything else is refused rather than
+rewritten. The one key changes, and no other byte of the page. The format's own keys
 are held to their types, so `loam set` cannot write what `loam check` would
 then report.

@@ -24,7 +24,10 @@ out of the docs folder. So loam owns only what lies between two lines,
 <!-- loam:index:end -->
 ```
 
-and the rest of the file is the project's, kept exactly as written. That is
+and the rest of the file is the project's, kept exactly as written. A marker
+counts only alone on its line and outside code, so a page that shows the
+markers in a fenced example, or names them in a sentence, is not written into
+there. That is
 cairn's header and footer, kept in the one file a reader actually opens.
 
 ## What it lists
