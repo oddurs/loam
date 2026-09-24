@@ -2,10 +2,11 @@
 id: 71
 title: 'Install loam without Rust: release binaries, an install script, and a GitHub Action'
 type: feature
-status: blocked
+status: done
 milestone: v0.4
 created: 2026-09-23
 updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p2
 ---
 
@@ -31,8 +32,12 @@ workflow refuses otherwise). Windows is not built: loam has never been run there
 
 - [x] The workflow builds all four targets and each binary runs on its runner
 - [x] install.sh installs an archive and refuses one that fails its checksum
-- [ ] A release exists, and the action installs it and runs in a workflow
+- [x] A release exists, and the action installs it and runs in a workflow
 
 ## 2026-09-23
 
 Built by hand at 35934784965: four targets green, publish skipped. The Linux archive is a static-pie binary; the macOS arm64 one runs uv's check here. install.sh tested against a file:// copy of the archive, and with a wrong checksum. Waiting on a person: the first tag, v0.3.0, publishes a public release, which is theirs to decide. After it: a workflow in some repository using oddurs/loam@v0.3.0, to tick the last criterion.
+
+## 2026-09-23
+
+Released v0.3.0 (https://github.com/oddurs/loam/releases/tag/v0.3.0): four archives with checksums. install.sh from the real URL installed it on macOS arm64 and checked this repository. CI now has an 'action' job using ./ as another repository would; its first run installed 0.3.0 on ubuntu and passed the check.
