@@ -53,6 +53,11 @@ states.
       "freshness": {"path": "docs/guide/keeping-pages-true.md", "state": "fresh", "…": "…"}
     }
   },
+  "cairn_items": {
+    "38": {"title": "What should a page say it covers?", "status": "done",
+           "category": "done", "type": "question"}
+  },
+  "cairn_error": null,
   "freshness": {"notes": [], "error": null}
 }
 ```
@@ -114,6 +119,17 @@ shapes it — `frontmatter`, `title`, `kind`, `status`, `summary`, each with its
   or `generated` — the `baseline` it was compared from, and the changes since.
   `null` when there is no history: outside git, with `--no-history`, or when
   reading it failed.
+
+### Cairn items
+
+**`cairn_items`** is what [cairn](https://github.com/oddurs/cairn) says of each
+item a page cites, keyed by its number as a string: its `title`, its
+`status`, the `category` cairn groups that status in (`open`, `active`,
+`done`, `dropped`), and its `type`. Only cited items are listed. It is `null`
+when the project names no cairn directory, and when cairn could not be asked —
+not installed, or failing — in which case **`cairn_error`** says why; otherwise
+`cairn_error` is `null`. Whether a reference resolves does not depend on cairn
+(spec §6.4): that is in each link.
 
 ### Freshness
 

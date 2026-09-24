@@ -24,8 +24,36 @@ pub struct History {
     pub error: Option<String>,
 }
 
+/// What cairn says of the items the pages cite, when the project keeps its
+/// backlog in cairn: `(items, error)`, one of them `null`.
+fn cited(tree: &Tree) -> (Value, Value) {
+    if tree.config.cairn.is_none() {
+        return (Value::Null, Value::Null);
+    }
+    let wanted: std::collections::BTreeSet<u64> = tree
+        .pages
+        .values()
+        .flat_map(|p| p.links.iter())
+        .filter(|l| l.class == LinkClass::Cairn)
+        .filter_map(|l| l.item)
+        .collect();
+    match crate::cairn::items(&tree.config.root) {
+        Ok(all) => (
+            json!(
+                all.into_iter()
+                    .filter(|(n, _)| wanted.contains(n))
+                    .map(|(n, i)| (n.to_string(), json!(i)))
+                    .collect::<Map<_, _>>()
+            ),
+            Value::Null,
+        ),
+        Err(e) => (Value::Null, json!(e)),
+    }
+}
+
 pub fn manifest(tree: &Tree, history: &History) -> Value {
     let backlinks = tree.backlinks_all();
+    let (cairn_items, cairn_error) = cited(tree);
     let mut pages = Map::new();
     for (path, page) in &tree.pages {
         let mut v = crate::reading::page_json(page);
@@ -67,6 +95,8 @@ pub fn manifest(tree: &Tree, history: &History) -> Value {
             "pages": s.pages.iter().map(|p| &p.path).collect::<Vec<_>>(),
         })).collect::<Vec<_>>(),
         "pages": pages,
+        "cairn_items": cairn_items,
+        "cairn_error": cairn_error,
         "freshness": {
             "notes": history.notes,
             "error": history.error,

@@ -133,6 +133,30 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         .filter(|f| f.code.contains("link") || f.code == "broken-anchor")
         .count();
     println!("    links  {} out, {broken} broken", page.links.len());
+    // The cairn items it cites, as cairn describes them.
+    let mut cited: Vec<u64> = page
+        .links
+        .iter()
+        .filter(|l| l.class == crate::tree::LinkClass::Cairn)
+        .filter_map(|l| l.item)
+        .collect();
+    cited.sort();
+    cited.dedup();
+    if !cited.is_empty() {
+        let known = crate::cairn::items(&tree.config.root);
+        for (i, n) in cited.iter().enumerate() {
+            let label = if i == 0 { "    cites" } else { "         " };
+            let about = match &known {
+                Ok(items) => match items.get(n) {
+                    Some(item) => format!("{} ({})", item.title, item.status),
+                    None => "not an item cairn knows".into(),
+                },
+                Err(e) if i == 0 => format!("({e})"),
+                Err(_) => String::new(),
+            };
+            println!("{label}  {n:04} {about}");
+        }
+    }
     let back = tree.backlinks(&page.path);
     if back.is_empty() {
         println!("   linked  from no page");

@@ -116,7 +116,9 @@ it came from, its supersession, its links and findings — then the page itself.
 | --- | --- |
 | `--json` | Print the page's reading and its body as [JSON](json-output.md#show). |
 
-Also lists the pages that link to this one, the index apart.
+Also lists the cairn items the page cites, each with the title and status
+cairn gives it — or, with cairn not installed, says they are unchecked — and
+the pages that link to this one, the index apart.
 
 ## `search WORDS…`
 

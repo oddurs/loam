@@ -97,13 +97,12 @@ An agent told to research something finds what is already written before writing
 
 ## v0.4 — Feeds a site
 
-`########··` 78% · 7 of 9 done
+`#########·` 89% · 8 of 9 done
 
 The docs folder is an indexable source: a site, a search box or another program can be built from it without reading loam's code or parsing its pages twice.
 
 ### backlog
 
-- [ ] `0054` Resolve cairn references by asking cairn <sup>feature · p1 · m</sup>
 - [ ] `0056` harrow shows stale pages under Needs you <sup>feature · p2 · s</sup>
 
 ### done
@@ -111,6 +110,7 @@ The docs folder is an indexable source: a site, a search box or another program 
 - [x] `0051` The manifest is a documented, versioned output <sup>spec · p0 · s</sup>
 - [x] `0052` index --json: the whole docs tree as one document <sup>feature · p0 · m</sup>
 - [x] `0053` Backlinks <sup>feature · p1 · s</sup>
+- [x] `0054` Resolve cairn references by asking cairn <sup>feature · p1 · m</sup>
 - [x] `0055` A recipe: a site built from the manifest <sup>docs · p2 · m</sup>
 - [x] `0069` Three agents try to break loam, and what they found is fixed <sup>bug · p2</sup>
 - [x] `0070` Adopt a docs folder loam has never seen, and fix what gets in the way <sup>chore · p2</sup>

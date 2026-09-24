@@ -1162,3 +1162,46 @@ fn index_prints_what_render_writes_and_the_manifest_beside_it() {
         "no git, no history"
     );
 }
+
+// ─── the items a page cites, as cairn says (0054) ────────────────────────────
+
+#[test]
+fn without_cairn_the_items_cited_are_said_to_be_unchecked() {
+    let repo = Repo::new(&[
+        (
+            "loam.toml",
+            "format = 1\n\n[links]\ncairn = \"cairn/items\"\n\n[[kind]]\nname = \"page\"\n",
+        ),
+        (
+            "cairn/items/0007-a-thing.md",
+            "---\nid: 7\n---\n# A thing\n",
+        ),
+        (
+            "docs/a.md",
+            "# A\n\nWhy: [0007](../cairn/items/0007-a-thing.md).\n",
+        ),
+    ]);
+    // No cairn on the PATH, and nothing else needed either.
+    let run = |args: &[&str]| {
+        Command::new(env!("CARGO_BIN_EXE_loam"))
+            .args(args)
+            .current_dir(repo.path(""))
+            .env("PATH", "/nonexistent")
+            .output()
+            .unwrap()
+    };
+    let t = stdout(&run(&["show", "docs/a.md"]));
+    assert!(
+        t.contains("cites  0007 (cairn is not installed, so the items cited are unchecked)"),
+        "{t}"
+    );
+    let m = json(&run(&["index", "--json"]));
+    assert_eq!(m["cairn_items"], serde_json::Value::Null);
+    assert!(m["cairn_error"].as_str().unwrap().contains("not installed"));
+    assert_eq!(m["pages"]["docs/a.md"]["items"], serde_json::json!([7]));
+    assert_eq!(
+        code(&run(&["check", "--strict"])),
+        0,
+        "resolving needs no cairn"
+    );
+}

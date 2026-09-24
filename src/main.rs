@@ -3,6 +3,7 @@
 // Copyright (c) 2026 Oddur Sigurdsson. MIT licensed; see LICENSE.
 
 mod agent;
+mod cairn;
 mod cmd;
 mod config;
 mod covers;

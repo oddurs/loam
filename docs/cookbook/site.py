@@ -6,9 +6,9 @@
 
 It reads no frontmatter, no loam.toml and no git: navigation is the manifest's
 `sections`, a draft is marked by its `status`, a stale page gets a banner from
-its `freshness`, each page gets a table of contents from its `headings` and a
-"Linked from" list from its `backlinks`, and a link to another page goes to
-that page's HTML. The only other input is each page's body, from `body_line`
+its `freshness`, each page gets a table of contents from its `headings`, a
+"Linked from" list from its `backlinks` and the cairn items it cites from
+`cairn_items`, and a link to another page goes to that page's HTML. The only other input is each page's body, from `body_line`
 on. It needs Python Markdown (`pip install markdown`), and is a recipe, not a
 feature: loam does not render HTML (see the README's "What loam is not").
 
@@ -135,6 +135,13 @@ def build(manifest_path, out):
             for b in page["backlinks"]
             if b["path"] in listed
         )
+        known = manifest.get("cairn_items") or {}
+        cites = "".join(
+            f"<li>{n:04} {html.escape(known[str(n)]['title'])} ({html.escape(known[str(n)]['status'])})</li>"
+            if str(n) in known
+            else f"<li>{n:04}</li>"
+            for n in page["items"]
+        )
         doc = f"""<!doctype html>
 <meta charset="utf-8"><title>{html.escape(page["title"] or path)}</title>
 <style>{STYLE}</style>
@@ -144,6 +151,7 @@ def build(manifest_path, out):
 {body}
 {f'<div class="toc"><strong>On this page</strong><ul>{toc}</ul></div>' if toc else ""}
 {f'<div class="backlinks"><strong>Linked from</strong><ul>{back}</ul></div>' if back else ""}
+{f'<div class="backlinks"><strong>Why it is this way</strong><ul>{cites}</ul></div>' if cites else ""}
 </main>
 """
         dest = os.path.join(out, here)

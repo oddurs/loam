@@ -141,13 +141,14 @@ it knows as files and JSON. Nothing else. It will not:
 
 ## Status
 
-v0.3: agents write into it. The format is specified; loam keeps an index,
-checks links, and says which pages the code has moved out from under
-([0038](cairn/items/0038-what-should-a-page-say-it-covers.md)). An agent
-gets its instructions from `loam agent`, the pages about the file in front of
-it from `loam context`, and is refused a second page on the same thing
-([Working with agents](docs/guide/working-with-agents.md)). Next is v0.4: the
-docs folder as a source a site can be built from. The plan is in
+v0.4: the docs folder is a source a site can be built from. `loam index
+--json` prints it as one [versioned document](spec/manifest.md) — every page,
+the index's sections, headings with their anchors, backlinks, the cairn items
+each page cites and whether it is still true — and
+[a recipe](docs/guide/building-a-site-from-the-manifest.md) builds a site from
+that and the pages' bodies alone. Before it: v0.3, agents write into it
+([Working with agents](docs/guide/working-with-agents.md)); v0.2, pages say
+what code they describe and loam says when it has moved on. The plan is in
 [`ROADMAP.md`](ROADMAP.md).
 
 ```sh

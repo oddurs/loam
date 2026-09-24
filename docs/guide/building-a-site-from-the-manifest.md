@@ -47,7 +47,8 @@ built 36 page(s) into site
   its `freshness`, saying how many commits changed what it covers.
 - **On this page** is its `headings`, and each heading's anchor is the
   manifest's `slug`, so every `#fragment` written against GitHub still lands.
-- **Linked from** is its `backlinks`.
+- **Linked from** is its `backlinks`, and **Why it is this way** the cairn
+  items it cites, with the title and status cairn gives each.
 - **A link to another page** — the manifest's `links` say which are pages —
   goes to that page's HTML.
 
