@@ -4,7 +4,7 @@ covers:
 order: 2
 summary: Why the index is generated between markers in a file people also write in, and what it lists.
 reviewed:
-  commit: ac82a5f4bd513492a6325dd4d3e0926682c69c83
+  commit: 45ff0467a3159269bca10312fddda9b72ace6f7e
   date: 2026-09-23
 ---
 
