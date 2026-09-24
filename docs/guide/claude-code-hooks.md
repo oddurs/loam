@@ -4,7 +4,7 @@ summary: Two hooks that bring a file's pages to Claude Code as it edits, and sen
 covers:
   - docs/cookbook
 reviewed:
-  commit: ac82a5f4bd513492a6325dd4d3e0926682c69c83
+  commit: f6c73a6296c30e690671aa74fe29b0b9155d56a8
   date: 2026-09-23
 ---
 

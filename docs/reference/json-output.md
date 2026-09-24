@@ -9,7 +9,7 @@ covers:
 order: 3
 summary: What `--json` prints for check, context, list, show, search and stale, for programs and agents.
 reviewed:
-  commit: ac82a5f4bd513492a6325dd4d3e0926682c69c83
+  commit: f6c73a6296c30e690671aa74fe29b0b9155d56a8
   date: 2026-09-23
 ---
 
