@@ -40,7 +40,11 @@ kind's `title` and `description`. In each, a row per page: its title as a link,
 marked *(draft)* when it is one, and its summary. Rows are in `order`, then by
 title ([0064](../../cairn/items/0064-order-a-page-s-place-among-its-kind.md)),
 because a guide's first page is first on purpose. A summary's own links are
-rewritten to work from the index, a `#section` of the page included.
+rewritten to work from the index, a `#section` of the page included. A
+title's links and images are dropped, keeping the link's text: a link inside
+the row's own link is read as the inner one alone, so the row would not reach
+its page, and a badge says nothing in an index. The same sections, as data,
+are the manifest's `sections` ([spec/manifest.md](../../spec/manifest.md)).
 
 A summary written in frontmatter is shown whole: its length was chosen. One
 loam took from a first paragraph was not, and a paragraph can run to eighty
