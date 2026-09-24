@@ -3,6 +3,9 @@ covers:
   - src/index.rs
 order: 2
 summary: Why the index is generated between markers in a file people also write in, and what it lists.
+reviewed:
+  commit: ac82a5f4bd513492a6325dd4d3e0926682c69c83
+  date: 2026-09-23
 ---
 
 # The index

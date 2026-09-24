@@ -3,6 +3,9 @@ order: 6
 summary: Two hooks that bring a file's pages to Claude Code as it edits, and send it back to the pages it made stale before it stops.
 covers:
   - docs/cookbook
+reviewed:
+  commit: ac82a5f4bd513492a6325dd4d3e0926682c69c83
+  date: 2026-09-23
 ---
 
 # Claude Code hooks
