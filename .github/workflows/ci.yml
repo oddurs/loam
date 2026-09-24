@@ -49,3 +49,14 @@ jobs:
       - name: Install cairn
         run: cargo install --locked --git https://github.com/oddurs/cairn --rev "$CAIRN_REV" cairn-md
       - run: make check
+
+  # The action in action.yml, as another repository would use it: it installs
+  # the latest release — no Rust — and checks these pages with it.
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./
+      - uses: ./
+        with:
+          args: search stale
