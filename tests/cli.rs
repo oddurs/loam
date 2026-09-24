@@ -1080,3 +1080,85 @@ fn set_says_when_a_covered_path_matches_nothing() {
     assert!(t.contains("`src/nope` matches no file"), "{t}");
     assert!(!t.contains("src/lib.rs` matches"), "{t}");
 }
+
+// ─── backlinks (0053) ────────────────────────────────────────────────────────
+
+#[test]
+fn show_lists_the_pages_that_link_here() {
+    let repo = Repo::with_config(&[
+        (
+            "docs/README.md",
+            "# Docs\n\n[a](guide/a.md)\n\n<!-- loam:index:begin -->\n<!-- loam:index:end -->\n",
+        ),
+        ("docs/guide/a.md", "# A\n\n[myself](#a) and [b](b.md).\n"),
+        (
+            "docs/guide/b.md",
+            "# B\n\n[a](a.md), and [a again](a.md#a).\n",
+        ),
+        ("docs/design/c.md", "# C\n\nSee [a](../guide/a.md).\n"),
+    ]);
+    let v = json(&repo.loam(&["show", "docs/guide/a.md", "--json"]));
+    assert_eq!(
+        v["backlinks"],
+        serde_json::json!([
+            {"path": "docs/design/c.md", "line": 3},
+            {"path": "docs/guide/b.md", "line": 3},
+        ]),
+        "the index and the page itself are left out; one line per page and line"
+    );
+    let t = stdout(&repo.loam(&["show", "docs/guide/a.md"]));
+    assert!(
+        t.contains("linked  from docs/design/c.md, docs/guide/b.md"),
+        "{t}"
+    );
+}
+
+// ─── index and the manifest (0051, 0052) ─────────────────────────────────────
+
+#[test]
+fn index_prints_what_render_writes_and_the_manifest_beside_it() {
+    let repo = Repo::with_config(&[
+        (
+            "docs/README.md",
+            "# Docs\n\n<!-- loam:index:begin -->\n<!-- loam:index:end -->\n",
+        ),
+        (
+            "docs/guide/a.md",
+            "---\norder: 1\n---\n\n# A\n\nThe first. See [b](b.md#two).\n\n## One\n\n## One\n",
+        ),
+        ("docs/guide/b.md", "# B\n\nThe second.\n\n## Two\n"),
+    ]);
+    assert_eq!(code(&repo.loam(&["render"])), 0);
+    let printed = stdout(&repo.loam(&["index"]));
+    assert!(
+        repo.read("docs/README.md").contains(&printed),
+        "index prints the block render writes"
+    );
+
+    let m = json(&repo.loam(&["index", "--json"]));
+    assert_eq!(m["manifest_version"], 1);
+    assert_eq!(m["sections"][0]["heading"], "Guide");
+    assert_eq!(
+        m["sections"][0]["pages"],
+        serde_json::json!(["docs/guide/a.md", "docs/guide/b.md"])
+    );
+    let a = &m["pages"]["docs/guide/a.md"];
+    assert_eq!(a["body_line"], 4);
+    assert_eq!(
+        a["lead"], "The first. See [b](b.md#two).",
+        "whole sentences, links as written"
+    );
+    assert_eq!(
+        a["headings"][2]["slug"], "one-1",
+        "numbered as GitHub numbers repeats"
+    );
+    assert_eq!(
+        m["pages"]["docs/guide/b.md"]["backlinks"],
+        serde_json::json!([{"path": "docs/guide/a.md", "line": 7}])
+    );
+    assert_eq!(
+        a["freshness"],
+        serde_json::Value::Null,
+        "no git, no history"
+    );
+}

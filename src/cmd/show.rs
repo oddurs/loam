@@ -32,6 +32,7 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
             .as_ref()
             .map_or(serde_json::Value::Null, super::stale::freshness_json);
         v["freshness_error"] = serde_json::json!(trouble);
+        v["backlinks"] = serde_json::json!(tree.backlinks(&page.path));
         println!("{}", serde_json::to_string_pretty(&v)?);
         return Ok(0);
     }
@@ -132,6 +133,14 @@ pub fn run(ctx: &Ctx, args: Args) -> Result<u8> {
         .filter(|f| f.code.contains("link") || f.code == "broken-anchor")
         .count();
     println!("    links  {} out, {broken} broken", page.links.len());
+    let back = tree.backlinks(&page.path);
+    if back.is_empty() {
+        println!("   linked  from no page");
+    } else {
+        let mut from: Vec<&str> = back.iter().map(|b| b.path.as_str()).collect();
+        from.dedup();
+        println!("   linked  from {}", from.join(", "));
+    }
     for f in &page.findings {
         println!(
             "  {} line {}: {}",

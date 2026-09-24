@@ -88,6 +88,8 @@ pub struct Page {
     /// §4.3: what generates it, when a program does.
     pub generated: Option<String>,
     pub anchors: Vec<String>,
+    /// Every heading, for a table of contents.
+    pub headings: Vec<scan::Heading>,
     pub links: Vec<Link>,
     pub findings: Vec<Finding>,
 }
@@ -383,6 +385,7 @@ pub fn read_page(config: &Config, path: &str, bytes: Vec<u8>) -> Page {
     };
 
     let anchors = scan::anchors(&blocks);
+    let headings = scan::headings(&blocks);
     let source_lines: Vec<&str> = text.as_deref().unwrap_or("").split('\n').collect();
     let raw_links = scan::links(&blocks, &|n| source_lines.get(n - 1).map(|s| s.to_string()));
     let links = raw_links
@@ -419,6 +422,7 @@ pub fn read_page(config: &Config, path: &str, bytes: Vec<u8>) -> Page {
         reviewed,
         generated,
         anchors,
+        headings,
         links,
         findings,
     }
@@ -510,7 +514,48 @@ pub fn percent_decode(s: &str) -> String {
     String::from_utf8_lossy(&out).into_owned()
 }
 
+/// A link into a page from another: which page, and the line it is on.
+#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+pub struct Backlink {
+    pub path: String,
+    pub line: usize,
+}
+
 impl Tree {
+    /// The pages that link to `path`, in path order, then line (0053). The
+    /// index is left out, since it links every page, and so is the page itself.
+    pub fn backlinks(&self, path: &str) -> Vec<Backlink> {
+        self.backlinks_all().remove(path).unwrap_or_default()
+    }
+
+    /// Every page's backlinks, computed in one pass over the links.
+    pub fn backlinks_all(&self) -> BTreeMap<String, Vec<Backlink>> {
+        let mut out: BTreeMap<String, Vec<Backlink>> = BTreeMap::new();
+        for (from, page) in &self.pages {
+            if *from == self.config.index {
+                continue;
+            }
+            for link in &page.links {
+                if link.class != LinkClass::Page {
+                    continue;
+                }
+                let Some(target) = &link.target else { continue };
+                if target == from || !self.pages.contains_key(target) {
+                    continue;
+                }
+                let b = Backlink {
+                    path: from.clone(),
+                    line: link.raw.line,
+                };
+                let list = out.entry(target.clone()).or_default();
+                if !list.contains(&b) {
+                    list.push(b);
+                }
+            }
+        }
+        out
+    }
+
     pub fn read(config: Config) -> Result<Tree> {
         let fs = Fs::new(&config.root);
         let mut pages = BTreeMap::new();

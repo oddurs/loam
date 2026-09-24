@@ -27,9 +27,11 @@ fn row(index_dir: &str, page: &Page, extra: Option<String>) -> String {
         .title
         .clone()
         .unwrap_or_else(|| page.path.rsplit('/').next().unwrap_or("").to_string());
+    // A link in the title would be a link inside the row's link, which
+    // Markdown reads as the inner link alone: the row would not reach the page.
     let mut link = format!(
         "[{}]({})",
-        cell(&title),
+        cell(&crate::scan::unlinked(&title)),
         encode_destination(&relative(index_dir, &page.path))
     );
     if page.status == "draft" {
@@ -37,16 +39,7 @@ fn row(index_dir: &str, page: &Page, extra: Option<String>) -> String {
     }
     let note = match extra {
         Some(e) => e,
-        None => page
-            .summary
-            .as_deref()
-            .map(|s| {
-                if page.summary_from == Some("paragraph") {
-                    lead(s, 160)
-                } else {
-                    s
-                }
-            })
+        None => lead_of(page)
             .map(|s| rebase(s, page, index_dir))
             .unwrap_or_default(),
     };
@@ -147,19 +140,25 @@ fn sorted(mut pages: Vec<&Page>) -> Vec<&Page> {
     pages
 }
 
-/// The generated block, markers included, as lines without endings.
-pub fn generate(tree: &Tree) -> Vec<String> {
-    let index = &tree.config.index;
-    let index_dir = dir_of(index);
-    let listed = |p: &&Page| p.path != *index;
-    let mut out = vec![BEGIN.to_string(), NOTE.to_string()];
+/// One section of the index: a kind's pages, the pages no declared kind
+/// holds, or the superseded ones. `render` writes these as Markdown and
+/// `index --json` as the manifest's `sections`, so the two cannot disagree.
+pub struct Section<'a> {
+    /// `kind`, `other` or `superseded`.
+    pub role: &'static str,
+    /// The kind's name, for a kind's section.
+    pub kind: Option<&'a str>,
+    pub heading: String,
+    pub description: Option<&'a str>,
+    /// In the index's order: `order`, then title.
+    pub pages: Vec<&'a Page>,
+}
 
-    let table = |out: &mut Vec<String>, rows: Vec<String>| {
-        out.push(String::new());
-        out.push("| | |".into());
-        out.push("|---|---|".into());
-        out.extend(rows);
-    };
+/// The index's sections, in order, each with its pages; empty ones left out.
+pub fn sections(tree: &Tree) -> Vec<Section<'_>> {
+    let index = &tree.config.index;
+    let listed = |p: &&Page| p.path != *index;
+    let mut out = Vec::new();
 
     for kind in tree.config.kinds.iter().filter(|k| k.index) {
         let pages: Vec<&Page> = tree
@@ -168,25 +167,19 @@ pub fn generate(tree: &Tree) -> Vec<String> {
             .filter(listed)
             .filter(|p| p.status != "superseded" && p.kind.as_deref() == Some(kind.name.as_str()))
             .collect();
-        if pages.is_empty() {
-            continue;
+        if !pages.is_empty() {
+            out.push(Section {
+                role: "kind",
+                kind: Some(&kind.name),
+                heading: kind.heading(),
+                description: kind
+                    .description
+                    .as_deref()
+                    .map(str::trim)
+                    .filter(|d| !d.is_empty()),
+                pages: sorted(pages),
+            });
         }
-        out.push(String::new());
-        out.push(format!("## {}", kind.heading()));
-        if let Some(d) = kind
-            .description
-            .as_deref()
-            .map(str::trim)
-            .filter(|d| !d.is_empty())
-        {
-            out.push(String::new());
-            out.extend(d.lines().map(str::to_string));
-        }
-        let rows = sorted(pages)
-            .into_iter()
-            .map(|p| row(index_dir, p, None))
-            .collect();
-        table(&mut out, rows);
     }
 
     // Pages whose kind is not declared, or that no kind claims: listed rather
@@ -203,13 +196,13 @@ pub fn generate(tree: &Tree) -> Vec<String> {
         .filter(|p| p.status != "superseded" && !declared(p))
         .collect();
     if !other.is_empty() {
-        out.push(String::new());
-        out.push("## Other".into());
-        let rows = sorted(other)
-            .into_iter()
-            .map(|p| row(index_dir, p, None))
-            .collect();
-        table(&mut out, rows);
+        out.push(Section {
+            role: "other",
+            kind: None,
+            heading: "Other".into(),
+            description: None,
+            pages: sorted(other),
+        });
     }
 
     let superseded: Vec<&Page> = tree
@@ -225,13 +218,35 @@ pub fn generate(tree: &Tree) -> Vec<String> {
         })
         .collect();
     if !superseded.is_empty() {
+        out.push(Section {
+            role: "superseded",
+            kind: None,
+            heading: "Superseded".into(),
+            description: Some(
+                "Kept because a link may still land here, and because what they argued is still evidence.",
+            ),
+            pages: sorted(superseded),
+        });
+    }
+    out
+}
+
+/// The generated block, markers included, as lines without endings.
+pub fn generate(tree: &Tree) -> Vec<String> {
+    let index_dir = dir_of(&tree.config.index);
+    let mut out = vec![BEGIN.to_string(), NOTE.to_string()];
+    for section in sections(tree) {
         out.push(String::new());
-        out.push("## Superseded".into());
+        out.push(format!("## {}", section.heading));
+        if let Some(d) = section.description {
+            out.push(String::new());
+            out.extend(d.lines().map(str::to_string));
+        }
         out.push(String::new());
-        out.push("Kept because a link may still land here, and because what they argued is still evidence.".into());
-        let rows = sorted(superseded)
-            .into_iter()
-            .map(|p| {
+        out.push("| | |".into());
+        out.push("|---|---|".into());
+        for p in section.pages {
+            let note = (section.role == "superseded").then(|| {
                 let by: Vec<String> = p
                     .superseded_by
                     .iter()
@@ -244,25 +259,35 @@ pub fn generate(tree: &Tree) -> Vec<String> {
                             .unwrap_or_else(|| t.clone());
                         format!(
                             "[{}]({})",
-                            cell(&title),
+                            cell(&crate::scan::unlinked(&title)),
                             encode_destination(&relative(index_dir, &t))
                         )
                     })
                     .collect();
-                let note = if by.is_empty() {
+                if by.is_empty() {
                     String::new()
                 } else {
                     format!("replaced by {}", by.join(", "))
-                };
-                row(index_dir, p, Some(note))
-            })
-            .collect();
-        table(&mut out, rows);
+                }
+            });
+            out.push(row(index_dir, p, note));
+        }
     }
-
     out.push(String::new());
     out.push(END.to_string());
     out
+}
+
+/// A page's summary as the index shows it: a paragraph loam took cut to its
+/// opening sentences (0066), one written in frontmatter whole.
+pub fn lead_of(page: &Page) -> Option<&str> {
+    page.summary.as_deref().map(|s| {
+        if page.summary_from == Some("paragraph") {
+            lead(s, 160)
+        } else {
+            s
+        }
+    })
 }
 
 pub enum Target {

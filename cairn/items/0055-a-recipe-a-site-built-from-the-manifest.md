@@ -2,12 +2,14 @@
 id: 55
 title: 'A recipe: a site built from the manifest'
 type: docs
-status: backlog
+status: done
 milestone: v0.4
+assignee: Oddur Sigurdsson
 depends_on:
 - 52
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p2
 pillar:
 - index
@@ -25,5 +27,9 @@ It is a recipe in the cookbook, not a feature. See the boundary.
 
 ## Acceptance criteria
 
-- [ ] Built from one of the adopted repositories
-- [ ] Reads nothing but the manifest and page bodies
+- [x] Built from one of the adopted repositories
+- [x] Reads nothing but the manifest and page bodies
+
+## 2026-09-23
+
+docs/cookbook/site.py (~160 lines, Python Markdown) builds a static site from the manifest and page bodies only: nav from sections, draft marks, stale banners, TOC from headings with the manifest's slugs as ids, backlinks footer, page links rewritten to HTML. Built from poptop: 36 pages, 1,559 internal links and anchors, none broken. manifest_check.py builds the site for every folder it checks, so the recipe cannot rot. Guide: docs/guide/building-a-site-from-the-manifest.md (a draft, as an agent wrote it).

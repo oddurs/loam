@@ -81,6 +81,7 @@ on a pull request without failing it. See [Keeping pages true](docs/guide/keepin
 | `loam init` | Adopt the docs folder here: write `loam.toml`, change no page |
 | `loam check` | Broken links and anchors, malformed frontmatter, unclaimed pages — each with a file and line |
 | `loam render` | Generate the index between its markers; `--check` for CI |
+| `loam index --json` | The whole docs folder as one [versioned document](spec/manifest.md), to build a site from |
 | `loam new KIND TITLE` | A page where its kind lives, from the kind's template |
 | `loam list`, `show`, `search` | What is written, and where; all with `--json` |
 | `loam mv OLD NEW` | Move a page or a directory, and rewrite every link to it |

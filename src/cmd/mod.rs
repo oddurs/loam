@@ -5,6 +5,7 @@
 pub mod agent;
 pub mod check;
 pub mod context;
+pub mod index;
 pub mod init;
 pub mod list;
 pub mod mv;

@@ -2,13 +2,15 @@
 id: 51
 title: The manifest is a documented, versioned output
 type: spec
-status: backlog
+status: done
 milestone: v0.4
+assignee: Oddur Sigurdsson
 depends_on:
 - 23
 - 24
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-09-23
+closed_at: 2026-09-23
 priority: p0
 pillar:
 - index
@@ -37,5 +39,9 @@ A site built from the manifest reads nothing else except page bodies.
 
 ## Acceptance criteria
 
-- [ ] Specified, with an example
-- [ ] A JSON Schema file published beside it, and tests validate output against it
+- [x] Specified, with an example
+- [x] A JSON Schema file published beside it, and tests validate output against it
+
+## 2026-09-23
+
+spec/manifest.md and spec/manifest.schema.json (draft 2020-12). Each page entry is its reading exactly as the corpus shapes it, plus path, body_line, lead, headings (with GitHub slugs), backlinks, items and freshness; the top has kinds, sections (the index as data), and freshness notes/error. manifest_version 1, additive changes free. spec/manifest_check.py validates loam's output on this repository and the three real corpus folders in make check and CI; it also passed on uv (81 pages) and the 7,357-page stress set.

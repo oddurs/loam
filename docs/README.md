@@ -19,6 +19,7 @@ How do I do this? A task, start to finish, with real output.
 | [Checking docs in CI](guide/checking-docs-in-ci.md) | One command that fails a build when a link breaks, a page cannot be read, or the index has drifted. |
 | [Working with agents](guide/working-with-agents.md) | Give an agent the contract, and let loam keep it from writing the same page twice, in the wrong place, or as the truth. |
 | [Claude Code hooks](guide/claude-code-hooks.md) | Two hooks that bring a file's pages to Claude Code as it edits, and send it back to the pages it made stale before it stops. |
+| [Building a site from the manifest](guide/building-a-site-from-the-manifest.md) *(draft)* | Build a static site from loam's manifest and the pages' bodies, reading nothing else. |
 
 ## Reference
 

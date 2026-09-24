@@ -35,11 +35,12 @@ audit:
 	$(CARGO) deny check --hide-inclusion-graph
 
 # Two readers of the format over the corpus: the one in spec/, written from the
-# specification, and loam itself. Needs `pip install pyyaml`.
+# specification, and loam itself. Needs `pip install pyyaml jsonschema markdown`.
 conformance: $(LOAM)
 	$(PYTHON) spec/conformance.py
 	$(PYTHON) spec/conformance.py -- $(LOAM) reading
 	$(PYTHON) spec/shared.py
+	$(PYTHON) spec/manifest_check.py $(LOAM)
 
 # This backlog, and the roadmap rendered from it.
 backlog:

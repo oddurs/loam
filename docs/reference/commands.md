@@ -67,6 +67,21 @@ Refuses a file that exists without the markers, and says what to add.
 | `--check` | Change nothing; exit 1 if the index is not what rendering would write. |
 | `-q`, `--quiet` | Print nothing on success. |
 
+## `index`
+
+Print the index — the block `render` writes between the markers — without
+writing it. With `--json`, print the **manifest** instead: every page's
+reading, the index's sections in order, each page's headings with their
+anchors, its backlinks, the cairn items it cites and whether it is still true.
+The two are made from the same data, so they cannot disagree. The manifest is
+specified in [spec/manifest.md](../../spec/manifest.md), versioned, with a JSON
+Schema beside it: a site can be built from it and the pages' bodies alone.
+
+| Option | |
+| --- | --- |
+| `--json` | Print the manifest. |
+| `--no-history` | Leave out freshness, which reads git's history. |
+
 ## `new KIND TITLE`
 
 Write a page in `KIND`'s directory, named from `TITLE`, with the title as its
@@ -100,6 +115,8 @@ it came from, its supersession, its links and findings — then the page itself.
 | Option | |
 | --- | --- |
 | `--json` | Print the page's reading and its body as [JSON](json-output.md#show). |
+
+Also lists the pages that link to this one, the index apart.
 
 ## `search WORDS…`
 

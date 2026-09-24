@@ -9,6 +9,7 @@ mod covers;
 mod fresh;
 mod git;
 mod index;
+mod manifest;
 mod reading;
 mod scan;
 mod style;
@@ -49,6 +50,8 @@ enum Command {
     Check(cmd::check::Args),
     /// Write the docs index between its markers
     Render(cmd::render::Args),
+    /// Print the index; with --json, the manifest a site can be built from
+    Index(cmd::index::Args),
     /// Write a new page where its kind lives, from the kind's template
     New(cmd::new::Args),
     /// List pages, by kind and status
@@ -90,6 +93,7 @@ fn main() -> ExitCode {
         Command::Init(a) => cmd::init::run(&ctx, a),
         Command::Check(a) => cmd::check::run(&ctx, a),
         Command::Render(a) => cmd::render::run(&ctx, a),
+        Command::Index(a) => cmd::index::run(&ctx, a),
         Command::New(a) => cmd::new::run(&ctx, a),
         Command::List(a) => cmd::list::run(&ctx, a),
         Command::Show(a) => cmd::show::run(&ctx, a),

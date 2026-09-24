@@ -53,11 +53,20 @@ The same objects as `list`, best match first, each with four more keys:
 
 Exit status is 1 when nothing matches, with `[]` printed.
 
+## `index`
+
+`loam index --json` prints the manifest: the whole docs folder as one
+document, for building a site or anything else from. It has its own
+specification, [spec/manifest.md](../../spec/manifest.md), its own version,
+`manifest_version`, and a [JSON Schema](../../spec/manifest.schema.json) that
+CI holds loam's output to.
+
 ## `show`
 
 One object: the page's reading, exactly as the conformance corpus shapes it
 ([spec/corpus/README.md](../../spec/corpus/README.md#the-shape-of-a-reading)),
-plus `path`, `body`, the text after the frontmatter, and `freshness`, as one
+plus `path`, `body`, the text after the frontmatter, `backlinks` — each page
+linking here, as `path` and `line`, the index apart — and `freshness`, as one
 page of [`stale`](#stale) gives it, or `null` outside a git repository. When
 the repository's history could not be read, `freshness` is `null` and
 `freshness_error` says why; otherwise `freshness_error` is `null`.

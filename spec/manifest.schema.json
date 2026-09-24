@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/oddurs/loam/blob/main/spec/manifest.schema.json",
+  "title": "loam manifest, version 1",
+  "description": "What `loam index --json` prints. Specified in spec/manifest.md. Keys not listed here may be added without a new manifest_version, so a reader must ignore them.",
+  "type": "object",
+  "required": ["manifest_version", "format", "generator", "docs", "index", "cairn", "kinds", "sections", "pages", "freshness"],
+  "properties": {
+    "manifest_version": { "const": 1 },
+    "format": { "type": "integer", "minimum": 1 },
+    "generator": { "type": "string" },
+    "docs": { "type": "string" },
+    "index": { "type": "string" },
+    "cairn": { "type": ["string", "null"] },
+    "kinds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "dir", "heading", "description", "indexed"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "dir": { "type": "string" },
+          "heading": { "type": "string" },
+          "description": { "type": ["string", "null"] },
+          "indexed": { "type": "boolean" }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "kind", "heading", "description", "pages"],
+        "properties": {
+          "role": { "enum": ["kind", "other", "superseded"] },
+          "kind": { "type": ["string", "null"] },
+          "heading": { "type": "string" },
+          "description": { "type": ["string", "null"] },
+          "pages": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+        }
+      }
+    },
+    "pages": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/page" }
+    },
+    "freshness": {
+      "type": "object",
+      "required": ["notes", "error"],
+      "properties": {
+        "notes": { "type": "array", "items": { "type": "string" } },
+        "error": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "from": { "type": ["string", "null"] },
+    "strings": { "type": "array", "items": { "type": "string" } },
+    "page": {
+      "type": "object",
+      "required": [
+        "frontmatter", "title", "title_from", "kind", "kind_from", "status", "status_from",
+        "summary", "summary_from", "order", "covers", "reviewed", "generated",
+        "supersedes", "superseded_by", "anchors", "links", "findings",
+        "path", "body_line", "lead", "headings", "backlinks", "items", "freshness"
+      ],
+      "properties": {
+        "frontmatter": { "type": ["object", "null"] },
+        "title": { "type": ["string", "null"] },
+        "title_from": { "$ref": "#/$defs/from" },
+        "kind": { "type": ["string", "null"] },
+        "kind_from": { "$ref": "#/$defs/from" },
+        "status": { "type": "string" },
+        "status_from": { "type": "string" },
+        "summary": { "type": ["string", "null"] },
+        "summary_from": { "$ref": "#/$defs/from" },
+        "order": { "type": ["integer", "null"] },
+        "covers": { "$ref": "#/$defs/strings" },
+        "reviewed": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["commit", "date"],
+              "properties": { "commit": { "type": "string" }, "date": { "type": "string" } }
+            }
+          ]
+        },
+        "generated": { "type": ["string", "null"] },
+        "supersedes": { "$ref": "#/$defs/strings" },
+        "superseded_by": { "$ref": "#/$defs/strings" },
+        "anchors": { "$ref": "#/$defs/strings" },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["line", "destination", "class", "target", "fragment"],
+            "properties": {
+              "line": { "type": "integer", "minimum": 1 },
+              "destination": { "type": "string" },
+              "class": { "enum": ["external", "outside", "page", "cairn", "file"] },
+              "target": { "type": ["string", "null"] },
+              "fragment": { "type": ["string", "null"] },
+              "item": { "type": "integer", "minimum": 0 },
+              "current": { "type": "string" }
+            }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["line", "code", "detail"],
+            "properties": {
+              "line": { "type": "integer", "minimum": 1 },
+              "code": { "type": "string" },
+              "detail": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "path": { "type": "string" },
+        "body_line": { "type": "integer", "minimum": 1 },
+        "lead": { "type": ["string", "null"] },
+        "headings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["line", "level", "text", "slug"],
+            "properties": {
+              "line": { "type": "integer", "minimum": 1 },
+              "level": { "type": "integer", "minimum": 1, "maximum": 6 },
+              "text": { "type": "string" },
+              "slug": { "type": "string" }
+            }
+          }
+        },
+        "backlinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "line"],
+            "properties": {
+              "path": { "type": "string" },
+              "line": { "type": "integer", "minimum": 1 }
+            }
+          }
+        },
+        "items": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "uniqueItems": true },
+        "freshness": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["path", "state", "baseline"],
+              "properties": {
+                "path": { "type": "string" },
+                "state": { "enum": ["fresh", "stale", "updating", "unknown", "generated"] }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

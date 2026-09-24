@@ -251,12 +251,39 @@ static H_LINK: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\[((?:[^\]\\]|\\.)*)\]\([^)]*\)").unwrap());
 static H_LINK_REF: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\[((?:[^\]\\]|\\.)*)\]\[[^\]]*\]").unwrap());
+static H_IMAGE_SHORTCUT: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"!\[(?:[^\]\\]|\\.)*\]").unwrap());
 static H_TAG: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<[^>\n]*>").unwrap());
 static ESCAPE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\\([!-/:-@\[-`{-~])").unwrap());
 
 /// The text of a heading as it renders, markup removed (spec §6.3). A code
 /// span is its content, untouched; steps 1–6 apply outside them.
 pub fn heading_text(source: &str) -> String {
+    outside_code(source, &heading_text_plain, false)
+}
+
+/// Markdown with every image removed and every link replaced by its text,
+/// code spans kept as they are: for a title that goes inside a link of its
+/// own, where a link would take the place of the one around it, and a badge
+/// says nothing.
+pub fn unlinked(source: &str) -> String {
+    let text = outside_code(
+        source,
+        &|t: &str| {
+            let t = H_IMAGE.replace_all(t, "");
+            let t = H_IMAGE_REF.replace_all(&t, "");
+            let t = H_IMAGE_SHORTCUT.replace_all(&t, "");
+            let t = H_LINK.replace_all(&t, "$1");
+            H_LINK_REF.replace_all(&t, "$1").into_owned()
+        },
+        true,
+    );
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+/// `plain` applied to the text outside code spans; a code span becomes its
+/// content, or, with `keep`, stays as written.
+fn outside_code(source: &str, plain_of: &dyn Fn(&str) -> String, keep: bool) -> String {
     let mut out = String::new();
     let mut plain = String::new();
     let b = source.as_bytes();
@@ -293,9 +320,13 @@ pub fn heading_text(source: &str) -> String {
             }
             match close {
                 Some(c) => {
-                    out.push_str(&heading_text_plain(&plain));
+                    out.push_str(&plain_of(&plain));
                     plain.clear();
-                    out.push_str(&source[j..c]);
+                    out.push_str(if keep {
+                        &source[i..c + run]
+                    } else {
+                        &source[j..c]
+                    });
                     i = c + run;
                 }
                 None => {
@@ -309,7 +340,7 @@ pub fn heading_text(source: &str) -> String {
         plain.push(ch);
         i += ch.len_utf8();
     }
-    out.push_str(&heading_text_plain(&plain));
+    out.push_str(&plain_of(&plain));
     out
 }
 
@@ -394,13 +425,27 @@ static ID_OR_NAME_ATTR: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r#"(?i)[ \t\n](?:id|name)[ \t]*=[ \t]*(?:"([^"]*)"|'([^']*)')"#).unwrap()
 });
 
-/// Spec §6.3: heading slugs made unique as GitHub does, then HTML ids.
-pub fn anchors(blocks: &[Block]) -> Vec<String> {
+/// A heading as a table of contents wants it: where it is, how deep, what it
+/// reads as, and the anchor that reaches it.
+#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+pub struct Heading {
+    pub line: usize,
+    pub level: usize,
+    pub text: String,
+    pub slug: String,
+}
+
+/// Every heading, with its slug made unique as GitHub does (spec §6.3).
+pub fn headings(blocks: &[Block]) -> Vec<Heading> {
     let mut seen: std::collections::HashMap<String, usize> = Default::default();
-    let mut result = Vec::new();
+    let mut out = Vec::new();
     for block in blocks {
-        if let Block::Heading { text, .. } = block {
-            let base = slugify(&heading_text(text));
+        if let Block::Heading {
+            line, level, text, ..
+        } = block
+        {
+            let rendered = heading_text(text);
+            let base = slugify(&rendered);
             let mut slug = base.clone();
             while seen.contains_key(&slug) {
                 let count = seen.get_mut(&base).expect("the original is recorded first");
@@ -408,9 +453,20 @@ pub fn anchors(blocks: &[Block]) -> Vec<String> {
                 slug = format!("{base}-{count}");
             }
             seen.insert(slug.clone(), 0);
-            result.push(slug);
+            out.push(Heading {
+                line: *line,
+                level: *level,
+                text: rendered,
+                slug,
+            });
         }
     }
+    out
+}
+
+/// Spec §6.3: heading slugs made unique as GitHub does, then HTML ids.
+pub fn anchors(blocks: &[Block]) -> Vec<String> {
+    let mut result: Vec<String> = headings(blocks).into_iter().map(|h| h.slug).collect();
     for block in blocks {
         let lines: Vec<String> = match block {
             Block::Heading { text, .. } => vec![text.clone()],
@@ -672,6 +728,22 @@ pub fn unescape(destination: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_title_inside_a_link_loses_its_own_links_and_badges() {
+        assert_eq!(
+            unlinked("[base64](https://crates.io) `x[y](z)`"),
+            "base64 `x[y](z)`"
+        );
+        assert_eq!(
+            unlinked("Serde &emsp; [![Build Status]][actions] [![Latest]][crates.io]"),
+            "Serde &emsp;"
+        );
+        assert_eq!(
+            unlinked("[RustCrypto]: Block Buffer"),
+            "[RustCrypto]: Block Buffer"
+        );
+    }
 
     #[test]
     fn slugs_match_github() {
